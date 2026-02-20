@@ -1,0 +1,99 @@
+{
+  "name": "ENCORE",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@craco/craco": "^7.1.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@hello-pangea/dnd": "^18.0.1",
+    "@hookform/resolvers": "^2.9.11",
+    "@mui/lab": "^5.0.0-alpha.170",
+    "@mui/material": "^5.13.5",
+    "@mui/x-data-grid": "^7.26.0",
+    "@mui/x-date-pickers": "^7.27.0",
+    "@react-icons/all-files": "^4.1.0",
+    "@reduxjs/toolkit": "^2.2.7",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "ajv": "^8.17.1",
+    "axios": "^1.10.0",
+    "bootstrap": "^5.2.3",
+    "bootstrap-daterangepicker": "^3.1.0",
+    "chart.js": "^4.2.1",
+    "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.11",
+    "exceljs": "^4.4.0",
+    "final-form": "^4.20.10",
+    "final-form-arrays": "^3.1.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
+    "konva": "^9.3.22",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.546.0",
+    "luxon": "^3.5.0",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.45",
+    "prop-types": "^15.8.1",
+    "quill": "^2.0.3",
+    "react": "^18.2.0",
+    "react-barcode": "^1.4.6",
+    "react-best-gradient-color-picker": "^3.0.14",
+    "react-bootstrap": "^2.7.2",
+    "react-bootstrap-daterangepicker": "^8.0.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.2.0",
+    "react-final-form": "^6.5.9",
+    "react-final-form-arrays": "^3.1.4",
+    "react-hook-form": "^7.43.6",
+    "react-icons": "^4.12.0",
+    "react-infinite-scroll-component": "^6.1.0",
+    "react-konva": "^18.2.12",
+    "react-multi-carousel": "^2.8.6",
+    "react-paginate": "^8.2.0",
+    "react-pro-sidebar": "^1.0.0",
+    "react-qrcode-logo": "^2.9.0",
+    "react-quilljs": "^2.0.5",
+    "react-redux": "^9.1.2",
+    "react-router-dom": "^6.9.0",
+    "react-scripts": "^5.0.1",
+    "react-select": "^5.7.3",
+    "react-toastify": "^11.0.5",
+    "sass": "^1.59.3",
+    "socket.io-client": "^4.8.1",
+    "sweetalert2": "^11.7.3",
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5",
+    "yup": "^1.0.2"
+  },
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "craco eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "workbox-webpack-plugin": "^7.1.0"
+  }
+}

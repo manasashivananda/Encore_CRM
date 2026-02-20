@@ -1,0 +1,3139 @@
+// Added by Bhaskar start
+:root {
+  --primary: #d22530;
+  --primaryFont: #fff;
+  --primaryHover: #9b1921;
+  --background: #f5f5f5;
+}
+
+/* test environment overrides */
+.test-theme {
+  background-color: #7FA6FF !important;
+  --primary: #7FA6FF;
+  --primaryFont: #ffffff;
+  --primaryHover: #7FA6FF;
+  --background: #7FA6FF;
+} 
+
+.test-theme2 {
+  background-color: #7dddca !important;
+  --primary: #08bb98;
+  --primaryFont: #ffffff;
+  --primaryHover: #7dddca;
+  --background: #7dddca;
+} 
+
+
+.test-theme::before {
+  content: "TESTING SITE    TESTING SITE    TESTING SITE";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 60px;
+  font-weight: bold;
+  color: rgba(255, 0, 0, 0.031);
+  white-space: pre; 
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.test-theme2::before {
+  content: "TESTING SITE    TESTING SITE    TESTING SITE";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 60px;
+  font-weight: bold;
+  color: rgba(255, 0, 0, 0.057);
+  white-space: pre;  
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Watermark in corner */
+.watermark {
+  position: fixed;
+  top: 10px;
+  left: 0;                
+  right: 0;
+  text-align: center;   
+  color: rgb(243, 49, 49);
+  opacity: 0.7;
+  font-size: 35px;
+  font-weight: bold;
+  z-index: 9999;
+  pointer-events: none;
+  letter-spacing: 10px;
+  text-transform: uppercase;
+}
+// Added by Bhaskar end
+
+// Edited by Bhaskar start
+
+$primary: var(--primary);
+$primaryFont: var(--primaryFont);
+$primaryHover: var(--primaryHover);
+$loginPrimary:#d22530;
+$background: var(--background);
+
+// Edited by Bhaskar end
+
+$secondary: #59abee;
+$secondaryFont: #fff;
+$secondaryHover: #3b80b8;
+$white: #fff;
+$black: #000;
+$darkgrey: #333;
+$designerDashboardBg: #bddeefa3;
+$productionDashboardBg: #cf475ec7;
+$qcDashboardBg: #ebe1d4;
+$successBg: #229b2c;
+$successBgHover: #135c19;
+$LaterDelivery: #f7d6e5;
+
+
+.bg-red{background-color: $productionDashboardBg !important; color: #fff;}
+.flashingBg {
+  background-color: #cbe4f9 !important;
+  color: $darkgrey;
+}
+
+.claddingBg {
+  background-color: #d1d1d1 !important;
+  color: $darkgrey;
+}
+
+.faciaBg {
+  background-color: #fff7c4 !important;
+  color: $darkgrey;
+}
+
+.jobbingBg {
+  background-color: #c9f7fd !important;
+  color: $darkgrey;
+}
+
+.gbiBg {
+  background-color: #eee3ff !important;
+  color: $darkgrey;
+}
+
+.roofingBg {
+  background-color: #ffd3a8 !important;
+  color: $darkgrey;
+}
+
+.gbilBg {
+  background-color: #dfebce !important;
+  color: $darkgrey;
+}
+
+.badge.orderMovedToMyobBadge {
+  background: #487e15 !important;
+  padding: 5px 10px;
+}
+
+.badge.orderMovedToProdBtn {
+  background: #fa644a !important;
+  padding: 5px 10px;
+}
+
+.bg-info {
+  background-color: #5d70d3 !important;
+}
+
+.odr-status-1 {
+  background: #8d2f61 !important;
+}
+
+.odr-status-2 {
+  background: #b82626 !important;
+}
+
+.odr-status-3 {
+  background: #de6926 !important;
+}
+
+.odr-status-4 {
+  background: #414143 !important;
+}
+
+.odr-status-5 {
+  background: #0c536c !important;
+}
+
+.odr-status-6 {
+  background: #787e37 !important;
+}
+
+.odr-status-7 {
+  background: #d54789 !important;
+}
+
+.odr-status-8 {
+  background: #9e7733 !important;
+}
+
+.odr-status-9 {
+  background: #5794a0 !important;
+}
+
+.odr-status-10 {
+  background: #ae591f !important;
+}
+
+.odr-status-11 {
+  background: #91b463 !important;
+}
+
+.odr-status-12 {
+  background: #59802e !important;
+}
+
+.LaterDelivery {
+  background: $LaterDelivery;
+}
+
+.VendorMissing {
+  background-color: #f3d1d1;
+}
+
+.MuiBox-root .MuiIconButton-sizeMedium {
+  padding: 3px;
+}
+
+.designerDashboardQuoteBg {
+  background: #a5e5ff !important;
+}
+
+.btn-Count {
+  border-radius: 100%;
+  color: $black;
+  width: 30px;
+  height: 30px;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 30px;
+  vertical-align: middle;
+  letter-spacing: -0.5px;
+  margin: -2px 0 0 5px;
+  font-size: 12px;
+}
+
+/*Table Row Color */
+.stripedTable tr td:nth-child(2n),
+.stripedTable tr th:nth-child(2n) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.stripedTable tr.ManualEntryRow td:nth-child(2n),
+.stripedTable tr.ManualEntryRow th:nth-child(2n) {
+  background-color: #f3d1d1;
+}
+
+.OrderGFExceed {
+  background-color: #ffc9c9 !important;
+}
+
+.stripedTable tr.OrderGFExceed td:nth-child(2n) {
+  background-color: #fddcdc;
+}
+
+.HaveFlashing {
+  background-color: #f2ecfd !important;
+}
+
+.HaveCraneLift {
+  background-color: #fcefe3 !important;
+}
+
+.HaveCraneLiftBadge {
+  background-color: #d8b044 !important;
+}
+
+.HaveFarSuburbBadge {
+  background-color: #e45429 !important;
+}
+
+.siteDelivery {
+  background: #fff1f1;
+  padding: 3px 5px;
+  font-size: 12px;
+  color: #333;
+}
+
+.storeDelivery {
+  background: #f1f4ff;
+  padding: 3px 5px;
+  font-size: 12px;
+  color: #333;
+}
+
+.pickupOrder {
+  background: #e5ffdd;
+  padding: 3px 5px;
+  font-size: 12px;
+  color: #333;
+}
+
+.HavingPickupOrder{
+  background: #e5ffdd;
+  padding: 3px 5px;
+  color: #333;
+}
+
+.CancelledOrder {
+  background: #ed96abad !important;
+  padding: 3px 5px;
+  color: #333;
+}
+
+.DrawerMd.DrawerRight {
+  width: 50vw;
+}
+
+.addfield {
+  font-size: 20px;
+  color: #135c19;
+  cursor: pointer;
+}
+
+.remfield {
+  font-size: 20px;
+  color: #ff003c;
+  cursor: pointer;
+}
+
+.stripedTable {
+  .Department-DeliveryCharges {
+    background-color: #d3ffdc;
+  }
+
+  .Department-Cladding {
+    background-color: #d1d1d1;
+  }
+
+  .Department-GBIOrders {
+    background-color: #daceeb;
+  }
+
+  .Department-FasciaGutter {
+    background-color: #fff7c4;
+  }
+
+  .Department-Jobbing {
+    background-color: #c9f7fd;
+  }
+
+  .Department-Roofing {
+    background-color: #ffd3a8;
+  }
+
+  .Department-GBIL {
+    background-color: #c6dfa9;
+  }
+
+  td:nth-child(2n) {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  }
+}
+
+.highlight-edited-row {
+  border: 2px dotted #000 !important;
+}
+
+.Doubtbadge {
+  background: #135c19;
+  color: #fff;
+  border-radius: 100%;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  display: inline-block;
+  text-align: center;
+  font-size: 10px;
+}
+
+body {
+  background-color: #f2edf3;
+}
+
+.mt-n2 {
+  margin-top: -2rem;
+}
+
+.mt-n1 {
+  margin-top: -10px;
+}
+
+.swal2-container {
+  z-index: 9999 !important;
+}
+
+.hide {
+  display: none !important;
+}
+
+@media screen and (max-width: 640px) {
+  .hide-for-small {
+    display: none !important;
+  }
+}
+
+.MuiDrawer-modal {
+  z-index: 99 !important;
+}
+
+.primary-btn {
+  background-color: $primary !important;
+  color: $white !important;
+  height: 35px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  padding: 0 20px !important;
+  border: none;
+
+  &:hover {
+    background-color: $primaryHover !important;
+    color: $white !important;
+  }
+}
+
+.secondary-btn {
+  background-color: $secondary !important;
+  color: $secondaryFont !important;
+  height: 35px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  padding: 0 20px !important;
+  border: none;
+
+  &:hover {
+    background-color: $secondaryHover !important;
+    color: $white !important;
+  }
+}
+
+.success-btn {
+  background-color: $successBg !important;
+  color: $white !important;
+  height: 35px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  padding: 0 20px !important;
+  border: none;
+
+  &:hover {
+    background-color: $successBgHover !important;
+    color: $white !important;
+  }
+}
+
+.bdrbtm {
+  border-bottom: 1px solid #ddd;
+}
+
+.noDataFound {
+  font-size: 24px;
+  line-height: 100px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  height: 8px;
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: 3px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ff93a2;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ff5b5b;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.LoaderText {
+  background: $white;
+  padding: 20px 0;
+}
+
+/*Header start*/
+header {
+  background-color: $white;
+  padding: 7px 20px;
+  border-bottom: 1px solid #ddd;
+  position: fixed;
+  width: 100%;
+  z-index: 2;
+  top: 0;
+  left: 0;
+
+  @media screen and (max-width: 640px) {
+    padding: 7px 5px;
+  }
+
+  a {
+    img {
+      max-height: 50px;
+
+      @media screen and (max-width: 640px) {
+        max-height: 30px;
+      }
+    }
+  }
+
+  .HeaderInfo {
+    span {
+      margin-right: 1rem;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .ProfileArea {
+    position: relative;
+    margin-left: 10px;
+    text-align: left;
+
+    .btn {
+      padding: 0 0.5rem 0 0;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: #000;
+
+      @media screen and (max-width: 640px) {
+        font-size: 0px;
+      }
+
+      &:focus,
+      &:active {
+        outline: none;
+        background: none;
+        color: #333;
+      }
+
+      &:after {
+        float: right;
+        margin-top: 10px;
+
+        @media screen and (max-width: 640px) {
+          font-size: 20px;
+          margin-top: 0px;
+        }
+      }
+    }
+
+    p {
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      margin: 0;
+      position: relative;
+      top: -4px;
+      padding-right: 20px;
+    }
+  }
+
+  .text-end.right-menu {
+    justify-content: flex-end;
+    align-items: center;
+    display: flex;
+  }
+}
+
+/* Header End*/
+/*footer*/
+.footer-copyrights {
+  p {
+    margin: 10px 0 0 0;
+    font-size: 12px;
+    color: #333;
+  }
+}
+
+/*footer End*/
+/*Login Page*/
+.LoginPage.container {
+  max-width: 100%;
+
+  .loginContainer {
+    background: $white;
+    box-shadow: 0 0 10px #ddd;
+  }
+
+  >.row {
+    align-items: center;
+    background: $background;
+    height: 100vh;
+    justify-content: center;
+
+    @media screen and (max-width: 640px) {
+      align-items: flex-start;
+    }
+
+    .loginLeft {
+      background: $loginPrimary url(./Assets/images/login-bg.jpg) no-repeat center bottom;
+      background-size: 100%;
+      min-height: 600px;
+
+      @media screen and (max-width: 768px) {
+        min-height: 50vh;
+      }
+
+      .loginLogo {
+        margin-top: 50px;
+      }
+    }
+
+    .loginRight {
+      padding: 10px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+
+      @media screen and (max-width: 768px) {
+        min-height: 50vh;
+      }
+
+      h4 {
+        margin: 0 0 40px 0;
+      }
+
+      a {
+        color: $primary;
+
+        &:hover {
+          color: $primaryHover;
+        }
+      }
+
+      &.updatePasswordPage {
+        .form-control {
+          border: none;
+          border-bottom: 1px solid #ddd;
+          border-radius: 0;
+          height: 40px;
+          padding: 10px 0;
+
+          &:focus,
+          &:active {
+            outline: none;
+            box-shadow: none;
+          }
+        }
+      }
+
+      .forgotField .MuiFormControl-root {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/*General Container*/
+.GeneralContainer {
+  display: flex;
+  margin-top: 61px;
+
+  @media screen and (max-width: 640px) {
+    margin-top: 55px;
+  }
+
+  .LeftSideContainer {
+    min-height: calc(100vh - 62px);
+    background: $white;
+
+    .SidebarCollapse {
+      position: absolute;
+      top: 17px;
+      left: 220px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      z-index: 3;
+      color: #000;
+      padding: 0;
+
+      @media screen and (max-width: 640px) {
+        left: 145px;
+      }
+
+      svg {
+        font-size: 25px;
+        fill: $primary;
+      }
+    }
+
+    aside {
+      height: calc(100vh - 62px);
+
+      @media screen and (max-width: 640px) {
+        width: 0;
+        min-width: 0;
+
+        &.ps-collapsed {
+          width: 80px;
+          position: absolute;
+          background: #ff9090;
+          z-index: 9;
+
+          nav ul li.submenuItem a {
+            padding-left: 0;
+
+            @media screen and (max-width: 640px) {
+              padding-left: 10px;
+            }
+          }
+        }
+      }
+
+      nav ul {
+        li {
+          &.submenuItem {
+            a {
+              padding-left: 60px;
+
+              &:has(> span.ps-menu-icon) {
+                padding-left: 50px;
+
+                @media screen and (max-width: 640px) {
+                  padding-left: 10px;
+                }
+              }
+            }
+
+            &.menuActive {
+              background: $primaryHover;
+
+              >a {
+                background: none;
+
+                .ps-menu-label {
+                  color: $white;
+                }
+
+                .ps-menu-icon {
+                  color: $white;
+                }
+              }
+            }
+          }
+
+          a {
+            border-bottom: 1px solid #dfdfdf;
+
+            .ps-menu-label {
+              color: #353538;
+              letter-spacing: 0.25px;
+              font-size: 14px;
+            }
+
+            .ps-menu-icon {
+              font-size: 20px;
+              color: $primary;
+              margin-right: 5px;
+            }
+          }
+
+          &.menuActive {
+            background: $primary;
+
+            >a {
+              background: none;
+
+              .ps-menu-label {
+                color: $white;
+              }
+
+              .ps-menu-icon {
+                color: $white;
+              }
+            }
+          }
+        }
+      }
+
+      .ps-submenu-content {
+        ul {
+          margin-top: 0;
+
+          .ps-menu-icon {
+            color: $primary;
+          }
+
+          .ps-menu-label {
+            color: #353538;
+          }
+        }
+      }
+    }
+  }
+
+  .RightMainContainer {
+    flex: 1 1 auto;
+    padding: 10px; // 10px 20px
+    max-height: calc(100vh - 62px);
+    overflow-y: scroll;
+     overflow-x: hidden;
+
+    @media screen and (max-width: 640px) {
+      padding: 10px 12px;
+    }
+
+    .Right-Side-Main-Container {
+      min-height: calc(100vh - 110px);
+    }
+
+    .GeneralHeading {
+      background: $white;
+      padding: 10px;
+      align-items: center;
+      display: flex;
+      margin: 0;
+
+      &.designerDashboardBg {
+        background: $designerDashboardBg;
+      }
+
+      &.qcDashboardBg {
+        background: $qcDashboardBg;
+      }
+
+      &.productionDashboardBg {
+        background: $productionDashboardBg;
+
+        h2,
+        h5 {
+          color: $white;
+        }
+      }
+
+      @media screen and (max-width: 640px) {
+        .col-md-6 {
+          padding: 0;
+        }
+      }
+
+      &.withBackArrow {
+        h2 {
+          padding-left: 30px;
+        }
+      }
+
+      h2 {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+        line-height: 35px;
+        display: flex;
+        position: relative;
+
+        @media screen and (max-width: 640px) {
+          font-size: 16px;
+        }
+
+        .arrow-btn {
+          position: absolute;
+          left: -2px;
+          top: -1px;
+          width: auto;
+          color: $primary;
+
+          svg {
+            font-size: 2rem !important;
+          }
+        }
+      }
+
+      h5 {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+        line-height: 25px;
+        display: flex;
+        position: relative;
+
+        @media screen and (max-width: 640px) {
+          font-size: 16px;
+        }
+
+        .arrow-btn {
+          position: absolute;
+          left: -2px;
+          top: -1px;
+          width: auto;
+          color: $primary;
+
+          svg {
+            font-size: 2rem !important;
+          }
+        }
+      }
+
+      .primary-btn,
+      .success-btn,
+      .secondary-btn {
+        height: 35px;
+        line-height: 33px;
+        font-weight: normal;
+
+        @media screen and (max-width: 640px) {
+          height: 30px;
+          font-size: 12px;
+          line-height: 28px;
+          padding: 0 10px !important;
+          margin-top: 5px;
+        }
+      }
+
+      &.SearchBar {
+        .search {
+          padding: 5px 32px;
+          float: left;
+        }
+
+        .SearchTextBox {
+          .MuiInputBase-root::before {
+            border: none;
+          }
+
+          .MuiFormControl-root {
+            width: 100%;
+
+            input {
+              border: 1px solid #ddd;
+              padding: 5px 12px;
+              background: $white;
+            }
+          }
+        }
+
+        .textarea {
+          width: 100%;
+        }
+
+        .DrawerSelectbox {
+          select {
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            width: 100%;
+            outline: none;
+          }
+        }
+
+        .form-control {
+          border: 1px solid #ddd;
+          height: 40px;
+          border-radius: 0.375rem;
+        }
+      }
+
+      .SearchTextBox {
+        .MuiFormControl-root {
+          width: 100%;
+        }
+      }
+    }
+
+    .GeneralTable {
+      background: $white;
+      // padding: 0 0 10px 0;
+      margin-top: 5px; // 15px
+
+      &.tableOverflow {
+        overflow: auto;
+      }
+
+      &.customerOrderForm {
+        max-height: 500px;
+      }
+
+      .MuiDataGrid-columnHeaders>.MuiDataGrid-row--borderBottom {
+        background: #d7d1d1;
+
+        .MuiDataGrid-columnHeaderTitle {
+          font-weight: bold;
+        }
+      }
+
+      a {
+        color: #333;
+        font-weight: bold;
+        text-decoration: none;
+
+        &:hover {
+          color: $primary;
+        }
+      }
+
+      .horiStripe {
+        tr {
+          &:nth-child(2n) {
+            background: #efefef;
+          }
+        }
+      }
+
+      thead {
+        background: #d7d1d1;
+        z-index: 1;
+        tr th {
+          font-size: 14px;
+          font-weight: bold;
+          color: $black;
+          padding: 15px 10px;
+          line-height: normal;
+          max-width: 200px;
+
+          @media screen and (max-width: 640px) {
+            min-width: 150px;
+          }
+
+          &:first-child {
+            padding-left: 20px;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          &.QcFailedOrder {
+            td {
+              background: #ff9c2170;
+            }
+          }
+
+          th {
+            padding: 10px;
+
+            a {
+              color: #333;
+              font-weight: bold;
+              margin-left: 10px;
+              text-decoration: none;
+              font-size: 14px;
+            }
+
+            &:first-child {
+              padding-left: 20px;
+            }
+          }
+
+          td {
+            color: #333;
+            font-weight: 400;
+            font-size: 13px;
+            padding: 5px 10px;
+            max-width: 200px;
+
+            a {
+              color: $primary;
+              font-weight: bold;
+              text-decoration: none;
+              font-size: 14px;
+            }
+
+            &:first-child {
+              padding-left: 20px;
+            }
+
+            .BadgeBlock {
+              display: flex;
+              flex-wrap: wrap;
+              max-width: 200px;
+
+              span.badge {
+                text-align: center;
+                width: 25%;
+
+                span {
+                  width: 100%;
+                  display: block;
+                  font-weight: bold;
+                }
+              }
+            }
+
+            .BadgeBlock3 {
+              display: flex;
+              flex-wrap: wrap;
+              max-width: 200px;
+
+              span.badge {
+                text-align: center;
+                width: 33%;
+                font-size: 10px;
+                min-width: 35px;
+
+                span {
+                  width: 100%;
+                  display: block;
+                  font-weight: bold;
+                }
+              }
+            }
+          }
+        }
+
+        tr:last-child {
+
+          td,
+          th {
+            border-bottom: 0;
+          }
+        }
+
+        .tableAvatar {
+          display: flex;
+          align-items: center;
+
+          .MuiAvatar-root {
+            font-size: 1rem;
+          }
+
+          a {
+            display: inline-block;
+            vertical-align: middle;
+            width: calc(100% - 50px);
+          }
+        }
+      }
+
+      .reactPaginate {
+        margin-bottom: 20px;
+
+        .Mui-selected {
+          background-color: $primary;
+          color: $white;
+        }
+      }
+    }
+
+    .LayoutCard.card {
+      border: none;
+
+      .card-header {
+        background-color: $white;
+        border-radius: 0;
+        padding: 10px 15px;
+
+        h4 {
+          font-size: 20px;
+          color: #333;
+        }
+
+        .card-title {
+          font-size: 18px;
+          font-weight: bold;
+          margin: 0;
+          padding-top: 5px;
+          display: flex;
+        }
+
+        .MuiButtonBase-root {
+          padding: 0 !important;
+        }
+
+        .btn.lvbtn {
+          padding: 0.6vw 0.8vw !important;
+          float: right;
+        }
+      }
+
+      .card-body {
+        overflow: auto;
+
+        .row {
+          margin-bottom: 15px;
+
+          label {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+          }
+
+          div {
+            font-size: 14px;
+            color: #666;
+          }
+
+          .sb-avatar--text {
+            span {
+              color: $white;
+            }
+          }
+        }
+
+        .EMPLeave_Management {
+          .row .col>div {
+            font-size: 28px;
+            font-weight: 600;
+            color: #000;
+          }
+        }
+      }
+
+      .ReportRow {
+        background: #f2edf3;
+        margin: 10px 0 0 0;
+        padding: 10px;
+
+        .level1 {
+          text-align: center;
+          background: #c8a7be;
+          padding: 1px 2px 2px;
+          color: $white !important;
+          border-radius: 2px;
+          margin: 2.5px;
+        }
+
+        .level2 {
+          margin: 5px 0 0 0;
+
+          div {
+            text-align: center;
+            background: #fdbc98;
+            color: $white;
+            margin-right: 5px;
+            padding: 1px 2px 2px;
+            border-radius: 2px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.ProfileBasicDetail {
+  &.qcDashboardBg {
+    .ProfileBasicDetailLeftHeader {
+      background: $qcDashboardBg;
+
+      .ColoredIcon svg {
+        fill: $white;
+      }
+    }
+  }
+
+  &.designerDashboardBg {
+    .ProfileBasicDetailLeftHeader {
+      background: $designerDashboardBg;
+
+      .ColoredIcon svg {
+        fill: $white;
+      }
+    }
+  }
+
+  &.productionDashboardBg {
+    .ProfileBasicDetailLeftHeader {
+      background: $productionDashboardBg;
+
+      .ColoredIcon svg {
+        fill: $white;
+      }
+    }
+  }
+
+  .ProfileBasicDetailLeftHeader {
+    padding: 1.5rem 18px;
+
+    @media screen and (max-width: 640px) {
+      padding: 10px 10px;
+    }
+
+    h4 {
+      margin: 1rem 0 0 0;
+    }
+
+    .ProfileCard {
+      &.CanceledCard {
+        background: #f00;
+        padding: 20px 0;
+
+        span,
+        label {
+          color: #fff;
+          text-align: center !important;
+          width: 100%;
+          display: block;
+
+          &:after {
+            display: none;
+          }
+        }
+      }
+
+      &.HoldCard {
+        background: rgb(240, 173, 78);
+        padding: 20px 0;
+
+        span,
+        label {
+          color: #fff;
+          text-align: center !important;
+          width: 100%;
+          display: block;
+
+          &:after {
+            display: none;
+          }
+        }
+      }
+
+      list-style: none;
+      margin: 0;
+      padding-left: 0.5vw;
+
+      .row {
+        margin-bottom: 5px;
+      }
+
+      label {
+        font-weight: bold;
+        color: #333;
+        font-size: 14px;
+        position: relative;
+        width: 100%;
+
+        &:after {
+          content: ":";
+          right: 0;
+          position: absolute;
+
+          @media screen and (max-width: 640px) {
+            display: none;
+          }
+        }
+      }
+
+      .MuiGrid-grid-md-7{
+        font-size: 15px;
+
+        .badge {
+          margin-top: 1px;
+          font-size: 12px;
+        }
+      }
+
+      .MuiGrid-grid-md-5 > *{
+        font-size: 15px;
+      }
+
+      .MuiGrid-grid-md-3\.6 > *{
+        font-size: 15px;
+      }
+
+      .MuiGrid-grid-md-6 > *{
+        font-size: 15px;
+        .badge {
+          margin-top: 1px;
+          font-size: 12px;
+        }
+      }
+
+      .OrderListDelivery{
+        font-size: 15px!important;
+      }
+
+      .col-md-7 {
+        position: relative;
+
+        >span {
+          position: relative;
+          font-weight: normal;
+          color: #000;
+          font-size: 14px;
+          word-wrap: break-word;
+        }
+      }
+
+      .detailDescrption {
+        border: 1px solid #ddd;
+        padding: 5px;
+        margin-top: 10px;
+        width: 100%;
+        display: block;
+        font-size: 13px;
+      }
+    }
+
+    .arrow-btn {
+      position: absolute;
+      left: 0px;
+      top: 13px;
+      width: auto;
+      color: $primary;
+
+      svg {
+        font-size: 2rem !important;
+      }
+    }
+  }
+}
+
+.ProfileBasicDetail.collapsed {
+  padding-bottom: 0px !important;
+}
+
+.ProfileBasicDetailLeftHeader.collapsed {
+  padding-bottom: 0px !important;
+}
+
+.ProfileBasicDetail.collapsed .ProfileBasicDetailLeftHeader {
+  transition: padding 0.3s ease-in-out;
+}
+
+.badge{
+  white-space: normal!important;
+}
+
+
+.ModelForm {
+  .DrawerFormField {
+    margin-bottom: 20px;
+
+    .col-md-12 {
+      margin: 0 0 15px 0;
+    }
+
+    .MuiFormControl-root {
+      width: 100%;
+    }
+
+    label {
+      margin-bottom: 10px;
+      font-weight: bold;
+      font-size: 14px;
+
+      em {
+        color: red;
+      }
+    }
+
+    .DrawerSelectbox {
+      label {
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-size: 14px;
+        color: #666;
+      }
+
+      select {
+        border: none;
+        border-bottom: 1px solid #333;
+      }
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="email"],
+    input[type="tel"],
+    select {
+      width: 100%;
+    }
+
+    .inputUnderline {
+      border-bottom: 1px solid #333;
+      width: 100%;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+      display: block;
+      cursor: not-allowed;
+    }
+
+    em.ErrorMsg {
+      color: red;
+      font-size: 12px;
+      padding-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .form-text {
+      color: #666;
+      font-size: 11px;
+      margin-top: 0;
+    }
+
+    .FormBtn {
+      background: $primary;
+      color: $white;
+      padding: 10px 30px;
+      border: 0;
+      font-weight: bold;
+
+      &:hover {
+        background: $primaryHover;
+      }
+    }
+
+    .FormBtnPrimary {
+      background: $secondary;
+      color: $white;
+      padding: 10px 30px;
+      border: 0;
+      font-weight: bold;
+    }
+  }
+}
+
+.DrawerRight {
+  width: 25vw;
+  height: 100vh;
+  overflow: hidden;
+  min-width: 480px;
+
+  @media screen and (max-width: 640px) {
+    width: 90vw;
+  }
+
+  .roleRow {
+    border-bottom: 1px solid #ddd;
+    padding: 9px 0;
+  }
+
+  &.priceBookDrawer {
+    width: 80vw;
+
+    .card-body .DrawerForm {
+      min-width: 1300px;
+      overflow: auto;
+    }
+  }
+
+  &.rolePermissionDrawer {
+    width: 80vw;
+
+    @media screen and (max-width: 640px) {
+      width: 90vw;
+    }
+  }
+
+  .general-form {
+    .card {
+      border: none;
+    }
+
+    .card-header {
+      background-color: $primary;
+      border-radius: 0;
+
+      h4 {
+        font-size: 20px;
+        color: $white;
+        margin: 0;
+        line-height: 40px;
+      }
+    }
+
+    .card-body {
+      padding: 1rem 1.5rem 0rem 1.5rem;
+      height: calc(100vh - 45px);
+      overflow: auto;
+
+      @media screen and (max-width: 640px) {
+        padding-bottom: 50px;
+      }
+
+      .DrawerForm {
+        .MUISelectBox {
+          .MuiFormLabel-root {
+            transform: translate(0px, 16px) scale(1);
+
+            &.MuiInputLabel-shrink {
+              transform: translate(0px, -1px) scale(0.75);
+            }
+          }
+        }
+
+        .DrawerFormField {
+          margin-bottom: 20px;
+
+          .col-md-12 {
+            margin: 0 0 15px 0;
+          }
+
+          .MuiFormControl-root {
+            width: 100%;
+          }
+
+          label {
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 14px;
+
+            em {
+              color: red;
+            }
+          }
+
+          .DrawerSelectbox {
+            label {
+              margin-bottom: 10px;
+              font-weight: bold;
+              font-size: 14px;
+              color: #666;
+            }
+
+            select {
+              border: none;
+              border-bottom: 1px solid #333;
+            }
+          }
+
+          input[type="text"],
+          input[type="number"],
+          input[type="date"],
+          input[type="email"],
+          input[type="tel"],
+          select {
+            width: 100%;
+          }
+
+          .inputUnderline {
+            border-bottom: 1px solid #333;
+            width: 100%;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+            display: block;
+            cursor: not-allowed;
+          }
+
+          em.ErrorMsg {
+            color: red;
+            font-size: 12px;
+            padding-bottom: 1rem;
+            display: inline-block;
+          }
+
+          .form-text {
+            color: #666;
+            font-size: 11px;
+            margin-top: 0;
+          }
+
+          .FormBtn {
+            background: $primary;
+            color: $white;
+            padding: 10px 30px;
+            border: 0;
+            font-weight: bold;
+
+            &:hover {
+              background: $primaryHover;
+            }
+
+            &:disabled {
+              cursor: no-drop;
+            }
+          }
+
+          .FormBtnPrimary {
+            background: $secondary;
+            color: $white;
+            padding: 10px 30px;
+            border: 0;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+.masterOrderList{
+  // margin: 10px 0px;
+  padding: 0px;
+  font-size: 13px;
+}
+
+.OrderDrawerRight {
+  // width: 25vw;
+  height: 100vh;
+  overflow: hidden;
+  min-width: 480px;
+
+  @media screen and (max-width: 640px) {
+    width: 90vw;
+  }
+
+  .roleRow {
+    border-bottom: 1px solid #ddd;
+    padding: 9px 0;
+  }
+
+  &.priceBookDrawer {
+    width: 80vw;
+
+    .card-body .DrawerForm {
+      min-width: 1300px;
+      overflow: auto;
+    }
+  }
+
+  &.rolePermissionDrawer {
+    width: 80vw;
+
+    @media screen and (max-width: 640px) {
+      width: 90vw;
+    }
+  }
+
+  .general-form {
+    .card {
+      border: none;
+    }
+
+    .card-header {
+      background-color: $primary;
+      border-radius: 0;
+
+      h4 {
+        font-size: 20px;
+        color: $white;
+        margin: 0;
+        line-height: 40px;
+      }
+    }
+
+    .card-body {
+      padding: 1rem 1.5rem 0rem 1.5rem;
+      height: calc(100vh - 45px);
+      overflow: auto;
+
+      @media screen and (max-width: 640px) {
+        padding-bottom: 50px;
+      }
+
+      .DrawerForm {
+        .MUISelectBox {
+          .MuiFormLabel-root {
+            transform: translate(0px, 16px) scale(1);
+
+            &.MuiInputLabel-shrink {
+              transform: translate(0px, -1px) scale(0.75);
+            }
+          }
+        }
+
+        .DrawerFormField {
+          margin-bottom: 20px;
+
+          .col-md-12 {
+            margin: 0 0 15px 0;
+          }
+
+          .MuiFormControl-root {
+            width: 100%;
+          }
+
+          label {
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 14px;
+
+            em {
+              color: red;
+            }
+          }
+
+          .DrawerSelectbox {
+            label {
+              margin-bottom: 10px;
+              font-weight: bold;
+              font-size: 14px;
+              color: #666;
+            }
+
+            select {
+              border: none;
+              border-bottom: 1px solid #333;
+            }
+          }
+
+          input[type="text"],
+          input[type="number"],
+          input[type="date"],
+          input[type="email"],
+          input[type="tel"],
+          select {
+            width: 100%;
+          }
+
+          .inputUnderline {
+            border-bottom: 1px solid #333;
+            width: 100%;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+            display: block;
+            cursor: not-allowed;
+          }
+
+          em.ErrorMsg {
+            color: red;
+            font-size: 12px;
+            padding-bottom: 1rem;
+            display: inline-block;
+          }
+
+          .form-text {
+            color: #666;
+            font-size: 11px;
+            margin-top: 0;
+          }
+
+          .FormBtn {
+            background: $primary;
+            color: $white;
+            padding: 10px 30px;
+            border: 0;
+            font-weight: bold;
+
+            &:hover {
+              background: $primaryHover;
+            }
+
+            &:disabled {
+              cursor: no-drop;
+            }
+          }
+
+          .FormBtnPrimary {
+            background: $secondary;
+            color: $white;
+            padding: 10px 30px;
+            border: 0;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+.PriceBookHeader {
+  display: flex;
+  background: #ddd;
+  padding: 5px 10px;
+  justify-content: space-around;
+
+  div {
+    min-width: 100px;
+    text-align: center;
+  }
+}
+
+.PriceBookRow {
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
+
+  div {
+    text-align: center;
+
+    input {
+      min-width: 70px;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 12px;
+      height: 25px;
+      width: 100%;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+  }
+}
+
+.barcodeSearchArea {
+  background: $white;
+
+
+}
+
+/*Emp Exp Form*/
+.EmpExpForm {
+  .row {
+    .col-md-12 {
+      label {
+        width: 100%;
+        font-weight: bold;
+        font-size: 13px;
+      }
+
+      input {
+        width: 100%;
+        height: 40px;
+        margin: 0 0 10px 0;
+        border: none;
+        border-bottom: 1px solid #ddd;
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+
+    .drawerFiled {
+      input {
+        width: 100%;
+        height: 40px;
+        margin: 0 0 10px 0;
+        border: none;
+        border-bottom: 1px solid #ddd;
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  }
+}
+
+.barcodeHideSection {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  z-index: -9999;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+}
+
+.barcodeContainer {
+  border: 1px solid #ddd;
+  padding: 30px 40px;
+  min-width: 1800px;
+  min-height: 1200px;
+  max-width: 1800px;
+  background: $white;
+
+  .BarcodeHeader {
+    width: 100%;
+    float: left;
+
+    .barcodeLogo {
+      width: 40%;
+      float: left;
+
+      img {
+        width: 70%;
+        margin-bottom: 50px;
+      }
+    }
+
+    .barcodeLogoAwf {
+      width: 30%;
+      float: left;
+
+      img {
+        width: 70%;
+        margin-bottom: 50px;
+      }
+    }
+
+    .barcodeBars {
+      float: right;
+      width: 40%;
+    }
+  }
+
+  .barcodeItems {
+    width: 100%;
+    float: left;
+    height: 840px;
+    display: flex;
+    justify-content: space-between;
+
+    .BarcodeLeft {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 63%;
+      float: left;
+
+      h2 {
+        font-size: 235px;
+        margin: 20px 0 20px 0;
+        line-height: 220px;
+        font-weight: bolder;
+        width: 100%;
+        text-align: left;
+      }
+
+      h3 {
+        font-size: 170px;
+        margin: 20px 0 50px 0;
+        line-height: 120px;
+        font-weight: bolder;
+        width: 100%;
+        text-align: center;
+      }
+
+      h4 {
+        font-size: 145px;
+        margin: 50px 0 20px 0;
+        line-height: 170px;
+        font-weight: bolder;
+        width: 95%;
+        text-align: center;
+        word-wrap: break-word;
+      }
+    }
+
+    .BarcodeRight {
+      width: 37%;
+      justify-content: space-between;
+      float: left;
+      display: flex;
+      align-items: center;
+
+      svg {
+        max-width: 100%;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          height: 125px;
+          width: 100%;
+          float: left;
+
+          label {
+            font-size: 40px;
+            line-height: 100px;
+            width: 230px;
+            float: left;
+            position: relative;
+
+            &::after {
+              content: ":";
+              position: absolute;
+              right: 5px;
+            }
+          }
+
+          span {
+            font-size: 40px;
+            line-height: 100px;
+          }
+
+          strong {
+            font-size: 40px;
+            line-height: 100px;
+            font-weight: bold;
+          }
+
+          .barcodeQRsection {
+            height: 275px;
+            width: 275px;
+            float: right;
+            margin-top: -15px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.barcodePrint {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/*Dashboard*/
+.orderDashboardReportCard {
+  .DashboardTopItem {
+    width: 100%;
+    float: left;
+    padding: 15px;
+
+    .DashboardTopItemContent {
+      width: 100%;
+
+      select {
+        font-size: 10px;
+        border: 1px solid #ddd;
+      }
+
+      h4 {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.DashboardTopItem {
+  background-color: $white;
+  color: #5b5b98;
+  border-radius: 10px;
+  padding: 20px 15px;
+  margin-bottom: 15px;
+
+  .DashboardTopItemIcon {
+    width: 58px;
+    height: 58px;
+    line-height: 58px;
+    background: #ef7575;
+    color: $white;
+    font-size: 30px;
+    border-radius: 8px;
+    text-align: center;
+    float: left;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.DashboardTopItemContent {
+  float: left;
+  width: calc(100% - 68px);
+
+  h3 {
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    font-size: 13px;
+    color: #5b5b98;
+  }
+
+  h4 {
+    line-height: 1.167;
+    letter-spacing: -0.01562em;
+    font-size: 25px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+}
+
+.DashboardTopItemNotes {
+  width: 100%;
+  display: block;
+
+  p {
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    font-size: 13px;
+    margin: 0;
+  }
+}
+
+.GraphContainer {
+  .card {
+    background-color: $white;
+    color: #5b5b98;
+    border-radius: 10px;
+    border: none;
+    padding: 0.85vw;
+
+    .card-header {
+      background: none;
+      border-color: #ddd;
+      padding-left: 0;
+      padding-top: 0;
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+
+    .card-body {
+      canvas {
+        max-height: 400px;
+      }
+    }
+  }
+}
+
+iframe#printf {
+  display: none;
+}
+
+.GeneralContainer .RightMainContainer .invoiceLayout .GeneralTable {
+  margin: 0;
+}
+
+.InvoiceHeader {
+  padding: 20px;
+  border-top: 5px solid $primary;
+  border-bottom: 1px solid $primary;
+  background: $white;
+
+  img {
+    margin-top: 25px;
+  }
+
+  h1 {
+    color: $primary;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 30px 0 0 0;
+  }
+
+  h2 {
+    color: $primary;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  h3 {
+    font-size: 16px;
+    color: #333;
+  }
+
+  h4 {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+  }
+}
+
+.InvoiceFooter {
+  padding: 20px;
+  border-top: 2px solid $primary;
+  border-bottom: 10px solid $primary;
+  margin-bottom: 20px;
+  background: $white;
+}
+
+.InvoiceAddress {
+  padding: 20px;
+  border-bottom: 1px solid $primary;
+  background: $white;
+
+  h3 {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+  }
+
+  h4 {
+    font-size: 14px;
+    color: #333;
+    margin: 0 0 10px 0;
+  }
+}
+
+.createSelect>div>div {
+  padding: 0;
+}
+
+.TableEditDelTd {
+  position: relative;
+}
+
+.TableEditDelTd:hover .TableEditDel {
+  display: flex;
+}
+
+.TableEditDel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  height: 100%;
+  background: #f3d1d1;
+  line-height: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  display: none;
+}
+
+.createSelectInput {
+  width: "100%";
+  padding: "10px";
+  border: "1px solid #ccc";
+  border-radius: "4px";
+  font-family: "Roboto, Arial, sans-serif";
+  font-size: "14px";
+}
+
+.subDepartmentTabs .MuiTabs-flexContainer {
+  button.MuiButtonBase-root {
+    &:first-child {
+      display: none !important;
+    }
+  }
+}
+
+.OrderTrackingSearchBar {
+  background: $white;
+  padding: 10px;
+}
+
+.BarcodeScanArea {
+  display: flex;
+
+  form {
+    padding: 15px;
+
+    .radio-buttons {
+      margin-bottom: 20px;
+      float: left;
+      width: 100%;
+
+      label {
+        float: left;
+        line-height: 30px;
+        margin-right: 15px;
+      }
+
+      input {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+      }
+    }
+
+    input {
+      background: $primary;
+      color: $white;
+      height: 70px;
+      font-size: 20px;
+      border: 3px dashed $white;
+      width: 100%;
+      padding: 20px 10px;
+      text-align: center;
+      letter-spacing: 3px;
+      float: left;
+
+      &::placeholder {
+        color: #efefef;
+      }
+
+      &:focus {
+        border: 3px dashed $white;
+      }
+    }
+  }
+
+  button {
+    background: $white;
+    color: $primary;
+    border: 2px solid $primaryHover;
+    height: 40px;
+    padding: 0 30px;
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 20px;
+    text-transform: uppercase;
+  }
+}
+
+.pagination>li {
+  display: inline-block;
+  padding-left: 0;
+  list-style: none;
+
+  >a,
+  >span {
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    line-height: 1.42857143;
+    text-decoration: none;
+    color: #2c689c;
+    background-color: $white;
+    border: 1px solid #ddd;
+    margin-left: -1px;
+  }
+
+  &.active>a {
+    color: $white;
+    background-color: $primary;
+    border-color: $primary;
+  }
+
+  >a:hover {
+    background-color: $primary;
+    color: white;
+  }
+}
+
+.pagination>li:first-child>a,
+.pagination>li:first-child>span {
+  margin-left: 0;
+  padding: 0px;
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
+  display: none !important;
+}
+
+.pagination>li:last-child>a,
+.pagination>li:last-child>span {
+  border-bottom-right-radius: 4px;
+  margin-right: 0;
+  padding: 0px !important;
+  border-top-right-radius: 4px;
+  display: none !important;
+}
+
+.GeneralModal {
+  .MuiDialogTitle-root {
+    background: $primary;
+    color: $white;
+    padding: 10px;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+
+    .btn {
+      color: $white;
+    }
+  }
+
+  .MuiDialogContent-root {
+    padding: 20px !important;
+  }
+
+  .documentContainer {
+    .col-md-3 {
+      div {
+        border: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+
+        span {
+          min-height: 200px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          img {
+            max-width: 100%;
+            max-height: 200px;
+          }
+        }
+
+        button {
+          position: absolute;
+          top: 0;
+          right: 0;
+        }
+
+        a {
+          background: $primary;
+          width: 100%;
+          font-size: 12px;
+          color: $white;
+          text-align: center;
+          text-decoration: none;
+          line-height: 30px;
+
+          &:hover {
+            background: $primaryHover;
+          }
+        }
+      }
+    }
+
+    .col-md-2 {
+      div {
+        border: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+
+        span {
+          min-height: 200px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          img {
+            max-width: 100%;
+            max-height: 200px;
+          }
+        }
+
+        button {
+          position: absolute;
+          top: 0;
+          right: 0;
+        }
+
+        a {
+          background: $primary;
+          width: 100%;
+          font-size: 12px;
+          color: $white;
+          text-align: center;
+          text-decoration: none;
+          line-height: 30px;
+
+          &:hover {
+            background: $primaryHover;
+          }
+        }
+      }
+    }
+  }
+
+  .MuiDialogActions-root {
+    padding: 10px 15px 0 15px;
+    border-top: 1px solid #ddd;
+
+    .dialogFooter {
+      padding-top: 0px;
+      min-width: 100%;
+    }
+  }
+}
+
+.dialogContainer {
+  .GeneralTable {
+    background: $white;
+    padding: 10px 0;
+    margin-top: 15px;
+
+    table {
+      border: 1px solid #ddd;
+
+      thead {
+        tr th {
+          font-size: 14px;
+          font-weight: bold;
+          color: #353538;
+          padding: 10px 10px;
+          line-height: normal;
+
+          @media screen and (max-width: 640px) {
+            min-width: 150px;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          &.QcFailedOrder {
+            td {
+              background: #ff9c2170;
+            }
+          }
+
+          th {
+            padding: 10px;
+
+            a {
+              color: #333;
+              font-weight: bold;
+              margin-left: 0.5vw;
+              text-decoration: none;
+              font-size: 14px;
+            }
+          }
+
+          td {
+            color: #333;
+            font-weight: 400;
+            font-size: 14px;
+            padding: 10px;
+
+            a {
+              color: $primary;
+              font-weight: bold;
+              text-decoration: none;
+              font-size: 14px;
+            }
+          }
+        }
+
+        tr:last-child {
+
+          td,
+          th {
+            border-bottom: 0;
+          }
+        }
+
+        .tableAvatar {
+          a {
+            display: inline-block;
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+  }
+}
+
+.barcodeIcon svg {
+  font-size: 45px;
+}
+
+@media screen and (max-width: 640px) {
+  .OrderSearchResult {
+    .order-1 {
+      order: 2 !important;
+    }
+
+    .order-2 {
+      order: 1 !important;
+    }
+  }
+
+  .controlsIcon {
+    position: absolute;
+    top: 20px;
+    right: 0;
+  }
+}
+
+.RackBox {
+  padding: 0 50px;
+  min-width: 350px;
+
+  .MuiFormControl-root {
+    width: 100%;
+  }
+
+  @media screen and (max-width: 1420px) {
+    padding: 0 10px;
+    min-width: 100%;
+  }
+}
+
+.ProdScanRack {
+  .MuiFormControl-root {
+    width: 100%;
+  }
+}
+
+.BulkUploadLoader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  span {
+    color: #fff;
+    font-size: 30px;
+  }
+
+  .IconBtnLoader svg {
+    width: 100px;
+    height: 100px;
+    color: #fff;
+  }
+}
+
+/*Loader*/
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 8px solid #fff;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #fff transparent transparent transparent;
+}
+
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.badge {
+  border-radius: 2px;
+  padding: 7px 5px;
+}
+
+.IconBtnLoader {
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.copyText p {
+  color: $primary;
+  display: block;
+  cursor: copy;
+  font-weight: bold;
+  margin: 0;
+}
+
+.deptInstruction {
+  padding: 0;
+
+  span.deptInstructionSpan {
+    line-height: 40px;
+  }
+
+  .MuiFormControl-root {
+    width: 100%;
+
+    .MuiInputBase-formControl {
+      padding: 0;
+
+      input,
+      textarea {
+        padding: 5px;
+      }
+    }
+  }
+}
+
+.dateRangePicker {
+  position: relative;
+
+  >label {
+    position: absolute;
+    background: #fff;
+    font-size: 9px;
+    top: -5px;
+    left: 18px;
+    color: #333;
+  }
+}
+
+.MuiBox-root .MuiButtonBase-root {
+  font-weight: bold;
+
+  &.Mui-selected {
+    color: $primary;
+  }
+}
+
+.DocIcon {
+  font-size: 100px;
+  color: $primary;
+}
+
+.productionEmpReportDeptBadge {
+  width: 200px;
+}
+
+.productionEmpReportDeptCount {
+  width: 100px;
+}
+
+.productionEmpReportJobSplit {
+  width: 750px;
+
+  >div {
+    width: 250px;
+    padding: 0 10px;
+    word-wrap: break-word;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+  }
+
+  .productionRackFiled {
+    width: 150px;
+
+    .MuiFormControl-root {
+      width: 100%;
+
+      .MuiSelect-select {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.stripedTable .selected {
+  border: 2px dashed $primary;
+}
+
+.HeaderOrg {
+  width: 150px;
+}
+
+.DrawerFormField.ArrayRow div[class$="-menu"] {
+  z-index: 2;
+}
+
+.ProfileBasicDetail .ProfileBasicDetailLeftHeader {
+  .blockquote-footer {
+    font-size: 12px;
+    line-height: 15px;
+    display: block;
+    text-align: justify;
+  }
+
+  .DetailHeader {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0 5px 20px;
+    margin-bottom: 10px;
+
+    &.withoutFlashing {
+      background: #fbe1db;
+      margin-top: 3px;
+
+      .arrow-btn {
+        top: 13px;
+      }
+    }
+
+    .arrow-btn {
+      top: 10px;
+    }
+
+    h3 {
+      font-size: 24px;
+      font-weight: bold;
+    }
+  }
+
+   .DetailHeader.collapsed {
+      padding: 10px 0 5px 20px;
+      margin-bottom: 0px !important;
+    }
+
+    .withoutFlashing.collapsed {
+      padding-bottom: 0px !important;
+    }
+
+  .gstCard {
+    margin-top: 3px;
+    background: #e6ffbf;
+    
+    .MuiGrid-grid-md-6{
+      padding-right: 7px;
+
+      padding-left: 7px;
+    }
+    span {
+      font-size: 12px;
+    }
+
+    label {
+      font-size: 12px;
+    }
+  }
+}
+
+.GeneralContainer .RightMainContainer .GeneralTable.reportTable {
+  * {
+    font-family: calibri;
+    font-size: 14px;
+  }
+
+  tr th,
+  tr td {
+    border: 1px solid #ddd;
+  }
+}
+
+.DataTable {
+  background: $white;
+
+  .MuiTablePagination-input,
+  .MuiTablePagination-selectLabel {
+    display: none !important;
+  }
+
+  .past-date-row {
+    background-color: #bbdefb;
+
+    &.MuiDataGrid-row:hover:hover {
+      background-color: #bbdefb !important;
+    }
+  }
+}
+
+.colorBox {
+  width: 50px;
+  height: 20px;
+  display: inline-block;
+}
+
+.LeftOrderPanel {
+  padding: 5px 15px;
+
+  h4 {
+    font-weight: bold;
+    color: #fff;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  [class*="col"] {
+    background: rgb(111, 168, 111);
+    padding: 5px 15px;
+    width: calc(100% / 13);
+  }
+
+  label {
+    color: #fff;
+  }
+
+  input {
+    max-width: 80%;
+    border: 1px solid #ddd;
+  }
+
+  button {
+    height: 30px;
+    border: none;
+    max-width: 100%;
+    padding: 5px 10px !important;
+    font-size: 12px;
+  }
+}
+
+.chipStatus {
+  font-weight: bold;
+
+  span {
+    font-size: 11px;
+  }
+}
+
+.chatSection {
+  max-height: 70vh;
+  overflow: auto;
+
+  .chatItem {
+    margin-bottom: 20px;
+    flex-direction: row;
+
+    &.odd-user-added-row {
+      flex-direction: row-reverse;
+
+      .chatContainer {
+        flex-direction: row-reverse;
+
+        .tableAvatar {
+          margin-left: 20px;
+        }
+
+        .chatContainerTitle {
+          flex-direction: row-reverse;
+
+          h6 {
+            margin-right: 15px;
+          }
+        }
+      }
+    }
+
+    .chatContent {
+      background: #efefef;
+      border-color: #ddd;
+
+      &.wfcRow {
+        background: #d7edff;
+      }
+
+      &.replyRow {
+        background: #dcffdc;
+      }
+
+      &.queryRow {
+        background: #ffe3e3;
+      }
+    }
+
+    .tableAvatar {
+      margin-right: 20px;
+    }
+
+    .chatContainerTitle {
+      text-align: right;
+
+      h4 {
+        font-size: 14px;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      h6 {
+        font-size: 14px;
+        font-style: italic;
+        margin-left: 15px;
+      }
+    }
+
+    .chatContent {
+      border: 1px solid $primary;
+      background: #e5e1e1;
+      border-radius: 10px;
+      padding: 10px;
+
+      img {
+        max-width: 100%;
+        max-height: 400px;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}
+
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75%     { opacity: 0; }
+}
+
+.blinking {
+  // animation: blink 1s infinite;
+  background-color: $primary !important;
+  color: #fff !important;
+}
+
+/* On hover: stop animation AND reset opacity */
+.blinking:hover {
+  animation-play-state: paused;  /* freeze animation */
+  animation: none !important;    /* fully remove animation */
+  opacity: 1 !important;         /* ensure full visibility */
+}
+
+.highlight-cell {
+  background-color: #211cb9a7 !important;
+  color: white;
+  padding: 3px !important;
+}
+
+.action-block{
+  display: flex;
+  justify-content: space-between;
+}
+
+.priority-1{
+  background-color: #a6cff7 !important;
+}
+
+.priority-2{
+  background-color: #b9ffc0 !important;
+}
+
+.priority-3{
+  background-color: #fcefe3 !important;
+}
+
+.priority-4{
+  background-color: #b9ffc0 !important;
+}
+
+.addPiecesBtn:focus{text-decoration: underline;}
+
+/* Totals row styling */
+.totals-row {
+  font-weight: bold !important;
+  font-size: 16px !important;
+  background-color: #e2bd93 !important;
+}
+
+.totals-row .MuiDataGrid-cell {
+  font-weight: bold !important;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+
+// code by Rahul
+/* Add to your CSS file */
+.hover-switch-text .switch-text {
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.hover-switch-text:hover .switch-text {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sticky-controls {
+    position: sticky;
+    top: 20px; /* Adjust as needed for your header */
+    z-index: 10;
+    height: fit-content;
+}
+}
+
+.far-watermark,
+.near-watermark {
+  position: absolute;
+  left: 40%;
+  font-size: 100px;
+  font-weight: bold;
+  color: rgba(255, 0, 0, 0.07);
+  white-space: pre; 
+  pointer-events: none;
+  z-index: 9999;
+  user-select: none;
+}

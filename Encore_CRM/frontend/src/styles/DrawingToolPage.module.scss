@@ -1,0 +1,1033 @@
+/* File: src/styles/DrawingToolPage.scss */
+
+.drawingLayout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  // height: calc(100vh - 50px);
+  height: auto;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;  // White background for entire page
+
+  .topBar {
+    display: flex;
+    justify-content: center;  // Center all items
+    align-items: center;  // Vertically align buttons
+    gap: 15px;  // Space between icon buttons
+    padding: 10px 15px;  // Padding around the toolbar
+    box-sizing: border-box;
+    flex-wrap: nowrap; // Keep all buttons in one line
+    overflow-x: hidden; // Hide scrollbar
+    white-space: nowrap; // Prevent text wrapping
+
+    // Style all buttons in topBar with clean icon-only styling
+    button {
+      padding: 0 !important;  // No padding for icon buttons
+      font-weight: 500 !important;
+      font-size: 13px !important;
+      font-family: Arial, sans-serif !important;
+      border: none !important;  // No border for icon buttons
+      border-radius: 0 !important;  // No border radius
+      background-color: transparent !important;  // Transparent background
+      color: #000000 !important;  // Black icons
+      cursor: pointer !important;
+      min-width: auto !important;
+      height: auto !important;
+      box-sizing: border-box !important;
+      transition: opacity 0.2s ease !important;
+      box-shadow: none !important;
+      white-space: nowrap !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      line-height: 1 !important;
+
+      &:hover:not(:disabled) {
+        opacity: 0.7 !important;
+        background-color: transparent !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      &:disabled {
+        opacity: 0.3 !important;
+        cursor: not-allowed !important;
+        background-color: transparent !important;
+      }
+
+      // Icon styling within buttons
+      svg {
+        margin: 0 !important;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .mainBody {
+    display: flex;
+    justify-content: space-between; // Better distribution
+    align-items: flex-start; // Align to top for better space usage
+    gap: 0px; // Remove gap between grid and right panel
+    flex: 1;
+    width: 100%;
+    max-width: 100%; // Prevent overflow
+    padding: 2px 12px 2px 12px; // Further reduced top/bottom padding for more grid height
+    padding-right: 0; // Make right panel flush to edge like sidebar
+    overflow-x: hidden; // Prevent horizontal scroll
+    overflow-y: hidden;
+    box-sizing: border-box;
+    
+    // Hide scrollbar during transitions to prevent pink flash
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    
+    // For Firefox
+    scrollbar-width: none;
+
+    .canvasWrapper {
+      flex: 1 1 auto; // Grow and shrink as needed
+      min-width: 0; // Allow shrinking below content size
+      display: flex;
+      flex-direction: column;
+      align-items: center; // Center the canvas
+      justify-content: flex-start; // Align to top
+      background-color: transparent; // No background to avoid extra white space
+      padding: 5px; // Extra bottom padding to ensure border visibility
+      box-sizing: border-box;
+      transition: none; // Disable transitions to prevent delays
+      position: relative; // For absolute positioning of controls
+
+      // Grid background for Stage components
+      .gridBackground {
+        // Create a perfect grid pattern that aligns with canvas edges
+        background-image:
+          linear-gradient(to right, #d0d0d0 1px, transparent 1px),
+          linear-gradient(to bottom, #d0d0d0 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: #ffffff;
+        margin: 0; // No margin to avoid extra space
+        // Start grid from edge to ensure complete cells
+        background-position: 0 0;
+        // Define clear canvas boundary
+        border: 1px solid #a0a0a0;
+        box-sizing: border-box;
+        // Ensure dimensions are multiples of grid size
+        overflow: hidden; // Hide any partial cells at edges
+        display: block; // Ensure it's a block element
+      }
+
+      .bottomControls {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+
+        .controlGroup {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          min-width: 120px;
+
+          .foldLabel {
+            font-weight: bold;
+            font-size: 13px;
+            text-align: center;
+          }
+
+          .foldRow {
+            display: flex;
+            gap: 4px;
+          }
+
+          .foldRow select {
+            max-width: unset;
+            width: 100px;
+            overflow: visible;
+            text-overflow: unset;
+
+            select {
+              padding: 5px 8px;
+              font-size: 13px;
+              border-radius: 4px;
+              width: 55px;
+            }
+          }
+        }
+
+        button {
+          padding: 8px 12px;
+          font-size: 14px;
+          border-radius: 6px;
+          min-width: 120px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+      }
+    }  // End of canvasWrapper
+
+    .leftPanel {
+      min-width: 170px;
+      width: 170px;
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 10px 10px 10px;
+      background: #f4f4f4;
+      overflow-y: auto;
+      max-height: 100%;
+      box-sizing: border-box;
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        padding: 2px 4px;
+        font-size: 12px;
+        height: 24px;
+      }
+
+      .lengthAngleScroll {
+        &.grid {
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          align-items: flex-start;
+          // Show exactly 10 entries without scroll, scrolling starts from 11th row
+          // Each input is 24px height + 3px gap = 27px per row
+          max-height: 270px;  // 10 rows: (24px × 10) + (3px gap × 9) = 240 + 27 = 267px + small buffer
+          overflow-y: auto;
+          overflow-x: hidden;
+          padding-right: 2px;
+          box-sizing: border-box;
+
+          &::-webkit-scrollbar {
+            width: 3px;
+          }
+
+          &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 2px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background: #999;
+            border-radius: 2px;
+          }
+
+          &::-webkit-scrollbar-thumb:hover {
+            background: #666;
+          }
+
+          :global(.col) {
+            display: flex;
+            flex-direction: column;
+            row-gap: 3px;
+            min-width: 52px;
+            max-width: 52px;
+          }
+
+          input {
+            width: 52px;
+            padding: 1px 2px;
+            font-size: 12px;
+            height: 24px;
+            border: 1.5px solid #bdbdbd;
+            border-radius: 6px;
+            text-align: center;
+            box-sizing: border-box;
+            background-color: white;
+            margin-right: 0;
+          }
+        }
+      }
+
+      .tableHeader {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        font-weight: bold;
+        font-size: 13px;
+        padding-top: 10px;
+        box-sizing: border-box;
+
+        span {
+          width: 52px;
+          text-align: center;
+        }
+      }
+
+      .girth {
+        font-weight: bold;
+        color: #000000;
+        margin: 10px 0 5px;
+      }
+    }
+
+    .rightPanel {
+      min-width: 50px; // Narrow sidebar width
+      width: 50px;
+      flex: 0 0 auto; // Don't grow or shrink
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 0; // Minimal padding, flush to edges
+      margin: 0;
+      background: #f4f4f4;
+      overflow: visible; // Allow visible overflow
+      max-height: unset;
+      box-sizing: border-box; // Include padding in width
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        padding: 2px 4px;
+        font-size: 12px;
+        height: 24px;
+      }
+
+      // Style all buttons in right panel
+      .btn {
+        padding: 4px 5px;
+        font-weight: 500;
+        font-size: 12px;  // Larger font for text buttons
+        font-family: Arial, sans-serif;
+        border: 1.5px solid #000000;
+        border-radius: 6px;
+        background-color: white;
+        color: #000000;
+        cursor: pointer;
+        min-width: 76px;
+        width: 100%;  // Make buttons full width in right panel
+        text-align: center;
+        height: 38px;  // Standard height
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+        box-shadow: none;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1.2;
+      }
+
+      // Override for icon-only buttons (Save, Folder, Users, Taper, Reverse Color, Finish)
+      button[title="Save to Library"],
+      button[title="My Library"],
+      button[title="Customer Library"],
+      button[title="Taper"],
+      button[title="Not Tapered"],
+      button[title="Reverse Color"],
+      button[title="Finish"] {
+        width: 40px !important;
+        min-width: 40px !important;
+        padding: 8px !important;
+        height: 36px !important;
+        font-size: inherit !important;
+      }
+
+      /* already hides spinner in normal mode */
+      input[type="number"].no-spinner {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      input[type="number"].no-spinner::-webkit-inner-spin-button,
+      input[type="number"].no-spinner::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .tableHeader {
+        display: flex;
+        justify-content: center;
+        gap: 4px; // Match grid gap
+        font-weight: bold;
+        font-size: 13px;
+        padding-top: 10px;
+        box-sizing: border-box;
+
+        span {
+          width: 52px; // Match input width
+          text-align: center;
+        }
+      }
+
+      .lengthAngleScroll {
+        &.grid {
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          align-items: flex-start;
+          // Show exactly 5 entries without scroll, then add scrollbar
+          // Each input is 24px height + 3px gap = 27px per row
+          max-height: 132px;  // 5 rows: (24px × 5) + (3px gap × 4) = 120 + 12 = 132px
+          overflow-y: auto;   // Scrollbar appears only when content exceeds max-height
+          overflow-x: hidden; // No horizontal scroll
+          padding-right: 2px;
+          box-sizing: border-box;
+
+          // Custom scrollbar - thinner
+          &::-webkit-scrollbar {
+            width: 3px;  // Reduced from 6px to 3px
+          }
+
+          &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 2px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background: #999;  // Slightly lighter color for thin scrollbar
+            border-radius: 2px;
+          }
+
+          &::-webkit-scrollbar-thumb:hover {
+            background: #666;
+          }
+
+          .col {
+            display: flex;
+            flex-direction: column;
+            row-gap: 3px;
+            min-width: 52px; // Ensure column width matches input
+            max-width: 52px; // Fixed width to prevent expansion
+          }
+
+          input {
+            width: 52px; // Smaller to ensure no horizontal scroll
+            padding: 1px 2px;
+            font-size: 12px;
+            height: 24px;
+            border: 1.5px solid #bdbdbd;
+            border-radius: 6px;
+            text-align: center;
+            box-sizing: border-box;
+            background-color: white;
+            margin-right: 0; // Remove margin to save space
+          }
+        }
+      }
+
+      .tableRow {
+        display: flex;
+        gap: 10px;
+
+        input {
+          width: 50%;
+        }
+      }
+
+      .girth {
+        font-weight: bold;
+        color: #000000;
+        margin: 10px 0 5px;
+      }
+
+      button {
+        margin-top: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 6px;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  // Grid background for Stage components (global)
+  .gridBackground {
+    // Perfect grid pattern matching SWI style
+    background-image:
+      linear-gradient(to right, #d0d0d0 1px, transparent 1px),
+      linear-gradient(to bottom, #d0d0d0 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-color: #ffffff;
+    // Align grid perfectly with edges
+    background-position: 0 0;
+    background-origin: border-box;
+    // Clear boundary
+    border: 1px solid #a0a0a0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  /* ------------------ Taper Tables & Inputs ------------------ */
+  .taperBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .taperTable {
+    // width: 100vw;
+    min-width: 100px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+    box-sizing: border-box;
+    // margin-right: 10px;
+    font-size: 13px;
+  }
+
+  .taperTable .tableHeader {
+    display: flex;
+    background: #f4f4f4;
+    padding: 8px;
+    font-weight: bold;
+  }
+
+  .taperTable .tableHeader span {
+    flex: 1;
+    text-align: center;
+  }
+
+  .taperTable .tableBody {
+    padding: 8px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #999;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #666;
+    }
+  }
+
+  .taperTable .tableRow {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .taperInput {
+    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 3px 5px;
+    font-size: 12px;
+    height: 26px;
+    border: 1px solid #bdbdbd;
+    border-radius: 4px;
+    background-color: white;
+  }
+
+  /* hide spinner arrows on taper inputs */
+  .taperInput.noSpinner {
+    /* Chrome, Safari, Edge, Opera */
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .taperInput.noSpinner::-webkit-inner-spin-button,
+  .taperInput.noSpinner::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  .taperInput.noSpinner {
+    -moz-appearance: textfield;
+  }
+
+  .taperControls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .taperControls .girth {
+    font-weight: bold;
+    color: #000000;
+    margin: 10px 0 5px;
+  }
+
+  .taperControls .btn {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+    min-height: auto !important;
+    height: 28px !important;
+  }
+
+  /* ------------------ Taper Tables end ------------------ */
+
+  /* Responsive Taper View Adjustments */
+  .taperViewContainer {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    justify-content: space-evenly;
+    padding: 20px;
+    overflow: visible;
+    height: 100%;
+    align-items: flex-start;
+    position: relative;
+
+    /* When sidebar is collapsed (more space available) */
+    @media (min-width: 1400px) {
+      gap: 30px;
+      padding: 25px;
+    }
+
+    /* When sidebar is expanded (less space) */
+    @media (max-width: 1200px) {
+      gap: 15px;
+      padding: 15px;
+    }
+  }
+
+  .btn {
+    padding: 4px 5px;  // Slightly reduced padding
+    font-weight: 500;  // Normal weight
+    font-size: 11px;  // Standard font size
+    font-family: Arial, sans-serif;  // Explicitly set font
+    border: 1.5px solid #000000;  // Black border
+    border-radius: 6px;
+    background-color: white;
+    color: #000000;  // Black text
+    cursor: pointer;
+    min-width: 76px;  // Slightly reduced to fit
+    text-align: center;
+    height: 36px;  // Slightly reduced height
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    box-shadow: none;
+    white-space: nowrap;
+    flex-shrink: 0;  // Prevent buttons from shrinking
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;  // Ensure consistent line height
+
+    &.white {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.red {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.dark {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.purple {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.orange {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.gray {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.blue {
+      // Active/toggled state - light blue for better visibility
+      background-color: #e3f2fd;  // Light blue background
+      color: #1565c0;              // Dark blue text
+      border-color: #2196f3;       // Medium blue border
+      border-width: 2px;           // Slightly thicker border
+      font-weight: 600;            // Slightly bolder
+      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2); // Soft outer glow
+      &:hover {
+        background-color: #bbdefb;  // Slightly darker light blue on hover
+        border-color: #1976d2;
+        color: #0d47a1;              // Darker blue text on hover
+      }
+    }
+
+    &.green {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.finish {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.primary-action {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.secondary-action {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+
+    &.taper {
+      background-color: white;
+      color: #000000;
+      border-color: #000000;
+      font-weight: 500;
+      &:hover {
+        background-color: #f5f5f5;
+        border-color: #000000;
+      }
+    }
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .bottomArrowControls {
+    position: absolute;
+    top: 10px;           // Position at top with spacing
+    right: 10px;         // Spacing from right edge
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;            // Increased gap for larger buttons
+    z-index: 10;         // Ensure it appears above canvas
+
+    .arrowBtn {
+      width: 32px;       // Increased for better visibility
+      height: 32px;      // Increased for better visibility
+      font-size: 18px;   // Larger font for arrows and zoom icons
+      border: none !important;
+      outline: none;
+      background: transparent;
+      color: #000000;    // Black color like zoom buttons
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .arrowBtn:hover {
+      background-color: transparent;
+    }
+
+    .arrowBtn:active {
+      background-color: transparent;
+    }
+
+    // Make selects and labels more compact
+    select {
+      padding: 4px 8px !important;   // Slightly more padding for text
+      font-size: 13px !important;    // Smaller font
+      height: 32px !important;       // Reduced height
+      min-width: 80px !important;    // Ensure dropdown is wide enough for "Select"
+    }
+
+    span {
+      font-size: 12px !important;    // Smaller label font
+      font-weight: 600 !important;   // Make labels bolder
+    }
+  }
+
+  // Responsive adjustments for all screen sizes
+  // 4K Monitors (27"+ high resolution)
+  @media (min-width: 2560px) {
+    .mainBody {
+      gap: 15px; // Adequate gap
+      .rightPanel {
+        min-width: 50px;
+        width: 50px;
+      }
+    }
+  }
+
+  // Full HD Desktop (22-27" monitors)
+  @media (max-width: 2559px) and (min-width: 1920px) {
+    .mainBody {
+      gap: 12px; // Adequate gap
+      .rightPanel {
+        min-width: 50px;
+        width: 50px;
+      }
+    }
+  }
+
+  // HD+ Desktop
+  @media (max-width: 1919px) and (min-width: 1600px) {
+    .mainBody {
+      gap: 10px; // Adequate gap
+      .rightPanel {
+        min-width: 50px;
+        width: 50px;
+      }
+    }
+  }
+
+  // HD Laptop/Small Desktop
+  @media (max-width: 1599px) and (min-width: 1366px) {
+    .mainBody {
+      gap: 8px; // Adequate gap
+      .rightPanel {
+        min-width: 50px;
+        width: 50px;
+      }
+    }
+  }
+
+  // iPad Landscape/Small Laptop
+  @media (max-width: 1365px) and (min-width: 1024px) {
+    .mainBody {
+      gap: 8px; // Adequate gap
+      .rightPanel {
+        min-width: 50px;
+        width: 50px;
+        padding: 8px 0;
+      }
+    }
+    .topBar {
+      padding: 8px 15px;
+      .btn {
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+    }
+  }
+
+  // iPad Portrait/Tablet
+  @media (max-width: 1023px) and (min-width: 768px) {
+    .mainBody {
+      gap: 8px;
+      .rightPanel {
+        min-width: 50px;
+        width: 50px;
+        padding: 8px 0;
+      }
+    }
+    .topBar {
+      padding: 6px 10px;
+      .btn {
+        padding: 5px 8px;
+        font-size: 12px;
+        min-width: 70px;
+      }
+    }
+  }
+
+  // Mobile - Enhanced touch interaction
+  @media (max-width: 767px) {
+    .mainBody {
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 5px;
+
+      .canvasWrapper {
+        width: 100%;
+        .bottomControls {
+          gap: 8px;
+          margin-top: 10px;
+
+          button {
+            min-width: 90px;
+            padding: 10px 8px; // Larger touch target
+            font-size: 13px;
+            height: 44px; // iOS recommended minimum
+          }
+        }
+      }
+
+      .rightPanel {
+        width: 100%;
+        max-width: 100%;
+        min-width: unset;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 8px;
+        gap: 15px;
+
+        input, select {
+          min-height: 44px; // iOS recommended touch target
+          font-size: 16px; // Prevent zoom on iOS
+          padding: 8px;
+        }
+
+        button {
+          min-height: 44px;
+          padding: 10px 12px;
+          font-size: 14px;
+        }
+
+        .lengthAngleScroll {
+          max-height: 200px;
+          width: 100%;
+
+          input {
+            width: 70px;
+            min-height: 44px;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+
+    .topBar {
+      flex-wrap: wrap;
+      padding: 5px;
+      gap: 4px;
+
+      .btn {
+        min-width: 75px;
+        height: 44px; // Touch-friendly height
+        padding: 10px 6px;
+        font-size: 12px;
+      }
+    }
+
+    .bottomArrowControls {
+      padding: 8px 14px;
+      gap: 8px;
+
+      .arrowBtn {
+        width: 48px; // Larger touch target
+        height: 48px;
+        font-size: 20px;
+
+        &:active {
+          background-color: #e0e0e0;
+        }
+      }
+    }
+
+    .taperTableBlock {
+      width: 98vw;
+      max-width: 370px;
+    }
+
+    // Improve scrollbar visibility on mobile
+    *::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+  }
+
+  // Small mobile screens (iPhone SE, etc.)
+  @media (max-width: 375px) {
+    .topBar {
+      .btn {
+        min-width: 65px;
+        font-size: 11px;
+        padding: 8px 4px;
+      }
+    }
+
+    .mainBody {
+      .rightPanel {
+        .lengthAngleScroll input {
+          width: 60px;
+        }
+      }
+    }
+  }
+
+// Reduce .girth font size for screens 1300px to 1500px
+@media (max-width: 1450px) and (min-width: 1200px) {
+  .girthDisplay{
+    font-size: 13px!important; // Reduced from default (13px)
+  }
+}
+}

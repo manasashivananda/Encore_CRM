@@ -1,0 +1,125 @@
+.duplicate-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.duplicate-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 500px;
+  width: 90%;
+  animation: modalSlideIn 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.duplicate-modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.duplicate-modal-header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.duplicate-modal-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.duplicate-modal-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.duplicate-modal-content {
+  padding: 32px 24px;
+}
+
+.duplicate-modal-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.duplicate-modal-icon svg {
+  width: 56px;
+  height: 56px;
+}
+
+.duplicate-modal-message {
+  font-size: 14px;
+  color: #6B7280;
+  text-align: center;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.duplicate-modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.duplicate-modal-btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  min-width: 100px;
+}
+
+.duplicate-modal-btn-confirm {
+  background-color: #9333EA;
+  color: white;
+}
+
+.duplicate-modal-btn-confirm:hover {
+  background-color: #7C2BBE;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+}
+
+.duplicate-modal-btn-cancel {
+  background-color: #F3F4F6;
+  color: #374151;
+}
+
+.duplicate-modal-btn-cancel:hover {
+  background-color: #E5E7EB;
+}

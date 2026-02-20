@@ -1,0 +1,37 @@
+const mongoose = require('mongoose');
+const mongooseSchema = mongoose.Schema;
+const OrderItemSchema = new mongooseSchema({
+    order_row_index : {type: Number, required: true},
+    order_master_id : {type: mongooseSchema.Types.ObjectId, required: true},
+    order_unique_id : {type: String, required: true},
+    order_item_unique_id : {type: String, required: true},
+    order_item_shape_id : {type: String, required: true, default: 0},
+    order_item_material : {type: mongooseSchema.Types.ObjectId, required: true},
+    order_item_color : {type: mongooseSchema.Types.ObjectId, required: true},
+    order_item_exact_grith : {type: String},
+    order_item_round_grith : {type: mongooseSchema.Types.ObjectId},
+    order_item_exact_fold : {type: String},
+    order_item_fold : {type: mongooseSchema.Types.ObjectId},
+    order_item_length : {type: String, required: true, default: 0},
+    order_item_uom : {type: String, default: "LN MTR"},
+    order_item_quantity : {type: String, required: true, default: 0},
+    order_item_pieces : {type: String, required: true, default: 0},
+    order_item_price : {type: String, required: true, default: 0},
+    order_item_qty_price : {type: String, required: true, default: 0},
+    order_item_special_price : {type: String, required: true, default: 0},
+    order_item_special_price_original : {type: Number, required: true, default: 0},
+    order_item_discount : {type: Number, required: true, default: 0},
+    order_item_discounted_amount : {type: Number, required: true, default: 0},
+    order_item_qty_discounted_price : {type: Number, required: true, default: 0},
+    order_item_code : {type: String, required: true, default: 0},
+    order_item_description : {type: String, required: true, default: 0},
+    order_item_flag : {type: String, required: true, default: "DT"},
+    order_item_user : {type: mongooseSchema.Types.ObjectId},
+    order_item_status_tracker : { type : mongooseSchema.Types.Mixed},
+    order_item_remake : { type : Boolean, default: false},
+    created :{type: Date, default: Date.now},
+    updated :{type: Date},
+    order_item_designer : {type: mongooseSchema.Types.ObjectId, required: true},
+});
+const OrderItem = mongoose.model('orderitems', OrderItemSchema);
+module.exports = OrderItem;
