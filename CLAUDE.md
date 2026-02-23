@@ -300,10 +300,90 @@ Template Library (TemplateLibrary.js)
 | Offsets | Bends (Elbow/Shoes) | Elbows + Shoes (square + round + custom) | All editable except standard bends. |
 | Rollforming | *(none)* | Placeholder (no spec yet) | |
 
+---
+
+## AWF Module — Work Log (23-Feb-2026)
+
+### What Was Built
+
+AWFSelectMaterials page fully built (display/navigation only — no backend save yet). Backend model for order entries created. Product images updated with placeholders.
+
+### AWF Select Materials — Complete Flow
+
+```
+Template Library (AWF product selected)
+    │  Double-click or "Use It" button
+    │  Passes: productId, name, productImage, partClass, subCategory, order context
+    ▼
+AWFSelectMaterials page (/orders/:id/awf/select-materials)
+    │  Two-column layout:
+    │    LEFT:  subCategory/partClass title → product image → productName
+    │    RIGHT: Material/Color dropdowns → Thickness → form fields → FINISH buttons
+    │
+    │  Form varies by type:
+    │    standard (Standard D/P, Standard Offset): Thickness 0.45, BARCODE
+    │    manual_dp (Manual D/P): Thickness 0.45, dimensions, Number of Pieces + Length side by side, TAPERED, NO BARCODE
+    │    clips (Clips & Pops): Thickness 0.60, NO BARCODE, NO dimensions
+    │    bends (Elbow/Shoes): Thickness 0.45, dimensions, BARCODE
+    │    custom_offset: DEFERRED (complex form)
+    │
+    │  FINISH buttons (placeholders — console.log only, no API save yet):
+    │    ✓ Finish — save and return to order
+    │    + Finish & Add New — save and go back to Template Library
+    │    📋 Finish & Copy — save and duplicate with same product
+    ▼
+  (Phase 2: wire up save to awf_order_entries collection)
+```
+
+### Files Created (23-Feb)
+
+| File | Purpose |
+|------|---------|
+| `backend/models/awfOrderEntryModel.js` | Mongoose model for `awf_order_entries` collection — one doc per FINISH click. Fields: orderNumber, productId/Name, partClass, subCategory, material, color, thickness, numberOfPieces, length, dimensions (width/height/diameter), tapered, barcode, note, unitPrice, productImage, status. Indexed on `{orderNumber, status}` |
+| `backend/scripts/updateAWFImages.js` | Quick script to update existing AWF products with placeholder image URLs (placehold.co). Run once: `node scripts/updateAWFImages.js` |
+| `frontend/src/styles/AWFSelectMaterials.scss` | AWF-specific styles — split layout, thickness bold display, dimension row with "x" separator, checkbox bold text, finish buttons centered |
+
+### Files Modified (23-Feb)
+
+| File | Changes |
+|------|---------|
+| `frontend/src/Pages/DrawingComponents/AWFSelectMaterials.js` | **Full rewrite** — MUI form with Material/Color dropdowns (same API as Flashing), thickness bold display, conditional fields per form type, TAPERED/BARCODE checkboxes, *Note* textarea, Unit Price, 3 FINISH buttons, Back button |
+| `frontend/src/Pages/DrawingComponents/TemplateLibrary.js` | Added `productImage: tpl.image` to AWF navigation state (both double-click and "Use It" handlers) |
+| `backend/scripts/seedAWFTemplates.js` | Updated all 14 products with placeholder image URLs from placehold.co |
+
+### Key Design Decisions (23-Feb)
+
+- **One model, not two**: AWF uses single `awf_order_entries` model (unlike Flashing's Template + MaterialRow). No drawing geometry in AWF.
+- **Shared Material/Color APIs**: Reuses `GET /fetch-core-product-data` and `GET /fetch-product-color-data/:id` — same endpoints as Flashing's SelectMaterialsSimplified. No duplicate APIs needed.
+- **No Add Rows**: AWF doesn't have add rows feature
+- **No Girth field**: Removed from model and form
+- **TAPERED**: Only for Manual D/P (simple checkbox, not Flashing's dual-profile taper mode)
+- **BARCODE**: Only for Standard D/P, Standard Offset, Bends — NOT for Clips or Manual D/P
+- **Flashing untouched**: Zero changes to SelectMaterialsSimplified.js, DrawingCanvas.js, or any Flashing flow
+
+### AWF Form Fields Per Type
+
+| Field | Standard | Manual D/P | Clips | Bends |
+|-------|----------|-----------|-------|-------|
+| Material dropdown | ✓ | ✓ | ✓ | ✓ |
+| Color dropdown | ✓ | ✓ | ✓ | ✓ |
+| Thickness | 0.45 | 0.45 | 0.60 | 0.45 |
+| Dimensions (W x H) | — | ✓ | — | ✓ |
+| + Add Quantity | — | ✓ | — | ✓ |
+| Number of Pieces | ✓ | ✓ (side by side with Length) | ✓ | ✓ |
+| Length (m) | — | ✓ (side by side with Pieces) | — | — |
+| TAPERED | — | ✓ | — | — |
+| BARCODE | ✓ | — | — | ✓ |
+| *Note* | ✓ | ✓ | ✓ | ✓ |
+| Unit Price | ✓ | ✓ | ✓ | ✓ |
+
 ### What's Next (TODO)
 
-1. **Product images**: Upload actual 3D product images to S3, update `image` field in `awf_product_libraries`. Currently showing placeholder icon.
-2. **Second AWF collection (order-specific)**: Create a new collection for order-specific AWF data — stores product specifications (shape, dimensions, thickness, lengths, pricing, barcode, is_custom) + material selection (material, color, quantity, length). Created when user clicks Finish on AWFSelectMaterials. Equivalent to Flashing's `templates` collection.
-3. **AWFSelectMaterials page**: Build the full material selection form using the second collection. Fields: Material, Color, Thickness, Number of Pieces, Length, Barcode checkbox, Note, Unit Price, Finish buttons.
-4. **Seed full product list**: Add all products when ready (currently 2 per category = 14 total).
-5. **Rollforming**: No spec in document yet — needs definition.
+1. **Phase 2 — FINISH save logic**: Create `awfOrderEntryCtrl.js` (controller with save/fetch/delete), `awfOrderEntryRoutes.js` (routes), register in `server.js`, wire up 3 FINISH buttons to save API
+2. **FINISH & Add New**: After save → navigate back to Template Library with AWF state
+3. **FINISH & Copy**: After save → stay on AWFSelectMaterials with same product pre-filled
+4. **AWF tab on order page**: Show saved AWF entries in a grid/table (like Flashing's DrawingDetailsTab)
+5. **Product images**: Upload actual 3D product images to S3, replace placehold.co URLs
+6. **Custom Offset form**: Complex form with W, A, B1, B2, C, D, E measurements + Seam Side + Type (Fixed/Adjustable) — deferred
+7. **Seed full product list**: Add all products when ready (currently 2 per category = 14 total)
+8. **Rollforming**: No spec in document yet — needs definition
