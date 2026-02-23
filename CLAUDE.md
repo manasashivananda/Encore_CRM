@@ -230,3 +230,80 @@ When a template is created/updated, material rows are pushed to the MSSQL SWI ma
 - Bulk operations use xlsx file uploads: `/bulk-import-*`
 - Export endpoints return Excel/PDF: `*-export`, `*-generate-export`
 - Auth token passed as `x-access-token` header on every authenticated request
+
+---
+
+## AWF Module — Work Log (20-Feb-2026)
+
+### What Was Built
+
+The AWF part group was added to the Template Library alongside the existing Flashing flow. AWF has its own independent collections, API routes, and frontend rendering — completely separate from Flashing.
+
+### AWF Architecture (Separate from Flashing)
+
+```
+Template Library (TemplateLibrary.js)
+  ├── Flashing flow (unchanged):
+  │     Sidebar classes → template-library API → Konva drawing cards → DrawingCanvas → SelectMaterialsSimplified
+  │
+  └── AWF flow (new):
+        Sidebar classes → awf-products API → Product cards (image + name) → AWFSelectMaterials page
+```
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `backend/models/awfProductLibraryModel.js` | Mongoose model for `awf_product_libraries` collection — simplified catalog (name, description, image only) |
+| `backend/controllers/awfProductLibraryCtrl.js` | Controller with `getAWFProducts()` — filters by part_class, sub_category, pagination |
+| `backend/routes/awfProductLibraryRoutes.js` | `GET /api/awf-products` route |
+| `backend/scripts/seedAWFTemplates.js` | Seed script — 14 products (2 per category) with simplified fields |
+| `frontend/src/Pages/DrawingComponents/AWFSelectMaterials.js` | AWF material selection page (placeholder — needs full form) |
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `backend/routes/meta.js` | Added AWF group with 4 classes + `subCategories` field (Downpipe, Offsets have sub-categories) |
+| `backend/server.js` | Registered `/api/awf-products` route |
+| `frontend/src/App.js` | Imported AWFSelectMaterials, added routes `/orders/:id/awf/select-materials` and `/quotes/:id/awf/select-materials` |
+| `frontend/src/Pages/DrawingComponents/TemplateLibrary.js` | Full AWF support — see details below |
+| `frontend/src/styles/TemplateLibrary.scss` | Toggle styles + AWF product card styles + AWF preview pane styles |
+
+### TemplateLibrary.js — AWF Changes Detail
+
+- **Part Group dropdown**: Only AWF and Flashing visible. Default is Flashing.
+- **AWF sidebar**: Shows only 4 part classes (Downpipe, Clips & Pops, Offsets, Rollforming). No Create Drawing / My Library / Customer Library.
+- **Sub-category toggles**: Downpipe shows `Standard D/P | Manual D/P` toggles. Offsets shows `Standard Offset | Custom Offset | Bends (Elbow/Shoes)` toggles. First toggle auto-selected.
+- **AWF API fetch**: When AWF selected, fetches from `/api/awf-products` (not `/api/template-library`). Passes `part_class` and `sub_category` as query params.
+- **AWF product cards**: Show product image (placeholder until S3 upload) + name only. No product specs on cards. Has double-click and single-click selection.
+- **AWF preview pane**: Shows product image + name + "Use It" button. No description or product specs shown.
+- **AWF navigation**: Double-click or "Use It" → `/orders/{orderNumber}/awf/select-materials?productId={id}` (separate from Flashing's `/drawings/new`). Passes only `productId, name, partGroup, partClass, subCategory` in state.
+- **Flashing completely unchanged**: All AWF logic guarded by `selectedGroup === 'AWF'` or `_isAWFProduct` flag.
+
+### Database
+
+- **Collection**: `awf_product_libraries` in `EncoreDB` (NOT `encorestaging`)
+- **Current data**: 14 products (2 per category) seeded via `node scripts/seedAWFTemplates.js`
+- **Schema fields (simplified catalog)**: `part_class` (4 enum values), `sub_category`, `name`, `description`, `image` (S3 key — null for now), `status`, `created_by`
+- **Note**: Product specifications (shape, dimensions, thickness, lengths, pricing, barcode, is_custom) are NOT in this collection — they belong in the second order-specific collection (to be created)
+
+### AWF Product Categories (from AWF MODULE.docx)
+
+| Part Class | Sub-Category | Products | Notes |
+|------------|-------------|----------|-------|
+| Downpipe | Standard D/P | 100x50, 100x75 (square) + 75mm, 90mm (round) × 1.8m/2.4m | Thickness 0.45mm fixed. Length dropdown. |
+| Downpipe | Manual D/P | 5 square + 5 round + 2 custom sizes | All fields editable. Tapered = big–small end. |
+| Clips & Pops | *(none)* | Saddle clips, Stand-off clips, Reducers (square + round) | Thickness 0.60mm. Length always 1. |
+| Offsets | Standard Offset | Standard + Federation types (square + round) | Thickness 0.45mm. Length 1.8m/2.4m. Adjustability 450–600mm. |
+| Offsets | Custom Offset | Round + Square drawing entry forms | User enters W, A, B1, B2, C, D, E measurements. Thickness dropdown 0.45/0.6. |
+| Offsets | Bends (Elbow/Shoes) | Elbows + Shoes (square + round + custom) | All editable except standard bends. |
+| Rollforming | *(none)* | Placeholder (no spec yet) | |
+
+### What's Next (TODO)
+
+1. **Product images**: Upload actual 3D product images to S3, update `image` field in `awf_product_libraries`. Currently showing placeholder icon.
+2. **Second AWF collection (order-specific)**: Create a new collection for order-specific AWF data — stores product specifications (shape, dimensions, thickness, lengths, pricing, barcode, is_custom) + material selection (material, color, quantity, length). Created when user clicks Finish on AWFSelectMaterials. Equivalent to Flashing's `templates` collection.
+3. **AWFSelectMaterials page**: Build the full material selection form using the second collection. Fields: Material, Color, Thickness, Number of Pieces, Length, Barcode checkbox, Note, Unit Price, Finish buttons.
+4. **Seed full product list**: Add all products when ready (currently 2 per category = 14 total).
+5. **Rollforming**: No spec in document yet — needs definition.

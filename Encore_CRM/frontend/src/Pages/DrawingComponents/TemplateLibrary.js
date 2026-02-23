@@ -1,4 +1,16 @@
-// src/components/TemplateLibrary/TemplateLibrary.jsx
+/**
+ * TemplateLibrary — Browse and select drawing templates by Part Group → Part Class
+ *
+ * AWF Changes (20-Feb-2026):
+ * - Added AWF part group support alongside existing Flashing flow
+ * - AWF does NOT have Create Drawing, My Library, or Customer Library — only its part classes
+ * - Some AWF part classes have sub-categories (e.g., Downpipe → Standard D/P, Manual D/P)
+ *   shown as toggle buttons at the top of the gallery; first toggle is auto-selected
+ * - Part classes without sub-categories (Clips & Pops, Rollforming) show templates directly
+ * - Default group is Flashing (from "Add Design"); user selects AWF manually from dropdown
+ * - Flashing flow is completely unchanged — all AWF logic is guarded by selectedGroup === 'AWF'
+ *   or hasSubCategories (which is always false for Flashing)
+ */
 import React, { useEffect, useState, useMemo, startTransition, useCallback, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -59,6 +71,10 @@ const TemplateLibrary = () => {
   const [selectedClass, setSelectedClass] = useState('');
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  // AWF sub-category state — tracks selected sub-category within a part class
+  // Navigation: Part Group (AWF) → Part Class (Downpipe) → Sub-Category (Standard D/P)
+  const [subCategoryMap, setSubCategoryMap] = useState({});      // From meta API: { AWF: { Downpipe: ['Standard D/P', ...] } }
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);  // Currently selected sub-category button
   const [libraryType, setLibraryType] = useState('my');
 
   // Search state
@@ -266,6 +282,7 @@ const TemplateLibrary = () => {
       .get(`${API_BASE_URL}/api/templates/meta/groups-classes`)
       .then(res => {
         setGroupClassMap(res.data.data || {});
+        setSubCategoryMap(res.data.subCategories || {});
       })
       .catch(err => {
         setGroupsError('Failed to load groups/classes.');
@@ -284,19 +301,44 @@ const TemplateLibrary = () => {
         setSelectedGroup('');
         setSelectedClass('');
       } else {
+        // AWF does not support Create Drawing / My Library / Customer Library — reset if one of these is selected
+        const drawingOnlyClasses = ['Create Drawing', 'My Library', 'Customer Library'];
+        if (selectedGroup === 'AWF' && drawingOnlyClasses.includes(selectedClass)) {
+          logger.debug('AWF does not support', selectedClass, '— resetting to first AWF class');
+          const firstClass = groupClassMap[selectedGroup]?.[0];
+          setSelectedClass(firstClass || '');
+        }
         // Group is valid, check if we need to restore class from location/localStorage
-        if (!selectedClass && location.state?.partClass) {
+        else if (!selectedClass && location.state?.partClass) {
           logger.debug('Restoring partClass from location.state after groupClassMap loaded');
           setSelectedClass(location.state.partClass);
         } else if (!selectedClass) {
+          let restored = false;
           try {
             const lastPartClass = localStorage.getItem('lastPartClass');
             if (lastPartClass) {
-              logger.debug('Restoring partClass from localStorage after groupClassMap loaded');
-              setSelectedClass(lastPartClass);
+              // Don't restore drawing-only classes for AWF
+              if (selectedGroup === 'AWF' && drawingOnlyClasses.includes(lastPartClass)) {
+                logger.debug('Skipping invalid localStorage class for AWF:', lastPartClass);
+              } else {
+                logger.debug('Restoring partClass from localStorage after groupClassMap loaded');
+                setSelectedClass(lastPartClass);
+                restored = true;
+              }
             }
           } catch (error) {
             logger.debug('Could not restore partClass from localStorage:', error);
+          }
+          // Set sensible default if nothing was restored
+          if (!restored) {
+            if (selectedGroup === 'AWF') {
+              // AWF defaults to first part class (e.g., Downpipe)
+              const firstClass = groupClassMap[selectedGroup]?.[0];
+              if (firstClass) setSelectedClass(firstClass);
+            } else {
+              // Flashing and other groups default to My Library
+              setSelectedClass('My Library');
+            }
           }
         }
       }
@@ -309,6 +351,23 @@ const TemplateLibrary = () => {
     logger.debug('🎯 Current selectedGroup:', selectedGroup);
   }, [selectedClass, selectedGroup]);
 
+  // Check if the currently selected part class has sub-categories (e.g., Downpipe → ['Standard D/P', 'Manual D/P'])
+  const currentSubCategories = useMemo(() => {
+    if (!selectedGroup || !selectedClass) return [];
+    return subCategoryMap?.[selectedGroup]?.[selectedClass] || [];
+  }, [subCategoryMap, selectedGroup, selectedClass]);
+
+  const hasSubCategories = currentSubCategories.length > 0;
+
+  // Auto-select the first sub-category when class changes (toggle behavior)
+  useEffect(() => {
+    if (currentSubCategories.length > 0) {
+      setSelectedSubCategory(currentSubCategories[0]);
+    } else {
+      setSelectedSubCategory(null);
+    }
+  }, [selectedGroup, selectedClass, currentSubCategories]);
+
   // Function to fetch templates with pagination
   const fetchTemplates = useCallback((pageNum = 1, append = false) => {
     if (!selectedGroup || !selectedClass) {
@@ -318,6 +377,19 @@ const TemplateLibrary = () => {
 
     // Skip fetching for 'Create Drawing'
     if (selectedClass === 'Create Drawing') {
+      setTemplates([]);
+      return;
+    }
+
+    // AWF does not support library views — block fetches for My Library / Customer Library
+    if (selectedGroup === 'AWF' && ['My Library', 'Customer Library'].includes(selectedClass)) {
+      setTemplates([]);
+      return;
+    }
+
+    // For AWF sub-categories: if the current class has sub-categories but none is selected, don't fetch
+    const classSubCategories = subCategoryMap?.[selectedGroup]?.[selectedClass] || [];
+    if (classSubCategories.length > 0 && !selectedSubCategory) {
       setTemplates([]);
       return;
     }
@@ -341,36 +413,49 @@ const TemplateLibrary = () => {
       limit: pageSize
     };
 
-    // Handle library views vs part class views
-    if (['My Library', 'Customer Library'].includes(selectedClass)) {
-      // Library views: use library_type parameter
-      params.library_type = libraryType === 'my' ? 'my_library' : 'customer_library';
-      if (libraryType === 'customer' && customerId) {
-        params.customer_id = customerId;
-      } else if (libraryType === 'my') {
-        params.owner_user_id = USER_ID;
+    // Determine API endpoint and params based on part group
+    let apiUrl;
+
+    if (selectedGroup === 'AWF') {
+      // AWF uses its own product catalog API
+      apiUrl = `${API_BASE_URL}/api/awf-products`;
+      params.part_class = selectedClass;
+      if (selectedSubCategory) {
+        params.sub_category = selectedSubCategory;
       }
     } else {
-      // Part class views (Gutters, Aprons, etc.): use part_group and part_class
-      params.library_type = 'part_class';
-      params.part_group = selectedGroup;
-      params.part_class = selectedClass;
+      // Flashing and other groups use the template library API
+      apiUrl = `${API_BASE_URL}/api/template-library`;
+
+      if (['My Library', 'Customer Library'].includes(selectedClass)) {
+        // Library views: use library_type parameter
+        params.library_type = libraryType === 'my' ? 'my_library' : 'customer_library';
+        if (libraryType === 'customer' && customerId) {
+          params.customer_id = customerId;
+        } else if (libraryType === 'my') {
+          params.owner_user_id = USER_ID;
+        }
+      } else {
+        // Part class views (Gutters, Aprons, etc.): use part_group and part_class
+        params.library_type = 'part_class';
+        params.part_group = selectedGroup;
+        params.part_class = selectedSubCategory || selectedClass;
+      }
     }
 
     // Debug logging
     logger.debug('=== TEMPLATE LIBRARY FETCH DEBUG ===');
-    logger.debug('Library fetch params:', params);
+    logger.debug('API URL:', apiUrl);
+    logger.debug('Fetch params:', params);
     logger.debug('Selected Group:', selectedGroup);
     logger.debug('Selected Class:', selectedClass);
-    logger.debug('Library Type:', libraryType);
-    logger.debug('Customer ID:', customerId);
-    logger.debug('Customer Name:', customerName);
+    logger.debug('Selected SubCategory:', selectedSubCategory);
     logger.debug('Page:', pageNum);
     logger.debug('================================');
 
     const token = tokenManager.getToken();
     axios
-      .get(`${API_BASE_URL}/api/template-library`, {
+      .get(apiUrl, {
         params,
         headers: {
           'x-access-token': token,
@@ -379,30 +464,43 @@ const TemplateLibrary = () => {
         }
       })
       .then(res => {
-        const libraryEntries = Array.isArray(res.data.data) ? res.data.data : [];
+        const responseData = Array.isArray(res.data.data) ? res.data.data : [];
         const pagination = res.data.pagination || {};
-        logger.debug('Library entries received:', libraryEntries.length);
+        logger.debug('Entries received:', responseData.length);
         logger.debug('Pagination info:', pagination);
 
-        // Extract templates from library entries (template data is populated in template_id field)
-        const templatesData = libraryEntries
-          .filter(entry => entry.template_id) // Filter out entries with deleted templates
-          .map(entry => ({
-            ...entry.template_id, // Spread template data
-            _libraryEntryId: entry._id, // Add library entry ID for delete functionality
-            _libraryCreatedAt: entry.createdAt // Preserve library creation date
-          }));
+        let templatesData;
 
-        logger.debug('Templates extracted from library:', templatesData.length);
+        if (selectedGroup === 'AWF') {
+          // AWF products — catalog entries with name, description, image
+          templatesData = responseData.map(product => ({
+            _id: product._id,
+            name: product.name,
+            description: product.description,
+            part_class: product.part_class,
+            sub_category: product.sub_category,
+            image: product.image,
+            _isAWFProduct: true // Flag to differentiate in rendering
+          }));
+        } else {
+          // Flashing template library entries — extract template data from template_id field
+          templatesData = responseData
+            .filter(entry => entry.template_id)
+            .map(entry => ({
+              ...entry.template_id,
+              _libraryEntryId: entry._id,
+              _libraryCreatedAt: entry.createdAt
+            }));
+        }
+
+        logger.debug('Templates/products processed:', templatesData.length);
 
         // Update hasMore based on pagination response
         setHasMore(pagination.hasMore !== undefined ? pagination.hasMore : templatesData.length === pageSize);
 
         if (append) {
-          // Append to existing templates
           setTemplates(prev => [...prev, ...templatesData]);
         } else {
-          // Replace templates
           setTemplates(templatesData);
         }
       })
@@ -420,7 +518,7 @@ const TemplateLibrary = () => {
           setLoadingTemplates(false);
         }
       });
-  }, [selectedGroup, selectedClass, libraryType, customerId, customerName, pageSize]);
+  }, [selectedGroup, selectedClass, libraryType, customerId, customerName, pageSize, subCategoryMap, selectedSubCategory]);
 
   // Fetch templates on group, class, and library type change
   useEffect(() => {
@@ -429,18 +527,22 @@ const TemplateLibrary = () => {
     fetchTemplates(1, false);
   }, [selectedGroup, selectedClass, libraryType, customerId, fetchTemplates]);
 
-  const visibleGroups = [];
+  // Only show AWF and Flashing in the dropdown — other groups still work if navigated directly
+  const visibleGroups = ['AWF', 'Flashing'];
   const partGroups = Object.keys(groupClassMap).filter(g =>
     visibleGroups.length ? visibleGroups.includes(g) : true
   );
 
+  // AWF shows only its part classes (no Create Drawing / My Library / Customer Library)
   const partClasses = selectedGroup
-    ? [
-        'Create Drawing', 
-        'My Library',
-        ...(customerId ? ['Customer Library'] : []),
-        ...(groupClassMap[selectedGroup] || [])
-      ]
+    ? selectedGroup === 'AWF'
+      ? [...(groupClassMap[selectedGroup] || [])]
+      : [
+          'Create Drawing',
+          'My Library',
+          ...(customerId ? ['Customer Library'] : []),
+          ...(groupClassMap[selectedGroup] || [])
+        ]
     : [];
 
   // Filter templates by search term (case-insensitive match on name)
@@ -455,9 +557,12 @@ const TemplateLibrary = () => {
   }, [templates, searchTerm]);
 
   // Filter templates by selected group and class (skip filtering for library views)
-  const filteredTemplates = ['My Library', 'Customer Library'].includes(selectedClass) 
-    ? filteredBySearch  // For library views, show all templates from the search
-    : filteredBySearch.filter(tpl => tpl.partGroup === selectedGroup && tpl.partClass === selectedClass);
+  // AWF products are already filtered server-side by part_class and sub_category — no client filter needed
+  const filteredTemplates = ['My Library', 'Customer Library'].includes(selectedClass)
+    ? filteredBySearch
+    : selectedGroup === 'AWF'
+      ? filteredBySearch // AWF products already filtered by API params
+      : filteredBySearch.filter(tpl => tpl.partGroup === selectedGroup && tpl.partClass === (selectedSubCategory || selectedClass));
 
   // Reset selection when filters or search change
   useEffect(() => {
@@ -637,7 +742,7 @@ const TemplateLibrary = () => {
         <input
           className="search-box"
           aria-label="Search templates"
-          placeholder="Search (GBI Part, Panel, Jobbing & R.F.):"
+          placeholder="Search by template name..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           autoComplete="off"
@@ -696,7 +801,8 @@ const TemplateLibrary = () => {
                       className={`dropdown-item ${selectedGroup === g ? 'selected' : ''}`}
                       onClick={() => {
                         setSelectedGroup(g);
-                        setSelectedClass('');
+                        // AWF has no library views — default to first part class; others default to My Library
+                        setSelectedClass(g === 'AWF' ? (groupClassMap[g]?.[0] || '') : 'My Library');
                         setSelectedTemplate(null);
                         setPage(1);
                         setIsDropdownOpen(false);
@@ -793,12 +899,37 @@ const TemplateLibrary = () => {
             aria-busy={loadingTemplates}
             ref={scrollContainerRef}
           >
-            <div className="gallery-header">
-              {selectedClass === 'My Library' ? 'My Library' :
-               selectedClass === 'Customer Library' ? 'Customer Library' : 'Templates'}
-              {selectedClass === 'Customer Library' && customerName && ` - ${customerName}`}
-            </div>
+            {/* Hide gallery header when sub-category toggles are visible — the toggle itself shows the selection */}
+            {!hasSubCategories && (
+              <div className="gallery-header">
+                {selectedClass === 'My Library' ? 'My Library' :
+                 selectedClass === 'Customer Library' ? 'Customer Library' : 'Templates'}
+                {selectedClass === 'Customer Library' && customerName && ` - ${customerName}`}
+              </div>
+            )}
 
+            {/* AWF Sub-Category Toggles — always visible when a part class has sub-categories */}
+            {hasSubCategories && (
+              <div className="sub-category-toggles">
+                {currentSubCategories.map(subCat => (
+                  <button
+                    key={subCat}
+                    className={`sub-category-toggle ${selectedSubCategory === subCat ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedSubCategory(subCat);
+                      setSelectedTemplate(null);
+                      setPage(1);
+                    }}
+                  >
+                    {subCat}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Template grid shows when sub-category is selected (or not needed) */}
+            {(!hasSubCategories || selectedSubCategory) && (
+            <>
             {loadingTemplates ? (
               // Skeleton for template grid
               <div className="template-grid" aria-label="Loading templates list">
@@ -817,7 +948,53 @@ const TemplateLibrary = () => {
 
                 <div className="template-grid">
                     {filteredTemplates.length ? (
-                      filteredTemplates.map(tpl => (
+                      filteredTemplates.map(tpl => tpl._isAWFProduct ? (
+                      /* ========== AWF Product Card — image + name only ========== */
+                      <div
+                        key={tpl._id}
+                        className={`template-card awf-product-card ${selectedTemplate?._id === tpl._id ? 'selected' : ''}`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          setSelectedTemplate(tpl);
+                          if (selectedGroup) localStorage.setItem('lastPartGroup', selectedGroup);
+                          if (selectedClass) localStorage.setItem('lastPartClass', selectedClass);
+                        }}
+                        onDoubleClick={() => {
+                          startTransition(() => {
+                            if (selectedGroup) localStorage.setItem('lastPartGroup', selectedGroup);
+                            if (selectedClass) localStorage.setItem('lastPartClass', selectedClass);
+                            navigate(
+                              `/${orderNumber.startsWith("IN") ? "orders" : "quotes"}/${orderNumber}/awf/select-materials?productId=${tpl._id}`,
+                              {
+                                state: {
+                                  orderNumber, customerName, customerId, customerPoNumber, orderId,
+                                  name: tpl.name,
+                                  productId: tpl._id,
+                                  partGroup: 'AWF',
+                                  partClass: tpl.part_class,
+                                  subCategory: tpl.sub_category,
+                                  _isAWFProduct: true,
+                                  previousPage: previousPage,
+                                }
+                              }
+                            );
+                          });
+                        }}
+                        onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.click(); }}
+                        aria-pressed={selectedTemplate?._id === tpl._id}
+                      >
+                        {/* Product image — placeholder until S3 images are uploaded */}
+                        <div className="awf-product-icon">
+                          {tpl.image
+                            ? <img src={tpl.image} alt={tpl.name} className="awf-product-img" />
+                            : <span className="awf-placeholder-icon">&#9634;</span>
+                          }
+                        </div>
+                        <div className="template-title">{tpl.name}</div>
+                      </div>
+                    ) : (
+                      /* ========== Flashing Template Card (existing) ========== */
                       <div
                         key={tpl._id}
                         className={`template-card ${selectedTemplate?._id === tpl._id ? 'selected' : ''}`}
@@ -825,17 +1002,14 @@ const TemplateLibrary = () => {
                         tabIndex={0}
                         onClick={() => {
                           setSelectedTemplate(tpl);
-                          // Store current selection in localStorage when selecting a template
                           if (selectedGroup) localStorage.setItem('lastPartGroup', selectedGroup);
                           if (selectedClass) localStorage.setItem('lastPartClass', selectedClass);
                         }}
                         onDoubleClick={() => {
                           startTransition(() => {
-                            // Store current selection before navigating
                             if (selectedGroup) localStorage.setItem('lastPartGroup', selectedGroup);
                             if (selectedClass) localStorage.setItem('lastPartClass', selectedClass);
 
-                            // Debug log to see what's being passed
                             logger.debug('=== DOUBLE CLICK NAVIGATION DEBUG ===');
                             logger.debug('tpl object:', tpl);
                             logger.debug('tpl.firstSegmentAngle:', tpl.firstSegmentAngle);
@@ -852,7 +1026,6 @@ const TemplateLibrary = () => {
                                   customerName,
                                   customerId,
                                   customerPoNumber,
-                                  //  PASS ALL FIELDS BELOW! - Use tpl (the clicked template) not selectedTemplate
                                   orderId,
                                   name: tpl.name,
                                   lengths: tpl.lengths,
@@ -868,12 +1041,10 @@ const TemplateLibrary = () => {
                                   previewNear: tpl.previewNear,
                                   partGroup: tpl.partGroup,
                                   partClass: tpl.partClass,
-                                  // Drawing orientation and transformations
                                   firstSegmentAngle: tpl.firstSegmentAngle,
                                   flipH: tpl.flipH,
                                   flipV: tpl.flipV,
                                   labelOffsets: tpl.labelOffsets,
-                                  // Fold information
                                   startFoldType: tpl.startFoldType,
                                   startFoldDirection: tpl.startFoldDirection,
                                   startFoldLength: tpl.startFoldLength,
@@ -927,15 +1098,15 @@ const TemplateLibrary = () => {
                         <PreviewCanvas
                           lines={tpl.lengths}
                           angles={tpl.angles}
-                          direction={tpl.direction}  // No default
-                          firstSegmentAngle={tpl.firstSegmentAngle}  // Use saved orientation
+                          direction={tpl.direction}
+                          firstSegmentAngle={tpl.firstSegmentAngle}
                           flipH={tpl.flipH}
                           flipV={tpl.flipV}
-                          width={canvasDimensions.width}  // Responsive width based on viewport
-                          height={canvasDimensions.height}   // Responsive height based on viewport
+                          width={canvasDimensions.width}
+                          height={canvasDimensions.height}
                           hidePoints
                           thinStroke
-                          fontSize={canvasDimensions.fontSize}  // Responsive font size
+                          fontSize={canvasDimensions.fontSize}
                         />
                         {editingTemplateId === tpl._id ? (
                           <input
@@ -946,7 +1117,7 @@ const TemplateLibrary = () => {
                             onKeyPress={(e) => {
                               if (e.key === 'Enter') {
                                 e.preventDefault();
-                                e.target.blur(); // This will trigger onBlur which saves
+                                e.target.blur();
                               }
                             }}
                             onClick={(e) => e.stopPropagation()}
@@ -966,21 +1137,20 @@ const TemplateLibrary = () => {
                             autoFocus
                           />
                         ) : (
-                          <div 
-                            className="template-title" 
+                          <div
+                            className="template-title"
                             onClick={(e) => {
                               e.stopPropagation();
                               setEditingTemplateId(tpl._id);
                               setEditingName(tpl.name || '');
                             }}
-                            style={{ 
+                            style={{
                               cursor: 'pointer',
                               minHeight: '14px',
                               padding: '2px 4px'
                             }}
                             title="Click to edit name"
                           >
-                            {/* React automatically escapes text content, preventing XSS */}
                             {tpl.name || <span style={{ color: '#999', fontStyle: 'italic' }}>Click to add name</span>}
                           </div>
                         )}
@@ -1023,107 +1193,145 @@ const TemplateLibrary = () => {
                 All templates loaded
               </div>
             )}
+            </>
+            )}
           </div>
 
           <div className="template-preview-pane">
             {selectedTemplate ? (
-              <>
-                <div style={{ 
-                  margin: '40px 10px 20px 10px',
-                  padding: '0',
-                  overflow: 'visible',
-                  minHeight: '150px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'flex-start'
-                }}>
-                  <PreviewCanvas
-                    lines={selectedTemplate.lengths}
-                    angles={selectedTemplate.angles}
-                    direction={selectedTemplate.direction}  // No default
-                    firstSegmentAngle={selectedTemplate.firstSegmentAngle}  // Use saved orientation
-                    flipH={selectedTemplate.flipH}
-                    flipV={selectedTemplate.flipV}
-                    width={Math.round(canvasDimensions.width * 1.5)}
-                    height={Math.round(canvasDimensions.height * 1.5)}
-                    hidePoints={false}
-                    thinStroke
-                  />
-                </div>
-                <div 
-                  className="template-title center"
-                  style={{ 
-                    minHeight: '20px',
-                    padding: '4px 8px'
-                  }}
-                >
-                  {selectedTemplate.name || <span style={{ color: '#999', fontStyle: 'italic' }}>No name</span>}
-                </div>
-                <button
-                  className="btn green full"
-                  onClick={() =>
-                    startTransition(() => {
-                      // Store current selection before navigating
-                      if (selectedGroup) localStorage.setItem('lastPartGroup', selectedGroup);
-                      if (selectedClass) localStorage.setItem('lastPartClass', selectedClass);
-
-                      // Debug log to see what's being passed
-                      logger.debug('=== USE IT BUTTON NAVIGATION DEBUG ===');
-                      logger.debug('selectedTemplate object:', selectedTemplate);
-                      logger.debug('selectedTemplate.firstSegmentAngle:', selectedTemplate.firstSegmentAngle);
-                      logger.debug('selectedTemplate.flipH:', selectedTemplate.flipH);
-                      logger.debug('selectedTemplate.flipV:', selectedTemplate.flipV);
-                      logger.debug('====================================');
-
-                      {/* Quotation check handled */}
-                      navigate(
-                        `/${orderNumber.startsWith("IN") ? "orders" : "quotes"}/${orderNumber}/drawings/new?templateId=${selectedTemplate._id}`,
-                        {
-                          state: {
-                            orderNumber,
-                            customerName,
-                            customerId,
-                            customerPoNumber,
-                            //PASS ALL FIELDS BELOW!
-                            orderId,
-                            name: selectedTemplate.name,
-                            lengths: selectedTemplate.lengths,
-                            angles: selectedTemplate.angles,
-                            direction: selectedTemplate.direction,
-                            reverseColor: selectedTemplate.reverseColor,
-                            isTaper: selectedTemplate.isTaper,
-                            farLengths: selectedTemplate.farLengths,
-                            farAngles: selectedTemplate.farAngles,
-                            nearLengths: selectedTemplate.nearLengths,
-                            nearAngles: selectedTemplate.nearAngles,
-                            previewFar: selectedTemplate.previewFar,
-                            previewNear: selectedTemplate.previewNear,
-                            partGroup: selectedTemplate.partGroup,
-                            partClass: selectedTemplate.partClass,
-                            // Drawing orientation and transformations
-                            firstSegmentAngle: selectedTemplate.firstSegmentAngle,
-                            flipH: selectedTemplate.flipH,
-                            flipV: selectedTemplate.flipV,
-                            labelOffsets: selectedTemplate.labelOffsets,
-                            // Fold information
-                            startFoldType: selectedTemplate.startFoldType,
-                            startFoldDirection: selectedTemplate.startFoldDirection,
-                            startFoldLength: selectedTemplate.startFoldLength,
-                            startFoldGap: selectedTemplate.startFoldGap,
-                            endFoldType: selectedTemplate.endFoldType,
-                            endFoldDirection: selectedTemplate.endFoldDirection,
-                            endFoldLength: selectedTemplate.endFoldLength,
-                            endFoldGap: selectedTemplate.endFoldGap,
-                            previousPage: previousPage,
+              selectedTemplate._isAWFProduct ? (
+                /* ========== AWF Product Preview — image + name ========== */
+                <>
+                  <div className="awf-preview-content">
+                    {/* Product image — placeholder until S3 images are uploaded */}
+                    <div className="awf-preview-icon">
+                      {selectedTemplate.image
+                        ? <img src={selectedTemplate.image} alt={selectedTemplate.name} className="awf-preview-img" />
+                        : <span className="awf-placeholder-icon-lg">&#9634;</span>
+                      }
+                    </div>
+                    <div className="template-title center" style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
+                      {selectedTemplate.name}
+                    </div>
+                  </div>
+                  <button
+                    className="btn green full"
+                    onClick={() =>
+                      startTransition(() => {
+                        if (selectedGroup) localStorage.setItem('lastPartGroup', selectedGroup);
+                        if (selectedClass) localStorage.setItem('lastPartClass', selectedClass);
+                        navigate(
+                          `/${orderNumber.startsWith("IN") ? "orders" : "quotes"}/${orderNumber}/awf/select-materials?productId=${selectedTemplate._id}`,
+                          {
+                            state: {
+                              orderNumber, customerName, customerId, customerPoNumber, orderId,
+                              name: selectedTemplate.name,
+                              productId: selectedTemplate._id,
+                              partGroup: 'AWF',
+                              partClass: selectedTemplate.part_class,
+                              subCategory: selectedTemplate.sub_category,
+                              _isAWFProduct: true,
+                              previousPage: previousPage,
+                            }
                           }
-                        }
-                      );
-                    })
-                  }
-                >
-                  Use It
-                </button>
-              </>
+                        );
+                      })
+                    }
+                  >
+                    Use It
+                  </button>
+                </>
+              ) : (
+                /* ========== Flashing Template Preview (existing) ========== */
+                <>
+                  <div style={{
+                    margin: '40px 10px 20px 10px',
+                    padding: '0',
+                    overflow: 'visible',
+                    minHeight: '150px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start'
+                  }}>
+                    <PreviewCanvas
+                      lines={selectedTemplate.lengths}
+                      angles={selectedTemplate.angles}
+                      direction={selectedTemplate.direction}
+                      firstSegmentAngle={selectedTemplate.firstSegmentAngle}
+                      flipH={selectedTemplate.flipH}
+                      flipV={selectedTemplate.flipV}
+                      width={Math.round(canvasDimensions.width * 1.5)}
+                      height={Math.round(canvasDimensions.height * 1.5)}
+                      hidePoints={false}
+                      thinStroke
+                    />
+                  </div>
+                  <div
+                    className="template-title center"
+                    style={{
+                      minHeight: '20px',
+                      padding: '4px 8px'
+                    }}
+                  >
+                    {selectedTemplate.name || <span style={{ color: '#999', fontStyle: 'italic' }}>No name</span>}
+                  </div>
+                  <button
+                    className="btn green full"
+                    onClick={() =>
+                      startTransition(() => {
+                        if (selectedGroup) localStorage.setItem('lastPartGroup', selectedGroup);
+                        if (selectedClass) localStorage.setItem('lastPartClass', selectedClass);
+
+                        logger.debug('=== USE IT BUTTON NAVIGATION DEBUG ===');
+                        logger.debug('selectedTemplate object:', selectedTemplate);
+                        logger.debug('====================================');
+
+                        navigate(
+                          `/${orderNumber.startsWith("IN") ? "orders" : "quotes"}/${orderNumber}/drawings/new?templateId=${selectedTemplate._id}`,
+                          {
+                            state: {
+                              orderNumber,
+                              customerName,
+                              customerId,
+                              customerPoNumber,
+                              orderId,
+                              name: selectedTemplate.name,
+                              lengths: selectedTemplate.lengths,
+                              angles: selectedTemplate.angles,
+                              direction: selectedTemplate.direction,
+                              reverseColor: selectedTemplate.reverseColor,
+                              isTaper: selectedTemplate.isTaper,
+                              farLengths: selectedTemplate.farLengths,
+                              farAngles: selectedTemplate.farAngles,
+                              nearLengths: selectedTemplate.nearLengths,
+                              nearAngles: selectedTemplate.nearAngles,
+                              previewFar: selectedTemplate.previewFar,
+                              previewNear: selectedTemplate.previewNear,
+                              partGroup: selectedTemplate.partGroup,
+                              partClass: selectedTemplate.partClass,
+                              firstSegmentAngle: selectedTemplate.firstSegmentAngle,
+                              flipH: selectedTemplate.flipH,
+                              flipV: selectedTemplate.flipV,
+                              labelOffsets: selectedTemplate.labelOffsets,
+                              startFoldType: selectedTemplate.startFoldType,
+                              startFoldDirection: selectedTemplate.startFoldDirection,
+                              startFoldLength: selectedTemplate.startFoldLength,
+                              startFoldGap: selectedTemplate.startFoldGap,
+                              endFoldType: selectedTemplate.endFoldType,
+                              endFoldDirection: selectedTemplate.endFoldDirection,
+                              endFoldLength: selectedTemplate.endFoldLength,
+                              endFoldGap: selectedTemplate.endFoldGap,
+                              previousPage: previousPage,
+                            }
+                          }
+                        );
+                      })
+                    }
+                  >
+                    Use It
+                  </button>
+                </>
+              )
             ) : (
               <div className="template-empty">Select a template</div>
             )}

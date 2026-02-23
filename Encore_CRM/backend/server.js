@@ -90,6 +90,10 @@ app.use('/api/templates', templateRoutes);
 const templateLibraryRoutes = require('./routes/templateLibraryRoutes');
 app.use('/api/template-library', templateLibraryRoutes);
 
+// AWF Product Library — separate catalog for AWF products (downpipes, clips, offsets, rollforming)
+const awfProductLibraryRoutes = require('./routes/awfProductLibraryRoutes');
+app.use('/api/awf-products', awfProductLibraryRoutes);
+
 const priceRoutes = require('./routes/priceRoutes');
 app.use('/api/custom-prices', priceRoutes)
 

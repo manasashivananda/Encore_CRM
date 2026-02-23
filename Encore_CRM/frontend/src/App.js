@@ -18,6 +18,7 @@ import OrderDetail from './Pages/Orders/detail';
 import DrawingCanvas from "./Pages/DrawingComponents/DrawingCanvas";
 import SelectMaterialsSimplified from "./Pages/DrawingComponents/SelectMaterialsSimplified";
 import TemplateLibrary from "./Pages/DrawingComponents/TemplateLibrary";
+import AWFSelectMaterials from "./Pages/DrawingComponents/AWFSelectMaterials";
 import DrawingDetailsTab from "./Pages/Drawings/DrawingDetailsTab";
 const DrawingToolPage = React.lazy(() => import("./Pages/DrawingComponents/DrawingToolPage"));
 
@@ -134,6 +135,9 @@ function App() {
         {/* Quotation drawing route */}
         <Route path="quotes/:order_unique_id/drawings/templates" element={<TemplateLibrary />} />
         <Route path="/select-materials-simplified" element={<SelectMaterialsSimplified />} />
+        {/* AWF material selection — separate flow from Flashing */}
+        <Route path="/orders/:order_unique_id/awf/select-materials" element={<AWFSelectMaterials />} />
+        <Route path="/quotes/:order_unique_id/awf/select-materials" element={<AWFSelectMaterials />} />
         <Route path="/draw" element={<DrawingCanvas />} />
         <Route path="/orders/:order_unique_id/drawings/new" element={<React.Suspense fallback={<>...</>}><DrawingToolPage /></React.Suspense>} />
         {/* Quotation new drawing route */}

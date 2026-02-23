@@ -1,3 +1,12 @@
+/**
+ * TemplateLibrary Styles
+ *
+ * AWF Changes (20-Feb-2026):
+ * - Added .sub-category-toggles and .sub-category-toggle styles for AWF sub-category buttons
+ *   (toggle group at top of gallery for classes like Downpipe, Offsets)
+ * - Added .awf-product-card, .awf-product-icon, .awf-product-meta styles for AWF product cards
+ * - Added .awf-preview-content, .awf-preview-details, .awf-detail-row styles for AWF preview pane
+ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
 /* ===== Container ========= */
@@ -648,6 +657,120 @@
     transform: rotate(360deg);
   }
 }
+
+/* =============================================
+   AWF Sub-Category Toggles
+   Always visible when a part class has sub-categories.
+   Active toggle is filled, others are outlined.
+   ============================================= */
+.sub-category-toggles {
+  display: flex;
+  gap: 0;
+  padding: 0 15px;
+  margin-bottom: 10px;
+}
+
+.sub-category-toggle {
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #d22530;
+  background: #fff;
+  color: #d22530;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:first-child {
+    border-radius: 6px 0 0 6px;
+  }
+
+  &:last-child {
+    border-radius: 0 6px 6px 0;
+  }
+
+  &:not(:first-child) {
+    border-left: none;
+  }
+
+  &:hover:not(.active) {
+    background: rgba(210, 37, 48, 0.08);
+  }
+
+  &.active {
+    background: #d22530;
+    color: #fff;
+  }
+}
+
+/* =============================================
+   AWF Product Cards & Preview
+   Shown when AWF part group is selected.
+   Cards display product image (or placeholder) + name.
+   Product specs (shape, dimensions, thickness, pricing)
+   are NOT shown here — they belong in the order-specific
+   collection / select-materials page.
+   ============================================= */
+.awf-product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  min-height: 100px;
+}
+
+.awf-product-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+/* Actual product image in card */
+.awf-product-img {
+  max-width: 100%;
+  max-height: 100px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* Placeholder icon when no image uploaded */
+.awf-placeholder-icon {
+  font-size: 40px;
+  color: #ccc;
+  line-height: 1;
+}
+
+/* AWF Preview Pane — image + name + description */
+.awf-preview-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 15px 15px;
+}
+
+.awf-preview-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+/* Larger product image in preview pane */
+.awf-preview-img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* Larger placeholder icon in preview pane */
+.awf-placeholder-icon-lg {
+  font-size: 64px;
+  color: #ccc;
+  line-height: 1;
+}
+
 
 /* Loading more indicator */
 .loading-more {
