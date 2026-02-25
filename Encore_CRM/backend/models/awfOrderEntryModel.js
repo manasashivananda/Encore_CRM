@@ -36,6 +36,26 @@ const awfOrderEntrySchema = new mongoose.Schema({
   },
   tapered: { type: Boolean, default: false },          // Manual D/P only
 
+  // Custom Offset fields
+  size: { type: String, default: null },                // manually entered size
+  measurements: {                                       // W, A, B1, B2, C in mm
+    W: { type: Number, default: null },
+    A: { type: Number, default: null },
+    B1: { type: Number, default: null },
+    B2: { type: Number, default: null },
+    C: { type: Number, default: null },
+  },
+  angleDegree: {                                        // D, E in degrees
+    D: { type: Number, default: null },
+    E: { type: Number, default: null },
+  },
+  offsetType: { type: String, enum: ['fixed', 'adjustable', null], default: null },
+  adjustableRange: {                                    // only when offsetType = 'adjustable'
+    from: { type: Number, default: null },
+    to: { type: Number, default: null },
+  },
+  seamSide: { type: String, enum: ['top', 'left', 'bottom', 'right', null], default: null },
+
   // Options
   barcode: { type: Boolean, default: false },
   note: { type: String, default: '' },

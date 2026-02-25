@@ -21,7 +21,8 @@ exports.createEntry = async (req, res) => {
       productId, productName, partClass, subCategory,
       material, color, thickness,
       numberOfPieces, length, dimensions, tapered,
-      barcode, note, unitPrice, productImage
+      barcode, note, unitPrice, productImage,
+      size, measurements, angleDegree, offsetType, adjustableRange, seamSide
     } = req.body;
 
     // Validate required fields
@@ -38,6 +39,7 @@ exports.createEntry = async (req, res) => {
       material, color, thickness,
       numberOfPieces, length, dimensions, tapered,
       barcode, note, unitPrice, productImage,
+      size, measurements, angleDegree, offsetType, adjustableRange, seamSide,
       status: 'active'
     });
 
@@ -85,7 +87,8 @@ exports.updateEntry = async (req, res) => {
     const {
       material, color, thickness,
       numberOfPieces, length, dimensions, tapered,
-      barcode, note, unitPrice
+      barcode, note, unitPrice,
+      size, measurements, angleDegree, offsetType, adjustableRange, seamSide
     } = req.body;
 
     const entry = await AWFOrderEntry.findByIdAndUpdate(
@@ -93,7 +96,8 @@ exports.updateEntry = async (req, res) => {
       {
         material, color, thickness,
         numberOfPieces, length, dimensions, tapered,
-        barcode, note, unitPrice
+        barcode, note, unitPrice,
+        size, measurements, angleDegree, offsetType, adjustableRange, seamSide
       },
       { new: true, runValidators: true }
     );

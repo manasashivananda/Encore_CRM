@@ -172,6 +172,13 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
           barcode: entry.barcode,
           note: entry.note,
           unitPrice: entry.unitPrice,
+          // Custom Offset fields
+          size: entry.size,
+          measurements: entry.measurements,
+          angleDegree: entry.angleDegree,
+          offsetType: entry.offsetType,
+          adjustableRange: entry.adjustableRange,
+          seamSide: entry.seamSide,
         }
       }
     });
@@ -237,12 +244,31 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
           </div>
         )}
 
-        {/* ── PRODUCT IMAGE ── */}
+        {/* ── PRODUCT IMAGE / CUSTOM OFFSET SVG ── */}
         <div style={{
           overflow: 'visible', width: '100%', display: 'flex', justifyContent: 'center',
           padding: `${10 * fontSize}px 0`, minHeight: `${120 * fontSize}px`, alignItems: 'center'
         }}>
-          {entry.productImage ? (
+          {entry.subCategory === 'Custom Offset' ? (
+            <svg viewBox="0 0 420 440" width={isLightbox ? 320 : 160} height={isLightbox ? 340 : 170} xmlns="http://www.w3.org/2000/svg">
+              <polygon points="120,80 280,80 310,60 150,60" fill="#e8e8e8" stroke="#333" strokeWidth="1.5" />
+              <polygon points="120,80 280,80 280,120 120,120" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+              <polygon points="280,80 310,60 310,100 280,120" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+              <polygon points="120,120 170,120 170,260 120,260" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+              <polygon points="170,120 200,100 200,240 170,260" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+              <polygon points="120,120 170,120 200,100 150,100" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+              <polygon points="120,260 280,260 280,300 120,300" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+              <polygon points="280,260 310,240 310,280 280,300" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+              <polygon points="120,260 280,260 310,240 150,240" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+              <text x="200" y="40" textAnchor="middle" fontSize="14" fontWeight="bold" fill={entry.measurements?.W ? '#d32f2f' : '#333'}>W{entry.measurements?.W ? ` = ${entry.measurements.W}` : ''}</text>
+              <text x="75" y="195" textAnchor="middle" fontSize="14" fontWeight="bold" fill={entry.measurements?.A ? '#d32f2f' : '#333'} transform="rotate(-90,75,195)">A{entry.measurements?.A ? ` = ${entry.measurements.A}` : ''}</text>
+              <text x="325" y="82" fontSize="13" fontWeight="bold" fill={entry.measurements?.B1 ? '#d32f2f' : '#1976d2'}>B1{entry.measurements?.B1 ? ` = ${entry.measurements.B1}` : ''}</text>
+              <text x="225" y="175" fontSize="13" fontWeight="bold" fill={entry.measurements?.B2 ? '#d32f2f' : '#1976d2'}>B2{entry.measurements?.B2 ? ` = ${entry.measurements.B2}` : ''}</text>
+              <text x="200" y="340" textAnchor="middle" fontSize="14" fontWeight="bold" fill={entry.measurements?.C ? '#d32f2f' : '#333'}>C{entry.measurements?.C ? ` = ${entry.measurements.C}` : ''}</text>
+              <text x="290" y="118" fontSize="13" fontWeight="bold" fill={entry.angleDegree?.D ? '#d32f2f' : '#e65100'}>D{entry.angleDegree?.D ? ` = ${entry.angleDegree.D}°` : ''}</text>
+              <text x="100" y="370" fontSize="13" fontWeight="bold" fill={entry.angleDegree?.E ? '#d32f2f' : '#e65100'}>E{entry.angleDegree?.E ? ` = ${entry.angleDegree.E}°` : ''}</text>
+            </svg>
+          ) : entry.productImage ? (
             <img
               src={entry.productImage}
               alt={entry.productName}
@@ -485,9 +511,46 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
                   </div>
                 )}
 
-                {/* Product image */}
+                {/* Product image / Custom Offset SVG */}
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0', minHeight: '200px', alignItems: 'center' }}>
-                  {entry.productImage ? (
+                  {entry.subCategory === 'Custom Offset' ? (
+                    <svg viewBox="0 0 420 440" width="380" height="400" xmlns="http://www.w3.org/2000/svg">
+                      <polygon points="120,80 280,80 310,60 150,60" fill="#e8e8e8" stroke="#333" strokeWidth="1.5" />
+                      <polygon points="120,80 280,80 280,120 120,120" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+                      <polygon points="280,80 310,60 310,100 280,120" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+                      <polygon points="120,120 170,120 170,260 120,260" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+                      <polygon points="170,120 200,100 200,240 170,260" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+                      <polygon points="120,120 170,120 200,100 150,100" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                      <polygon points="120,260 280,260 280,300 120,300" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+                      <polygon points="280,260 310,240 310,280 280,300" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+                      <polygon points="120,260 280,260 310,240 150,240" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                      <line x1="120" y1="45" x2="280" y2="45" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="120" y1="40" x2="120" y2="50" stroke="#d32f2f" strokeWidth="1" />
+                      <line x1="280" y1="40" x2="280" y2="50" stroke="#d32f2f" strokeWidth="1" />
+                      <text x="200" y="40" textAnchor="middle" fontSize="14" fontWeight="bold" fill={entry.measurements?.W ? '#d32f2f' : '#333'}>W{entry.measurements?.W ? ` = ${entry.measurements.W}` : ''}</text>
+                      <line x1="95" y1="80" x2="95" y2="300" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="90" y1="80" x2="100" y2="80" stroke="#d32f2f" strokeWidth="1" />
+                      <line x1="90" y1="300" x2="100" y2="300" stroke="#d32f2f" strokeWidth="1" />
+                      <text x="75" y="195" textAnchor="middle" fontSize="14" fontWeight="bold" fill={entry.measurements?.A ? '#d32f2f' : '#333'} transform="rotate(-90,75,195)">A{entry.measurements?.A ? ` = ${entry.measurements.A}` : ''}</text>
+                      <line x1="295" y1="60" x2="295" y2="100" stroke="#1976d2" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="290" y1="60" x2="300" y2="60" stroke="#1976d2" strokeWidth="1" />
+                      <line x1="290" y1="100" x2="300" y2="100" stroke="#1976d2" strokeWidth="1" />
+                      <text x="325" y="82" fontSize="13" fontWeight="bold" fill={entry.measurements?.B1 ? '#d32f2f' : '#1976d2'}>B1{entry.measurements?.B1 ? ` = ${entry.measurements.B1}` : ''}</text>
+                      <line x1="215" y1="100" x2="215" y2="240" stroke="#1976d2" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="210" y1="100" x2="220" y2="100" stroke="#1976d2" strokeWidth="1" />
+                      <line x1="210" y1="240" x2="220" y2="240" stroke="#1976d2" strokeWidth="1" />
+                      <text x="235" y="175" fontSize="13" fontWeight="bold" fill={entry.measurements?.B2 ? '#d32f2f' : '#1976d2'}>B2{entry.measurements?.B2 ? ` = ${entry.measurements.B2}` : ''}</text>
+                      <line x1="120" y1="320" x2="280" y2="320" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="120" y1="315" x2="120" y2="325" stroke="#d32f2f" strokeWidth="1" />
+                      <line x1="280" y1="315" x2="280" y2="325" stroke="#d32f2f" strokeWidth="1" />
+                      <text x="200" y="340" textAnchor="middle" fontSize="14" fontWeight="bold" fill={entry.measurements?.C ? '#d32f2f' : '#333'}>C{entry.measurements?.C ? ` = ${entry.measurements.C}` : ''}</text>
+                      <path d="M 270,120 Q 275,108 285,100" fill="none" stroke="#e65100" strokeWidth="1.5" />
+                      <text x="290" y="118" fontSize="13" fontWeight="bold" fill={entry.angleDegree?.D ? '#d32f2f' : '#e65100'}>D{entry.angleDegree?.D ? ` = ${entry.angleDegree.D}°` : ''}</text>
+                      <path d="M 130,260 Q 125,272 120,280" fill="none" stroke="#e65100" strokeWidth="1.5" />
+                      <text x="100" y="370" fontSize="13" fontWeight="bold" fill={entry.angleDegree?.E ? '#d32f2f' : '#e65100'}>E{entry.angleDegree?.E ? ` = ${entry.angleDegree.E}°` : ''}</text>
+                      <text x="210" y="420" textAnchor="middle" fontSize="11" fill="#666" fontStyle="italic">* Standard angle of a downpipe offset is 80°</text>
+                    </svg>
+                  ) : entry.productImage ? (
                     <img
                       src={entry.productImage}
                       alt={entry.productName}

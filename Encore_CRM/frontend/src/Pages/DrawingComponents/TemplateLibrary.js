@@ -985,9 +985,28 @@ const TemplateLibrary = () => {
                         onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.click(); }}
                         aria-pressed={selectedTemplate?._id === tpl._id}
                       >
-                        {/* Product image — placeholder until S3 images are uploaded */}
+                        {/* Product image — SVG drawing for Custom Offset, image for others */}
                         <div className="awf-product-icon">
-                          {tpl.image
+                          {tpl.sub_category === 'Custom Offset' ? (
+                            <svg viewBox="0 0 420 440" width="120" height="130" xmlns="http://www.w3.org/2000/svg">
+                              <polygon points="120,80 280,80 310,60 150,60" fill="#e8e8e8" stroke="#333" strokeWidth="1.5" />
+                              <polygon points="120,80 280,80 280,120 120,120" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+                              <polygon points="280,80 310,60 310,100 280,120" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+                              <polygon points="120,120 170,120 170,260 120,260" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+                              <polygon points="170,120 200,100 200,240 170,260" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+                              <polygon points="120,120 170,120 200,100 150,100" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                              <polygon points="120,260 280,260 280,300 120,300" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+                              <polygon points="280,260 310,240 310,280 280,300" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+                              <polygon points="120,260 280,260 310,240 150,240" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                              <text x="200" y="45" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#d32f2f">W</text>
+                              <text x="70" y="195" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#d32f2f" transform="rotate(-90,70,195)">A</text>
+                              <text x="330" y="85" fontSize="15" fontWeight="bold" fill="#1976d2">B1</text>
+                              <text x="225" y="175" fontSize="15" fontWeight="bold" fill="#1976d2">B2</text>
+                              <text x="200" y="340" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#d32f2f">C</text>
+                              <text x="295" y="118" fontSize="14" fontWeight="bold" fill="#e65100">D</text>
+                              <text x="95" y="370" fontSize="14" fontWeight="bold" fill="#e65100">E</text>
+                            </svg>
+                          ) : tpl.image
                             ? <img src={tpl.image} alt={tpl.name} className="awf-product-img" />
                             : <span className="awf-placeholder-icon">&#9634;</span>
                           }
@@ -1204,9 +1223,38 @@ const TemplateLibrary = () => {
                 /* ========== AWF Product Preview — image + name ========== */
                 <>
                   <div className="awf-preview-content">
-                    {/* Product image — placeholder until S3 images are uploaded */}
+                    {/* Product image — SVG drawing for Custom Offset, image for others */}
                     <div className="awf-preview-icon">
-                      {selectedTemplate.image
+                      {selectedTemplate.sub_category === 'Custom Offset' ? (
+                        <svg viewBox="0 0 420 440" width="260" height="280" xmlns="http://www.w3.org/2000/svg">
+                          <polygon points="120,80 280,80 310,60 150,60" fill="#e8e8e8" stroke="#333" strokeWidth="1.5" />
+                          <polygon points="120,80 280,80 280,120 120,120" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+                          <polygon points="280,80 310,60 310,100 280,120" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+                          <polygon points="120,120 170,120 170,260 120,260" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+                          <polygon points="170,120 200,100 200,240 170,260" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+                          <polygon points="120,120 170,120 200,100 150,100" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                          <polygon points="120,260 280,260 280,300 120,300" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
+                          <polygon points="280,260 310,240 310,280 280,300" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
+                          <polygon points="120,260 280,260 310,240 150,240" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                          <line x1="120" y1="45" x2="280" y2="45" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                          <line x1="120" y1="40" x2="120" y2="50" stroke="#d32f2f" strokeWidth="1" />
+                          <line x1="280" y1="40" x2="280" y2="50" stroke="#d32f2f" strokeWidth="1" />
+                          <text x="200" y="40" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#d32f2f">W</text>
+                          <line x1="95" y1="80" x2="95" y2="300" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                          <line x1="90" y1="80" x2="100" y2="80" stroke="#d32f2f" strokeWidth="1" />
+                          <line x1="90" y1="300" x2="100" y2="300" stroke="#d32f2f" strokeWidth="1" />
+                          <text x="75" y="195" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#d32f2f" transform="rotate(-90,75,195)">A</text>
+                          <text x="325" y="82" fontSize="13" fontWeight="bold" fill="#1976d2">B1</text>
+                          <text x="225" y="175" fontSize="13" fontWeight="bold" fill="#1976d2">B2</text>
+                          <line x1="120" y1="320" x2="280" y2="320" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                          <line x1="120" y1="315" x2="120" y2="325" stroke="#d32f2f" strokeWidth="1" />
+                          <line x1="280" y1="315" x2="280" y2="325" stroke="#d32f2f" strokeWidth="1" />
+                          <text x="200" y="340" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#d32f2f">C</text>
+                          <text x="290" y="118" fontSize="13" fontWeight="bold" fill="#e65100">D</text>
+                          <text x="100" y="370" fontSize="13" fontWeight="bold" fill="#e65100">E</text>
+                          <text x="210" y="410" textAnchor="middle" fontSize="10" fill="#666" fontStyle="italic">* Standard angle of a downpipe offset is 80°</text>
+                        </svg>
+                      ) : selectedTemplate.image
                         ? <img src={selectedTemplate.image} alt={selectedTemplate.name} className="awf-preview-img" />
                         : <span className="awf-placeholder-icon-lg">&#9634;</span>
                       }
