@@ -1,0 +1,85 @@
+/* AWFDetailsTab — Card grid styles for AWF entries on order page */
+
+.awf-details-grid {
+  padding: 8px 0;
+}
+
+.awf-entry-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+}
+
+.awf-entry-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.awf-entry-image {
+  max-height: 110px;
+  max-width: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+
+.awf-entry-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+}
+
+.awf-entry-info {
+  padding: 10px 12px;
+
+  .awf-entry-name {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 2px;
+    color: #333;
+  }
+
+  .awf-entry-category {
+    color: #888;
+    font-size: 12px;
+  }
+}
+
+.awf-entry-details {
+  font-size: 13px;
+}
+
+.awf-detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+
+  .awf-detail-label {
+    color: #666;
+    font-weight: 500;
+  }
+
+  .awf-detail-value {
+    color: #333;
+    font-weight: 600;
+    text-align: right;
+  }
+}
+
+.awf-entry-actions {
+  background: #fafafa;
+  border-top: 1px solid #eee;
+  padding: 4px 8px;
+  display: flex;
+  justify-content: flex-end;
+}

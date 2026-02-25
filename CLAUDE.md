@@ -379,11 +379,155 @@ AWFSelectMaterials page (/orders/:id/awf/select-materials)
 
 ### What's Next (TODO)
 
-1. **Phase 2 — FINISH save logic**: Create `awfOrderEntryCtrl.js` (controller with save/fetch/delete), `awfOrderEntryRoutes.js` (routes), register in `server.js`, wire up 3 FINISH buttons to save API
-2. **FINISH & Add New**: After save → navigate back to Template Library with AWF state
-3. **FINISH & Copy**: After save → stay on AWFSelectMaterials with same product pre-filled
-4. **AWF tab on order page**: Show saved AWF entries in a grid/table (like Flashing's DrawingDetailsTab)
+1. ~~**Phase 2 — FINISH save logic**~~ — DONE (24-Feb)
+2. ~~**FINISH & Add New**~~ — DONE (24-Feb)
+3. ~~**FINISH & Copy**~~ — DONE (24-Feb)
+4. ~~**AWF tab on order page**~~ — DONE (24-Feb)
 5. **Product images**: Upload actual 3D product images to S3, replace placehold.co URLs
 6. **Custom Offset form**: Complex form with W, A, B1, B2, C, D, E measurements + Seam Side + Type (Fixed/Adjustable) — deferred
-7. **Seed full product list**: Add all products when ready (currently 2 per category = 14 total)
+7. ~~**Seed full product list**~~ — Partially done (Manual D/P expanded to all products from doc)
 8. **Rollforming**: No spec in document yet — needs definition
+
+---
+
+## AWF Module — Work Log (24-Feb-2026)
+
+### What Was Built
+
+Phase 2 complete: FINISH save logic, AWF tab on order page, AWF tab on designers page, edit/delete functionality, lightbox view, barcode sticker display, and navigation fixes.
+
+### Backend Changes (24-Feb)
+
+| File | Changes |
+|------|---------|
+| `backend/controllers/awfOrderEntryCtrl.js` | Added `updateEntry` (PUT) for edit mode. Changed `deleteEntry` from soft delete (`findByIdAndUpdate`) to hard delete (`findByIdAndDelete`) to match Flashing behavior. |
+| `backend/routes/awfOrderEntryRoutes.js` | Added `PUT /:id` route for updating entries. |
+
+### Frontend — AWF Tab on Order Page (manageOrderItem.js)
+
+| Change | Details |
+|--------|---------|
+| Import | Added `AWFDetailsTab` import |
+| Tab | Added `<Tab label="AWF" value="AWF" />` — always visible after GBIL |
+| Content | AWF tab renders "Add AWF Product" button + `<AWFDetailsTab>` component |
+| Navigation | "Add AWF Product" navigates to Template Library with `partGroup: "AWF"` |
+| Tab persistence | `onEntryDelete` is no-op `() => {}` to prevent tab switching after delete |
+| activeTab | Reads `location.state?.activeTab` to open correct tab after FINISH navigation |
+
+### Frontend — AWF Tab on Designers Page (designToolOrders.js)
+
+| Change | Details |
+|--------|---------|
+| Imports | Added `Tabs, Tab` (MUI), `AWFDetailsTab`, `useLocation` |
+| Tabs | Flashing / AWF tab switcher above the Flashing header |
+| AWF content | "Add AWF Product" button in `GeneralHeading` wrapper + `<AWFDetailsTab>` |
+| Tab state | `activeDesignTab` reads `location.state?.activeTab` — defaults to Flashing, switches to AWF when returning from AWF finish |
+| Flashing guard | All Flashing-specific content (Order Item header, badges, toggle, buttons, DrawingDetailsTab) inside `activeDesignTab === "Flashing"` guard |
+
+**Note:** `designToolQuotes.js` was NOT modified — quotation flow untouched per user instruction.
+
+### Frontend — AWFSelectMaterials.js Updates
+
+| Feature | Details |
+|---------|---------|
+| Edit mode | Detects `editEntryId` + `editData` in navigation state. Pre-fills form fields. Uses PUT instead of POST. |
+| Navigation fix | `handleFinish` uses `previousPage` (like Flashing) — navigates to `/designers/{id}` when from designers, `/orders/{id}` when from orders |
+| activeTab | Passes `activeTab: 'AWF'` in navigation state so order/designer page opens on AWF tab |
+| Colors auto-load | In edit mode, auto-loads colors when materials are available |
+
+### Frontend — AWFDetailsTab.js (Card Grid + Lightbox)
+
+Created as AWF equivalent of DrawingDetailsTab. Located at `frontend/src/Pages/Drawings/AWFDetailsTab.js`.
+
+**Card Grid:**
+- `Col md={6}` — 2 cards per row (matches Flashing normal card layout)
+- Header row: product info (left) | COLOR bold (center) | Qty/Len table (right)
+- Barcode sticker display: "BARCODE" / barcode icon / "STICKERS" when `entry.barcode === true`
+- Product image area (or Package icon placeholder)
+- Edit / Delete action buttons bar (outline-primary / outline-danger)
+- `previousPage` passed in edit navigation state for correct return navigation
+
+**Lightbox (double-click to open):**
+- Full-screen overlay (`rgba(0,0,0,0.9)`, z-index 10000) — same as Flashing
+- Header bar: "Material: {name} {thickness}" + COLOR in large text
+- Qty/Len table (top-right, always visible)
+- Edit / Delete buttons (top-right, below table) — Delete uses swal with z-index 10001
+- Product name + partClass centered
+- Barcode sticker (large, if checked)
+- Product image (large)
+- Keyboard: Arrow Left/Right to navigate, Escape to close
+- On close: scrolls to card + blue glow highlight (1.5s)
+- Click dark overlay to close
+
+**Delete behavior:**
+- Hard delete from MongoDB (matching Flashing)
+- No success swal after delete
+- Tab stays on AWF (no tab switching)
+
+### Frontend — AWFSelectMaterials.js Form Updates (25-Feb)
+
+| Change | Details |
+|--------|---------|
+| Dimension boxes | Only show for custom products (name contains "---") — applies to ALL part classes (Downpipe, Offsets, Bends). Square custom ("--- x --- mm") shows 2 boxes (A, B). Round custom ("--- mm") shows 1 box (A). |
+| Length dropdown | Downpipe + Offsets: dropdown with 1.800 / 2.400. Clips: fixed display "Length: 1". Others: no length field. |
+| Barcode checkbox | Now visible for ALL products (including Manual D/P and Clips) |
+| TAPERED renamed | Checkbox label changed from "TAPERED" to "Big – Small End" |
+| Barcode sticker visual | When BARCODE checked, shows "BARCODE / barcode icon / STICKERS" above product image on left panel |
+| Thickness display | Shows 2 decimal places (0.60 not 0.6) |
+| Finish button | Always shows "Finish" (not "Update" in edit mode) |
+
+### AWF Form Fields Per Type (Updated 25-Feb)
+
+| Field | Standard D/P | Manual D/P | Clips & Pops | Standard Offset | Bends |
+|-------|-------------|-----------|--------------|-----------------|-------|
+| Material dropdown | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Color dropdown | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Thickness | 0.45 (fixed) | 0.45 (fixed) | 0.60 (fixed) | 0.45 (fixed) | 0.45 (fixed) |
+| Dimensions (A x B) | Custom only | Custom only | — | Custom only | Custom only |
+| Dimensions (A) | Custom only | Custom only | — | Custom only | Custom only |
+| Number of Pieces | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Length | Dropdown (1.800/2.400) | Dropdown (1.800/2.400) | Fixed: 1 | Dropdown (1.800/2.400) | Dropdown (1.800/2.400) |
+| Big – Small End | — | ✓ | — | — | — |
+| BARCODE | ✓ | ✓ | ✓ | ✓ | ✓ |
+| *Note* | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Unit Price | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+**Dimension logic:** `showDimensions = productName.includes('---')`. If name also contains "x" → square → 2 boxes (A, B). Otherwise → round → 1 box (A). This applies across all part classes universally.
+
+**Length logic:** `partClass === 'Downpipe' || partClass === 'Offsets'` → dropdown (1.800/2.400). `formType === 'clips'` → fixed "1". All others → no length field.
+
+### AWF Product Library (Database Updates 24-25 Feb)
+
+Manual D/P products expanded to match document:
+
+**Square (name has "x"):** 100X50mm, 100x75mm, 75x50mm, 125x100mm, 150x100mm, --- x --- mm (custom)
+
+**Round (no "x"):** 65mm, 75mm, 90mm, 100mm, 125mm, --- mm (custom)
+
+Offset custom products added:
+
+**Standard Offset:** --- x --- mm Square Offset (custom), --- mm Round Offset (custom)
+
+**Bends (Elbow/Shoes):** --- x --- mm Square Elbow (custom), --- mm Round Elbow (custom)
+
+Total AWF products in `awf_product_libraries`: 28 (14 original + 10 Manual D/P + 4 Offset custom)
+
+### Files Summary (All AWF Changes 24-25 Feb)
+
+| File | Action | Purpose |
+|------|--------|---------|
+| `frontend/src/Pages/Drawings/AWFDetailsTab.js` | CREATED | Card grid + lightbox for AWF entries |
+| `frontend/src/Pages/Orders/manageOrderItem.js` | MODIFIED | AWF tab + render AWFDetailsTab |
+| `frontend/src/Pages/OrderDesignersManagement/designToolOrders.js` | MODIFIED | Flashing/AWF tabs + AWFDetailsTab |
+| `frontend/src/Pages/DrawingComponents/AWFSelectMaterials.js` | MODIFIED | Edit mode, navigation fix, form updates, Length dropdown for Downpipe+Offsets, universal custom dimension logic |
+| `frontend/src/styles/AWFSelectMaterials.scss` | MODIFIED | Dimension row spacing, barcode overlay styles |
+| `backend/controllers/awfOrderEntryCtrl.js` | MODIFIED | Added updateEntry, hard delete |
+| `backend/routes/awfOrderEntryRoutes.js` | MODIFIED | Added PUT route |
+| `backend/scripts/addCustomOffsetProducts.js` | CREATED | Seed script for 4 custom Offset products |
+
+### What's Next (TODO)
+
+1. **Custom Offset form**: Complex form with W, A, B1, B2, C, D, E measurements + Seam Side + Type (Fixed/Adjustable) — deferred
+2. **Product images**: Upload actual product images to S3, replace placehold.co URLs. Images need seam side indicator and dimension labels.
+3. **Rollforming**: No spec yet
+5. **Quotation flow**: AWF tab for quotes — deferred per user instruction

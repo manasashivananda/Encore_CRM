@@ -94,6 +94,10 @@ app.use('/api/template-library', templateLibraryRoutes);
 const awfProductLibraryRoutes = require('./routes/awfProductLibraryRoutes');
 app.use('/api/awf-products', awfProductLibraryRoutes);
 
+// AWF Order Entries — save/fetch/delete AWF material selections
+const awfOrderEntryRoutes = require('./routes/awfOrderEntryRoutes');
+app.use('/api/awf-entries', awfOrderEntryRoutes);
+
 const priceRoutes = require('./routes/priceRoutes');
 app.use('/api/custom-prices', priceRoutes)
 

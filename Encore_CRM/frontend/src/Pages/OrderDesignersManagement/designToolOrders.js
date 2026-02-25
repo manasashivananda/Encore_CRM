@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Row, Col, Badge, Spinner } from "react-bootstrap";
 import { HeadingTwo, HeadingFour, MyDiv, StrongTag, HeadingFive } from "../Common/Components";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { TableBody, Table, TableContainer, TableHead, Switch, TableRow, TableCell, IconButton, Tooltip, Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import axios from "axios";
 import swal from "sweetalert2";
@@ -12,7 +12,9 @@ import { TbShieldCheckered } from "react-icons/tb";
 import { LuRefreshCw } from "react-icons/lu";
 
 import { startTransition } from 'react';
+import { Tabs, Tab } from "@mui/material";
 import DrawingDetailsTab from '../Drawings/DrawingDetailsTab';
+import AWFDetailsTab from '../Drawings/AWFDetailsTab';
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -22,6 +24,7 @@ const USER_ID = localStorage.getItem("userId");
 function DesignToolOrders({ CoreOrderDetails, orderUpdates }) {
   let navigate = useNavigate();
   let { id } = useParams();
+  const location = useLocation();
   const [orders, setOrders] = useState("");
   const [loading, setLoading] = useState(false);
   const [openQCReportDialog, setOpenQCReportDialog] = useState(false);
@@ -88,6 +91,9 @@ function DesignToolOrders({ CoreOrderDetails, orderUpdates }) {
   const [drawingCounts, setDrawingCounts] = useState({ colorCount: 0, totalDrawings: 0, totalPieces: 0 });
   // Add toggle state
   const [showDrawingTab, setShowDrawingTab] = useState(true);
+  const [activeDesignTab, setActiveDesignTab] = useState(
+    location.state?.activeTab === 'AWF' ? 'AWF' : 'Flashing'
+  );
     
     useEffect(() => {
         loadSubItems();
@@ -198,6 +204,18 @@ function DesignToolOrders({ CoreOrderDetails, orderUpdates }) {
   return (
     <React.Fragment>
       <div ref={topRef}></div>
+      {/* Flashing / AWF tab switcher */}
+      <Tabs
+        value={activeDesignTab}
+        onChange={(e, val) => setActiveDesignTab(val)}
+        sx={{ mb: 1 }}
+      >
+        <Tab label="Flashing" value="Flashing" />
+        <Tab label="AWF" value="AWF" />
+      </Tabs>
+      {/* Flashing tab content */}
+      {activeDesignTab === "Flashing" && (
+        <>
       <MyDiv className="GeneralHeading">
         <Col md={1}>
           <HeadingTwo>Order Item</HeadingTwo>
@@ -207,7 +225,7 @@ function DesignToolOrders({ CoreOrderDetails, orderUpdates }) {
           <Spinner animation="border" size="sm" className="ms-2" />
           ) : (
           <>
-            <Badge bg="danger"> 
+            <Badge bg="danger">
               <HeadingFive className="mb-0" style={{ fontWeight: '700', color: '#fff' }}>Colors : {drawingCounts.colorCount}</HeadingFive>
             </Badge>
             <Badge bg="success" className="ms-3">
@@ -332,92 +350,135 @@ function DesignToolOrders({ CoreOrderDetails, orderUpdates }) {
           </MyDiv>
         </Col>
       </MyDiv>
-      {/* code by Rahul */}
-      {showDrawingTab ? (
-          <DrawingDetailsTab 
-              orderId={CoreOrderDetails.d_order_unique_id} 
-              mongoId={CoreOrderDetails._id}
-              onDesignDelete={() => {
-                loadSubItems();
-                fetchColorCount();
-                // setRefreshFlashing(prev => !prev)
-              }}
-              currentPage={"designers"}
-            //  Quotation check handled
-              type={"order"}
-              showEditDelete={CoreOrderDetails.order_designed_person_id === USER_ID}
-              // isDesignerPage={true} // Pass true if designer
-          />
-      ) : (
-      <MyDiv className="GeneralTable">
-        {loading ? (
-          <HeadingFour className="text-center">Loading...</HeadingFour>
-        ) : (
-          <TableContainer>
-            <Table className="bgGrey stripedTable" aria-label="Order table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="left"> SI NO</TableCell>
-                  <TableCell align="left">Shape ID / Item Code / Desc</TableCell>
-                  <TableCell align="left">Material Name</TableCell>
-                  <TableCell align="left">Color</TableCell>
-                  <TableCell align="center">Exact Girth</TableCell>
-                  <TableCell align="center">Rounded Off Girth</TableCell>
-                  <TableCell align="center">Folds</TableCell>
-                  <TableCell align="center">Length</TableCell>
-                  <TableCell align="center">Pieces</TableCell>
-                  <TableCell align="center">Quantity</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {orders?.length ? (
-                  orders.map((item, index) => (
-                    <React.Fragment key={item._id}>
-                      <TableRow className={item.order_item_exact_fold > 10 || item.order_item_exact_grith >= (item.product_Color.toUpperCase().startsWith("GALVANISED") ? 1220 : 1203) ? "OrderGFExceed" : null}>
-                        <TableCell align="left">{index + 1}</TableCell>
-                        <TableCell align="left">
-                          <StrongTag>
-                            SID - {item.order_item_shape_id} / {item.order_item_code}
-                          </StrongTag>
-                          <br />
-                          {item.order_item_description}
+          {showDrawingTab ? (
+              <DrawingDetailsTab
+                  orderId={CoreOrderDetails.d_order_unique_id}
+                  mongoId={CoreOrderDetails._id}
+                  onDesignDelete={() => {
+                    loadSubItems();
+                    fetchColorCount();
+                  }}
+                  currentPage={"designers"}
+                  type={"order"}
+                  showEditDelete={CoreOrderDetails.order_designed_person_id === USER_ID}
+              />
+          ) : (
+          <MyDiv className="GeneralTable">
+            {loading ? (
+              <HeadingFour className="text-center">Loading...</HeadingFour>
+            ) : (
+              <TableContainer>
+                <Table className="bgGrey stripedTable" aria-label="Order table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="left"> SI NO</TableCell>
+                      <TableCell align="left">Shape ID / Item Code / Desc</TableCell>
+                      <TableCell align="left">Material Name</TableCell>
+                      <TableCell align="left">Color</TableCell>
+                      <TableCell align="center">Exact Girth</TableCell>
+                      <TableCell align="center">Rounded Off Girth</TableCell>
+                      <TableCell align="center">Folds</TableCell>
+                      <TableCell align="center">Length</TableCell>
+                      <TableCell align="center">Pieces</TableCell>
+                      <TableCell align="center">Quantity</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {orders?.length ? (
+                      orders.map((item, index) => (
+                        <React.Fragment key={item._id}>
+                          <TableRow className={item.order_item_exact_fold > 10 || item.order_item_exact_grith >= (item.product_Color.toUpperCase().startsWith("GALVANISED") ? 1220 : 1203) ? "OrderGFExceed" : null}>
+                            <TableCell align="left">{index + 1}</TableCell>
+                            <TableCell align="left">
+                              <StrongTag>
+                                SID - {item.order_item_shape_id} / {item.order_item_code}
+                              </StrongTag>
+                              <br />
+                              {item.order_item_description}
+                            </TableCell>
+                            <TableCell align="left">{item.core_Product_Thickness + " - " + item.core_Product_Name}</TableCell>
+                            <TableCell align="left">
+                              {item.product_Color}
+                              <span
+                                style={{
+                                  backgroundColor: item.product_Color_Hex_Code ? item.product_Color_Hex_Code : "transparent",
+                                  width: "100%",
+                                  height: "15px",
+                                  display: "block",
+                                }}
+                              ></span>
+                            </TableCell>
+                            <TableCell align="center">{item.order_item_exact_grith}</TableCell>
+                            <TableCell align="center">{item.product_Girth}</TableCell>
+                            <TableCell align="center">
+                              {item.product_Fold}
+                              {item.order_item_exact_fold > 10 ? <>({item.order_item_exact_fold})</> : null}
+                            </TableCell>
+                            <TableCell align="center">{item.order_item_length}</TableCell>
+                            <TableCell align="center">{item.order_item_pieces}</TableCell>
+                            <TableCell align="center">{parseFloat(item.order_item_quantity).toFixed(2)}</TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={11}>
+                          <NoDataFound />
                         </TableCell>
-                        <TableCell align="left">{item.core_Product_Thickness + " - " + item.core_Product_Name}</TableCell>
-                        <TableCell align="left">
-                          {item.product_Color}
-                          <span
-                            style={{
-                              backgroundColor: item.product_Color_Hex_Code ? item.product_Color_Hex_Code : "transparent",
-                              width: "100%",
-                              height: "15px",
-                              display: "block",
-                            }}
-                          ></span>
-                        </TableCell>
-                        <TableCell align="center">{item.order_item_exact_grith}</TableCell>
-                        <TableCell align="center">{item.product_Girth}</TableCell>
-                        <TableCell align="center">
-                          {item.product_Fold}
-                          {item.order_item_exact_fold > 10 ? <>({item.order_item_exact_fold})</> : null}
-                        </TableCell>
-                        <TableCell align="center">{item.order_item_length}</TableCell>
-                        <TableCell align="center">{item.order_item_pieces}</TableCell>
-                        <TableCell align="center">{parseFloat(item.order_item_quantity).toFixed(2)}</TableCell>
                       </TableRow>
-                    </React.Fragment>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={11}>
-                      <NoDataFound />
-                    </TableCell>
-                  </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </MyDiv>
+          )}
+        </>
+      )}
+      {/* AWF tab content */}
+      {activeDesignTab === "AWF" && (
+        <>
+          <MyDiv className="GeneralHeading">
+            <Col md={7}></Col>
+            <Col md={5} className="d-flex justify-content-end">
+              <MyDiv className="ms-2 d-flex align-items-center">
+                {CoreOrderDetails.order_designed_person_id === USER_ID && CoreOrderDetails.order_status !== "Order Cancelled" && (
+                  <Button
+                    disabled={!CoreOrderDetails?._id}
+                    onClick={() => {
+                      startTransition(() => {
+                        navigate(`/orders/${CoreOrderDetails?.d_order_unique_id}/drawings/templates`, {
+                          state: {
+                            orderNumber: CoreOrderDetails?.d_order_unique_id,
+                            customerName: CoreOrderDetails?.account_Name,
+                            customerId: CoreOrderDetails?.account_ID,
+                            orderId: CoreOrderDetails?._id,
+                            orderDeliveryDate: CoreOrderDetails?.order_delivery_date_str,
+                            enteredDate: CoreOrderDetails?.created_str,
+                            customerPoNumber: CoreOrderDetails?.d_order_customer_PO_number,
+                            currentPage: "designers",
+                            partGroup: "AWF",
+                          }
+                        });
+                      });
+                    }}
+                    className="btn primary-btn"
+                    style={{ whiteSpace: 'nowrap', marginRight: '10px' }}>
+                    Add AWF Product
+                  </Button>
                 )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </MyDiv>
+              </MyDiv>
+            </Col>
+          </MyDiv>
+          <AWFDetailsTab
+            orderId={CoreOrderDetails.d_order_unique_id}
+            mongoId={CoreOrderDetails._id}
+            onEntryDelete={() => orderUpdates()}
+            currentPage={"designers"}
+            type={"order"}
+            showEditDelete={CoreOrderDetails.order_designed_person_id === USER_ID}
+          />
+        </>
       )}
       <Dialog open={openQCReportDialog} onClose={handleCloseQCReportDialog} fullWidth maxWidth="md" className="GeneralModal">
         <DialogTitle>QC Log Reports</DialogTitle>

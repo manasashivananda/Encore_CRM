@@ -110,6 +110,28 @@
       }
     }
 
+    .awf-product-image-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .awf-barcode-overlay {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #000;
+
+      .awf-barcode-text {
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        line-height: 1.1;
+      }
+    }
+
     .awf-product-size {
       font-size: 15px;
       color: #666;
@@ -181,8 +203,8 @@
       .awf-dimension-row {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 8px;
+        gap: 20px;
+        margin-bottom: 20px;
 
         .MuiTextField-root {
           flex: 1;

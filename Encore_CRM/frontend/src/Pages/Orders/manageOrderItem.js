@@ -17,6 +17,7 @@ import BarCodeList from "./barcodeList";
 import OrderDocuments from "./documents";
 import FileUpload from "./fileUpload";
 import DrawingDetailsTab from '../Drawings/DrawingDetailsTab';
+import AWFDetailsTab from '../Drawings/AWFDetailsTab';
 // import DoubtTabData from "./doubtTab";
 // import SupplierTabData from "./supplierItem";
 
@@ -718,6 +719,7 @@ function OrderItemManage({ orderUpdates, CoreOrderDetails }) {
     if (CoreOrderDetails.gbil_order_prod_push_status && CoreOrderDetails.gbil_order_prod_push_status !== 0) {
       tabs.push(<Tab key="gbil" label="GBIL" value="GBIL" />);
     }
+    tabs.push(<Tab key="awf" label="AWF" value="AWF" />);
     
     // let doubtBgColor = "";
     // let supplierBgColor = "";
@@ -1539,6 +1541,53 @@ function OrderItemManage({ orderUpdates, CoreOrderDetails }) {
               </TableContainer>
             )}
           </MyDiv>)}
+        </React.Fragment>
+      )}
+      {activeTab === "AWF" && (
+        <React.Fragment>
+          <MyDiv className="orderTabSummery ProfileBasicDetail order-profile mt-2">
+            <Card className="ProfileBasicDetailLeftHeader" style={{ padding: ".5rem 18px"}}>
+              <Row>
+                <Col md={12}>
+                  <MyDiv className="d-flex justify-content-end align-items-center">
+                    {RolePermission?.DrawingAccess?.add === "1" && CoreOrderDetails.order_status !== "Order Cancelled" && (
+                      <Button
+                        disabled={!CoreOrderDetails?._id}
+                        onClick={() => {
+                          startTransition(() => {
+                            navigate(`/orders/${CoreOrderDetails?.d_order_unique_id}/drawings/templates`, {
+                              state: {
+                                orderNumber: CoreOrderDetails?.d_order_unique_id,
+                                customerName: CoreOrderDetails?.account_Name,
+                                customerId: CoreOrderDetails?.account_ID,
+                                orderId: CoreOrderDetails?._id,
+                                orderDeliveryDate: CoreOrderDetails?.order_delivery_date_str,
+                                customerPoNumber: CoreOrderDetails?.d_order_customer_PO_number,
+                                enteredDate: CoreOrderDetails?.created_str,
+                                currentPage: "orders",
+                                partGroup: "AWF",
+                              }
+                            });
+                          });
+                        }}
+                        className="btn primary-btn"
+                        style={{ whiteSpace: 'nowrap' }}>
+                        Add AWF Product
+                      </Button>
+                    )}
+                  </MyDiv>
+                </Col>
+              </Row>
+            </Card>
+          </MyDiv>
+          <AWFDetailsTab
+            orderId={CoreOrderDetails.d_order_unique_id}
+            mongoId={CoreOrderDetails._id}
+            onEntryDelete={() => {}}
+            currentPage={"orders"}
+            type={"order"}
+            showEditDelete={RolePermission?.DrawingAccess?.edit === "1" && CoreOrderDetails.order_status !== "Order Cancelled"}
+          />
         </React.Fragment>
       )}
       {activeTab === "Jobbing" && CoreOrderDetails?.j_order_prod_push_status !== 0 && (

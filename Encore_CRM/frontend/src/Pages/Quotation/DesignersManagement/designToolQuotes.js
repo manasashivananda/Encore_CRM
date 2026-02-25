@@ -321,7 +321,7 @@ function DesignToolQuotes({ CoreOrderDetails, orderUpdates }) {
       </MyDiv>
         {showDrawingTab ? (
             <DrawingDetailsTab
-                orderId={CoreOrderDetails.quote_unique_id} 
+                orderId={CoreOrderDetails.quote_unique_id}
                 mongoId={CoreOrderDetails._id}
                 showEditDelete={CoreOrderDetails.quote_designed_person_id === USER_ID}
                 onDesignDelete={() => {
