@@ -20,8 +20,8 @@ exports.createEntry = async (req, res) => {
       orderNumber, customerId, customerName,
       productId, productName, partClass, subCategory,
       material, color, thickness,
-      numberOfPieces, length, dimensions, tapered,
-      barcode, note, unitPrice, productImage,
+      numberOfPieces, length, dimensions, tapered, taperedSmallEnd, taperedBigEnd,
+      barcode, use24Downpipe, note, unitPrice, productImage,
       size, measurements, angleDegree, offsetType, adjustableRange, seamSide
     } = req.body;
 
@@ -37,8 +37,8 @@ exports.createEntry = async (req, res) => {
       orderNumber, customerId, customerName,
       productId, productName, partClass, subCategory,
       material, color, thickness,
-      numberOfPieces, length, dimensions, tapered,
-      barcode, note, unitPrice, productImage,
+      numberOfPieces, length, dimensions, tapered, taperedSmallEnd, taperedBigEnd,
+      barcode, use24Downpipe, note, unitPrice, productImage,
       size, measurements, angleDegree, offsetType, adjustableRange, seamSide,
       status: 'active'
     });
@@ -86,8 +86,8 @@ exports.updateEntry = async (req, res) => {
   try {
     const {
       material, color, thickness,
-      numberOfPieces, length, dimensions, tapered,
-      barcode, note, unitPrice,
+      numberOfPieces, length, dimensions, tapered, taperedSmallEnd, taperedBigEnd,
+      barcode, use24Downpipe, note, unitPrice,
       size, measurements, angleDegree, offsetType, adjustableRange, seamSide
     } = req.body;
 
@@ -95,8 +95,8 @@ exports.updateEntry = async (req, res) => {
       req.params.id,
       {
         material, color, thickness,
-        numberOfPieces, length, dimensions, tapered,
-        barcode, note, unitPrice,
+        numberOfPieces, length, dimensions, tapered, taperedSmallEnd, taperedBigEnd,
+        barcode, use24Downpipe, note, unitPrice,
         size, measurements, angleDegree, offsetType, adjustableRange, seamSide
       },
       { new: true, runValidators: true }

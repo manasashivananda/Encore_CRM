@@ -72,6 +72,14 @@ const AWFSelectMaterials = () => {
   const showTapered = formType === 'manual_dp';
   const showBarcode = true;
 
+  // Standard D/P: extract length from product name (e.g., "100x50mm 1.8mtr" → "1.800")
+  const standardDPLength = useMemo(() => {
+    if (formType !== 'standard' || partClass !== 'Downpipe') return null;
+    if (productName?.includes('1.8')) return '1.8';
+    if (productName?.includes('2.4')) return '2.4';
+    return null;
+  }, [formType, partClass, productName]);
+
   // ═══════════════════════════════════════════════════════════════
   // ORDER DETAILS (for header)
   // ═══════════════════════════════════════════════════════════════
@@ -93,11 +101,26 @@ const AWFSelectMaterials = () => {
   const [color, setColor] = useState(editData?.color || '');
   const [thickness, setThickness] = useState(editData?.thickness || defaultThickness);
   const [numberOfPieces, setNumberOfPieces] = useState(editData?.numberOfPieces != null ? String(editData.numberOfPieces) : '');
-  const [length, setLength] = useState(editData?.length != null ? String(editData.length) : '');
+  const [length, setLength] = useState(() => {
+    if (!editData?.length) return '';
+    const val = String(editData.length);
+    // If saved length isn't 1.800 or 2.400, it was custom
+    if (val !== '1.800' && val !== '2.400' && val !== '1' && val !== '') return 'custom';
+    return val;
+  });
+  const [customLength, setCustomLength] = useState(() => {
+    if (!editData?.length) return '';
+    const val = String(editData.length);
+    if (val !== '1.800' && val !== '2.400' && val !== '1' && val !== '') return val;
+    return '';
+  });
   const [dimWidth, setDimWidth] = useState(editData?.dimWidth != null ? String(editData.dimWidth) : '');
   const [dimHeight, setDimHeight] = useState(editData?.dimHeight != null ? String(editData.dimHeight) : '');
   const [tapered, setTapered] = useState(editData?.tapered || false);
+  const [taperedSmallEnd, setTaperedSmallEnd] = useState(editData?.taperedSmallEnd != null ? String(editData.taperedSmallEnd) : '');
+  const [taperedBigEnd, setTaperedBigEnd] = useState(editData?.taperedBigEnd != null ? String(editData.taperedBigEnd) : '');
   const [barcode, setBarcode] = useState(editData?.barcode || false);
+  const [use24Downpipe, setUse24Downpipe] = useState(editData?.use24Downpipe || false);
   const [note, setNote] = useState(editData?.note || '');
   const [unitPrice, setUnitPrice] = useState(editData?.unitPrice != null ? String(editData.unitPrice) : '');
   const [saving, setSaving] = useState(false);
@@ -132,6 +155,14 @@ const AWFSelectMaterials = () => {
     // Auto-set length to 1 for Clips & Pops
     if (formType === 'clips' && !isEditMode) {
       setLength('1');
+    }
+    // Auto-set length to 1.8 for Offsets
+    if (partClass === 'Offsets' && !isEditMode) {
+      setLength('1.8');
+    }
+    // Auto-set length from product name for Standard D/P
+    if (standardDPLength && !isEditMode) {
+      setLength(standardDPLength);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -272,9 +303,12 @@ const AWFSelectMaterials = () => {
       productId, productName, partClass, subCategory,
       material, color, thickness,
       numberOfPieces: Number(numberOfPieces),
-      length: length ? Number(length) : null,
+      length: length === 'custom' ? (customLength ? Number(customLength) : null) : (length ? Number(length) : null),
       dimensions: { width: dimWidth ? Number(dimWidth) : null, height: dimHeight ? Number(dimHeight) : null },
-      tapered, barcode, note,
+      tapered,
+      taperedSmallEnd: tapered && taperedSmallEnd ? Number(taperedSmallEnd) : null,
+      taperedBigEnd: tapered && taperedBigEnd ? Number(taperedBigEnd) : null,
+      barcode, use24Downpipe, note,
       unitPrice: unitPrice ? Number(unitPrice) : 0,
       productImage,
       // Custom Offset fields
@@ -362,10 +396,14 @@ const AWFSelectMaterials = () => {
       toast.success('AWF entry saved — form copied');
       setNumberOfPieces('');
       setLength('');
+      setCustomLength('');
       setDimWidth('');
       setDimHeight('');
       setTapered(false);
+      setTaperedSmallEnd('');
+      setTaperedBigEnd('');
       setBarcode(false);
+      setUse24Downpipe(false);
       setNote('');
       setUnitPrice('');
       // Reset custom offset fields
@@ -401,120 +439,277 @@ const AWFSelectMaterials = () => {
         <div className="awf-left-panel">
           <Card className="awf-canvas-card">
             <div className="awf-canvas-container">
-              <h4 className="awf-product-title">{subCategory || partClass}</h4>
+              <h4 className="awf-product-title">{subCategory || (partClass === 'Clips & Pops' ? 'Clips' : partClass)}</h4>
 
-              {formType === 'custom_offset' ? (
+              {partClass === 'Offsets' && formType !== 'custom_offset' ? (
+                /* ═══ STANDARD OFFSET / BENDS — Square or Round pipe SVG drawing ═══ */
+                <div className="awf-offset-drawing">
+                  {barcode && (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', padding: '4px 0' }}>
+                      <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.2 }}>BARCODE</span>
+                      <svg width={140} height={50} viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+                        {[0,3,5,7,12,14,17,19,24,26,28,33,35,38,40,42,47,49,51,56,58,61,63,68,70,72,77,79,82,84,86,91,93,95,100,102,105,107,112,114,116,121,123,126,128,133,135,137].map(x => (
+                          <rect key={x} x={x} y="0" width={x % 12 < 3 ? 2.5 : 1} height="50" fill="#000" />
+                        ))}
+                      </svg>
+                      <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.4 }}>STICKERS</span>
+                    </div>
+                  )}
+                  {isSquareProduct ? (
+                    /* Square offset — thick 3D box pipe L-shape: horizontal top + vertical left */
+                    <svg viewBox="-80 0 380 400" width="350" height="390" xmlns="http://www.w3.org/2000/svg">
+                      {/* ─── Top face (horizontal section) ─── */}
+                      <polygon points="25,55 200,55 220,39 45,39" fill="#ddd" stroke="#555" strokeWidth="1.5" />
+
+                      {/* ─── Inner step face (bottom of horizontal pipe visible in the corner) ─── */}
+                      <polygon points="90,120 200,120 220,104 110,104" fill="#bbb" stroke="#555" strokeWidth="1.5" />
+
+                      {/* ─── Right side of horizontal section ─── */}
+                      <polygon points="200,55 220,39 220,104 200,120" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+
+                      {/* ─── Right side of vertical section (below junction) ─── */}
+                      <polygon points="90,120 110,104 110,334 90,350" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+
+                      {/* ─── Bottom face of vertical section ─── */}
+                      <polygon points="25,350 90,350 110,334 45,334" fill="#999" stroke="#555" strokeWidth="1.5" />
+
+                      {/* ─── Front face — horizontal section ─── */}
+                      <polygon points="25,55 200,55 200,120 25,120" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+
+                      {/* ─── Front face — vertical section ─── */}
+                      <polygon points="25,120 90,120 90,350 25,350" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+
+                      {/* Federation label */}
+                      {productName?.toLowerCase().includes('federation') && (
+                        <text x="150" y="385" textAnchor="middle" fontSize="16" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
+                      )}
+
+                      {/* ─── Dimension labels ─── */}
+                      {/* C = 880mm (horizontal) — updates with use24Downpipe */}
+                      <line x1="25" y1="370" x2="200" y2="370" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="25" y1="365" x2="25" y2="375" stroke="#d32f2f" strokeWidth="1" />
+                      <line x1="200" y1="365" x2="200" y2="375" stroke="#d32f2f" strokeWidth="1" />
+                      <text x="112" y="390" textAnchor="middle" fontSize="12" fontWeight="bold"
+                        fill={use24Downpipe ? '#d32f2f' : '#333'}>
+                        {use24Downpipe ? '1480mm' : '880mm'}  C
+                      </text>
+                    </svg>
+                  ) : (
+                    /* Round offset — cylindrical Z-shape with dimension labels */
+                    <svg viewBox="0 0 480 460" width="400" height="420" xmlns="http://www.w3.org/2000/svg">
+                      {/* ─── Round pipe offset shape ─── */}
+                      {/* Top vertical pipe (round) */}
+                      <ellipse cx="340" cy="60" rx="30" ry="12" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                      <rect x="310" y="60" width="60" height="120" fill="#d5d5d5" stroke="none" />
+                      <line x1="310" y1="60" x2="310" y2="180" stroke="#333" strokeWidth="1.5" />
+                      <line x1="370" y1="60" x2="370" y2="180" stroke="#333" strokeWidth="1.5" />
+
+                      {/* Angled section connecting top pipe to bottom pipe */}
+                      <line x1="310" y1="180" x2="190" y2="280" stroke="#333" strokeWidth="1.5" />
+                      <line x1="370" y1="180" x2="250" y2="280" stroke="#333" strokeWidth="1.5" />
+                      <rect x="190" y="180" width="60" height="100" fill="#d5d5d5" stroke="none" opacity="0.3" />
+
+                      {/* Bottom horizontal pipe (round) */}
+                      <ellipse cx="120" cy="310" rx="12" ry="30" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                      <rect x="120" y="280" width="310" height="60" fill="#d5d5d5" stroke="none" />
+                      <line x1="120" y1="280" x2="430" y2="280" stroke="#333" strokeWidth="1.5" />
+                      <line x1="120" y1="340" x2="430" y2="340" stroke="#333" strokeWidth="1.5" />
+                      <ellipse cx="430" cy="310" rx="12" ry="30" fill="#ccc" stroke="#333" strokeWidth="1.5" />
+
+                      {/* Federation label */}
+                      {productName?.toLowerCase().includes('federation') && (
+                        <text x="275" y="430" textAnchor="middle" fontSize="18" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
+                      )}
+
+                      {/* ─── Dimension labels ─── */}
+                      {/* B = 120mm (top pipe width) */}
+                      <line x1="375" y1="50" x2="375" y2="72" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
+                      <text x="390" y="55" fontSize="12" fontWeight="bold" fill="#d32f2f">120mm  B</text>
+
+                      {/* C = 880mm — updates with use24Downpipe */}
+                      <line x1="120" y1="355" x2="430" y2="355" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="120" y1="350" x2="120" y2="360" stroke="#d32f2f" strokeWidth="1" />
+                      <line x1="430" y1="350" x2="430" y2="360" stroke="#d32f2f" strokeWidth="1" />
+                      <text x="275" y="375" textAnchor="middle" fontSize="13" fontWeight="bold"
+                        fill={use24Downpipe ? '#d32f2f' : '#333'}>
+                        {use24Downpipe ? '1480mm' : '880mm'}  C
+                      </text>
+
+                    </svg>
+                  )}
+                  {note && (
+                    <div style={{ fontSize: '18px', color: '#333', fontWeight: 'bold', textAlign: 'right', width: '100%', marginTop: '4px' }}>
+                      Note: {note}
+                    </div>
+                  )}
+                </div>
+              ) : formType === 'custom_offset' ? (
                 /* ═══ CUSTOM OFFSET — Interactive SVG drawing ═══ */
                 <div className="awf-offset-drawing">
-                  <svg viewBox="0 0 420 480" width="380" height="440" xmlns="http://www.w3.org/2000/svg">
-                    {/* 3D isometric offset pipe */}
-                    {/* Top face */}
-                    <polygon points="120,80 280,80 310,60 150,60" fill="#e8e8e8" stroke="#333" strokeWidth="1.5" />
-                    {/* Front face of top section */}
-                    <polygon points="120,80 280,80 280,120 120,120" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
-                    {/* Right face of top section */}
-                    <polygon points="280,80 310,60 310,100 280,120" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
-
-                    {/* Angled section - front */}
-                    <polygon points="120,120 170,120 170,260 120,260" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
-                    {/* Angled section - right side */}
-                    <polygon points="170,120 200,100 200,240 170,260" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
-                    {/* Angled section - top connecting */}
-                    <polygon points="120,120 170,120 200,100 150,100" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
-
-                    {/* Bottom section - front */}
-                    <polygon points="120,260 280,260 280,300 120,300" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
-                    {/* Bottom section - right */}
-                    <polygon points="280,260 310,240 310,280 280,300" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
-                    {/* Bottom section - top */}
-                    <polygon points="120,260 280,260 310,240 150,240" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
-
-                    {/* Bottom face */}
-                    <polygon points="120,300 280,300 310,280 150,280" fill="#c0c0c0" stroke="#333" strokeWidth="1.5" />
+                  {barcode && (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', padding: '4px 0' }}>
+                      <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.2 }}>BARCODE</span>
+                      <svg width={140} height={50} viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+                        {[0,3,5,7,12,14,17,19,24,26,28,33,35,38,40,42,47,49,51,56,58,61,63,68,70,72,77,79,82,84,86,91,93,95,100,102,105,107,112,114,116,121,123,126,128,133,135,137].map(x => (
+                          <rect key={x} x={x} y="0" width={x % 12 < 3 ? 2.5 : 1} height="50" fill="#000" />
+                        ))}
+                      </svg>
+                      <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.4 }}>STICKERS</span>
+                    </div>
+                  )}
+                  <svg viewBox="0 0 420 460" width="380" height="440" xmlns="http://www.w3.org/2000/svg">
+                    {/* ─── 3D Z-shape offset pipe (thick box style) ─── */}
+                    {/* Top face — top bar */}
+                    <polygon points="110,70 290,70 312,52 132,52" fill="#ddd" stroke="#555" strokeWidth="1.5" />
+                    {/* Inner step — top junction */}
+                    <polygon points="165,125 290,125 312,107 187,107" fill="#bbb" stroke="#555" strokeWidth="1.5" />
+                    {/* Right side — top bar */}
+                    <polygon points="290,70 312,52 312,107 290,125" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                    {/* Right side — connector */}
+                    <polygon points="165,125 187,107 187,267 165,285" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                    {/* Inner step — bottom junction */}
+                    <polygon points="165,285 290,285 312,267 187,267" fill="#bbb" stroke="#555" strokeWidth="1.5" />
+                    {/* Right side — bottom bar */}
+                    <polygon points="290,285 312,267 312,322 290,340" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                    {/* Bottom face — bottom bar */}
+                    <polygon points="110,340 290,340 312,322 132,322" fill="#999" stroke="#555" strokeWidth="1.5" />
+                    {/* Front face — top bar */}
+                    <polygon points="110,70 290,70 290,125 110,125" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                    {/* Front face — connector */}
+                    <polygon points="110,125 165,125 165,285 110,285" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                    {/* Front face — bottom bar */}
+                    <polygon points="110,285 290,285 290,340 110,340" fill="#ccc" stroke="#555" strokeWidth="1.5" />
 
                     {/* ─── Dimension lines & labels ─── */}
 
                     {/* W — width across top */}
-                    <line x1="120" y1="45" x2="280" y2="45" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="120" y1="40" x2="120" y2="50" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="280" y1="40" x2="280" y2="50" stroke="#d32f2f" strokeWidth="1" />
-                    <text x="200" y="40" textAnchor="middle" fontSize="14" fontWeight="bold"
+                    <line x1="110" y1="48" x2="290" y2="48" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="110" y1="43" x2="110" y2="53" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="290" y1="43" x2="290" y2="53" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="200" y="42" textAnchor="middle" fontSize="14" fontWeight="bold"
                       fill={highlightedLabel === 'W' ? '#d32f2f' : '#333'}>
                       W{measW ? ` = ${measW}` : ''}
                     </text>
-                    {highlightedLabel === 'W' && <rect x="170" y="27" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
+                    {highlightedLabel === 'W' && <rect x="170" y="29" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* A — height left side (full) */}
-                    <line x1="95" y1="80" x2="95" y2="300" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="90" y1="80" x2="100" y2="80" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="90" y1="300" x2="100" y2="300" stroke="#d32f2f" strokeWidth="1" />
-                    <text x="75" y="195" textAnchor="middle" fontSize="14" fontWeight="bold"
-                      fill={highlightedLabel === 'A' ? '#d32f2f' : '#333'}
-                      transform="rotate(-90, 75, 195)">
-                      A{measA ? ` = ${measA}` : ''}
-                    </text>
-                    {highlightedLabel === 'A' && <rect x="62" y="175" width="26" height="40" rx="3" fill="#ffeb3b" opacity="0.4" />}
+                    {/* A — full height left side */}
+                    <line x1="90" y1="70" x2="90" y2="340" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="85" y1="70" x2="95" y2="70" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="85" y1="340" x2="95" y2="340" stroke="#d32f2f" strokeWidth="1" />
+                    {offsetType === 'adjustable' && adjustableFrom && adjustableTo ? (
+                      <>
+                        <text x="42" y="195" textAnchor="middle" fontSize="13" fontWeight="bold"
+                          fill={highlightedLabel === 'A' ? '#d32f2f' : '#333'}>
+                          {adjustableFrom}-{adjustableTo}mm
+                        </text>
+                        <text x="42" y="212" textAnchor="middle" fontSize="12" fontWeight="bold" fontStyle="italic"
+                          fill={highlightedLabel === 'A' ? '#d32f2f' : '#333'}>
+                          Adjustable
+                        </text>
+                      </>
+                    ) : (
+                      <text x="42" y="210" textAnchor="middle" fontSize="14" fontWeight="bold"
+                        fill={highlightedLabel === 'A' ? '#d32f2f' : '#333'}>
+                        A{measA ? ` = ${measA}` : ''}
+                      </text>
+                    )}
+                    {highlightedLabel === 'A' && <rect x="8" y="183" width="70" height="38" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* B1 — upper right section */}
-                    <line x1="295" y1="60" x2="295" y2="100" stroke="#1976d2" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="290" y1="60" x2="300" y2="60" stroke="#1976d2" strokeWidth="1" />
-                    <line x1="290" y1="100" x2="300" y2="100" stroke="#1976d2" strokeWidth="1" />
-                    <text x="325" y="82" textAnchor="start" fontSize="13" fontWeight="bold"
+                    {/* B1 — top bar 3D side height */}
+                    <line x1="322" y1="52" x2="322" y2="107" stroke="#1976d2" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="317" y1="52" x2="327" y2="52" stroke="#1976d2" strokeWidth="1" />
+                    <line x1="317" y1="107" x2="327" y2="107" stroke="#1976d2" strokeWidth="1" />
+                    <text x="335" y="82" textAnchor="start" fontSize="13" fontWeight="bold"
                       fill={highlightedLabel === 'B1' ? '#d32f2f' : '#1976d2'}>
                       B1{measB1 ? ` = ${measB1}` : ''}
                     </text>
-                    {highlightedLabel === 'B1' && <rect x="320" y="69" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
+                    {highlightedLabel === 'B1' && <rect x="330" y="69" width="70" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* B2 — lower right of angled section */}
-                    <line x1="215" y1="100" x2="215" y2="240" stroke="#1976d2" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="210" y1="100" x2="220" y2="100" stroke="#1976d2" strokeWidth="1" />
-                    <line x1="210" y1="240" x2="220" y2="240" stroke="#1976d2" strokeWidth="1" />
-                    <text x="235" y="175" textAnchor="start" fontSize="13" fontWeight="bold"
+                    {/* B2 — connector height */}
+                    <line x1="200" y1="107" x2="200" y2="267" stroke="#1976d2" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="195" y1="107" x2="205" y2="107" stroke="#1976d2" strokeWidth="1" />
+                    <line x1="195" y1="267" x2="205" y2="267" stroke="#1976d2" strokeWidth="1" />
+                    <text x="215" y="192" textAnchor="start" fontSize="13" fontWeight="bold"
                       fill={highlightedLabel === 'B2' ? '#d32f2f' : '#1976d2'}>
                       B2{measB2 ? ` = ${measB2}` : ''}
                     </text>
-                    {highlightedLabel === 'B2' && <rect x="230" y="162" width="65" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
+                    {highlightedLabel === 'B2' && <rect x="210" y="179" width="70" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* C — bottom width */}
-                    <line x1="120" y1="320" x2="280" y2="320" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="120" y1="315" x2="120" y2="325" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="280" y1="315" x2="280" y2="325" stroke="#d32f2f" strokeWidth="1" />
-                    <text x="200" y="340" textAnchor="middle" fontSize="14" fontWeight="bold"
+                    {/* C — width across bottom */}
+                    <line x1="110" y1="358" x2="290" y2="358" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="110" y1="353" x2="110" y2="363" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="290" y1="353" x2="290" y2="363" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="200" y="378" textAnchor="middle" fontSize="14" fontWeight="bold"
                       fill={highlightedLabel === 'C' ? '#d32f2f' : '#333'}>
                       C{measC ? ` = ${measC}` : ''}
                     </text>
-                    {highlightedLabel === 'C' && <rect x="175" y="327" width="50" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
+                    {highlightedLabel === 'C' && <rect x="175" y="365" width="50" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* D — angle at top-right connection */}
-                    <path d="M 270,120 Q 275,108 285,100" fill="none" stroke="#e65100" strokeWidth="1.5" />
-                    <text x="290" y="118" textAnchor="start" fontSize="13" fontWeight="bold"
+                    {/* D — angle at top-right junction */}
+                    <path d="M 275,125 Q 282,113 290,107" fill="none" stroke="#e65100" strokeWidth="1.5" />
+                    <text x="300" y="122" textAnchor="start" fontSize="13" fontWeight="bold"
                       fill={highlightedLabel === 'D' ? '#d32f2f' : '#e65100'}>
                       D{angleD ? ` = ${angleD}°` : ''}
                     </text>
-                    {highlightedLabel === 'D' && <rect x="285" y="105" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
+                    {highlightedLabel === 'D' && <rect x="295" y="109" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* E — angle at bottom connection */}
-                    <path d="M 130,260 Q 125,272 120,280" fill="none" stroke="#e65100" strokeWidth="1.5" />
-                    <text x="100" y="375" textAnchor="start" fontSize="13" fontWeight="bold"
+                    {/* E — angle at bottom-left junction */}
+                    <path d="M 125,285 Q 118,297 112,305" fill="none" stroke="#e65100" strokeWidth="1.5" />
+                    <text x="85" y="400" textAnchor="start" fontSize="13" fontWeight="bold"
                       fill={highlightedLabel === 'E' ? '#d32f2f' : '#e65100'}>
                       E{angleE ? ` = ${angleE}°` : ''}
                     </text>
-                    {highlightedLabel === 'E' && <rect x="95" y="362" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
+                    {highlightedLabel === 'E' && <rect x="80" y="387" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* Note at bottom */}
-                    <text x="210" y="420" textAnchor="middle" fontSize="11" fill="#666" fontStyle="italic">
-                      * Standard angle of a downpipe offset is 80°
-                    </text>
+                    {/* ─── Seam Side indicator — colored dashed lines ─── */}
+                    {seamSide === 'top' && (
+                      <>
+                        <line x1="110" y1="72" x2="290" y2="72" stroke="#d32f2f" strokeWidth="3" strokeDasharray="8,5" />
+                        <line x1="112" y1="127" x2="112" y2="283" stroke="#d32f2f" strokeWidth="3" strokeDasharray="8,5" />
+                        <line x1="110" y1="287" x2="290" y2="287" stroke="#d32f2f" strokeWidth="3" strokeDasharray="8,5" />
+                      </>
+                    )}
+                    {seamSide === 'left' && (
+                      <>
+                        <line x1="112" y1="70" x2="112" y2="125" stroke="#f57c00" strokeWidth="3" strokeDasharray="8,5" />
+                        <line x1="110" y1="125" x2="110" y2="285" stroke="#f57c00" strokeWidth="3" strokeDasharray="8,5" />
+                        <line x1="112" y1="285" x2="112" y2="340" stroke="#f57c00" strokeWidth="3" strokeDasharray="8,5" />
+                      </>
+                    )}
+                    {seamSide === 'bottom' && (
+                      <>
+                        <line x1="110" y1="123" x2="290" y2="123" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
+                        <line x1="163" y1="127" x2="163" y2="283" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
+                        <line x1="110" y1="338" x2="290" y2="338" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
+                      </>
+                    )}
+                    {seamSide === 'right' && (
+                      <>
+                        <line x1="288" y1="70" x2="288" y2="125" stroke="#1976d2" strokeWidth="3" strokeDasharray="8,5" />
+                        <line x1="163" y1="125" x2="163" y2="285" stroke="#1976d2" strokeWidth="3" strokeDasharray="8,5" />
+                        <line x1="288" y1="285" x2="288" y2="340" stroke="#1976d2" strokeWidth="3" strokeDasharray="8,5" />
+                      </>
+                    )}
+
                   </svg>
+                  {note && (
+                    <div style={{ fontSize: '18px', color: '#333', fontWeight: 'bold', textAlign: 'right', width: '100%', marginTop: '4px' }}>
+                      Note: {note}
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* ═══ OTHER TYPES — Product image / placeholder ═══ */
                 <>
                   {barcode && (
-                    <div className="awf-barcode-overlay">
-                      <span className="awf-barcode-text">BARCODE</span>
-                      <FaBarcode size={60} />
-                      <span className="awf-barcode-text">STICKERS</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', padding: '4px 0' }}>
+                      <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.2 }}>BARCODE</span>
+                      <svg width={140} height={50} viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+                        {[0,3,5,7,12,14,17,19,24,26,28,33,35,38,40,42,47,49,51,56,58,61,63,68,70,72,77,79,82,84,86,91,93,95,100,102,105,107,112,114,116,121,123,126,128,133,135,137].map(x => (
+                          <rect key={x} x={x} y="0" width={x % 12 < 3 ? 2.5 : 1} height="50" fill="#000" />
+                        ))}
+                      </svg>
+                      <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.4 }}>STICKERS</span>
                     </div>
                   )}
 
@@ -529,6 +724,11 @@ const AWFSelectMaterials = () => {
                   </div>
 
                   <span className="awf-product-size">{productName}</span>
+                  {note && (
+                    <div style={{ fontSize: '18px', color: '#333', fontWeight: 'bold', textAlign: 'right', width: '280px', marginTop: '0px', padding: '0' }}>
+                      Note: {note}
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -617,6 +817,18 @@ const AWFSelectMaterials = () => {
                       inputProps={{ maxLength: 4 }}
                       fullWidth
                     />
+                  </div>
+
+                  {/* BARCODE checkbox */}
+                  <div className="awf-checkbox-option">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={barcode}
+                        onChange={(e) => setBarcode(e.target.checked)}
+                      />
+                      <span>BARCODE</span>
+                    </label>
                   </div>
 
                   {/* Note */}
@@ -826,7 +1038,8 @@ const AWFSelectMaterials = () => {
                 )}
 
                 {/* Number of Pieces + Length */}
-                {(partClass === 'Downpipe' || partClass === 'Offsets') ? (
+                {standardDPLength ? (
+                  /* Standard D/P — length is readonly, determined by product selection */
                   <div className="awf-form-row">
                     <TextField
                       label="Number of Pieces"
@@ -840,19 +1053,54 @@ const AWFSelectMaterials = () => {
                       inputProps={{ maxLength: 4 }}
                       fullWidth
                     />
-                    <FormControl fullWidth>
-                      <InputLabel>Length (m)</InputLabel>
-                      <Select
-                        native
-                        value={length}
-                        onChange={(e) => setLength(e.target.value)}
+                    <div className="awf-thickness-display">
+                      <span className="awf-thickness-label">Length :</span>
+                      <span className="awf-thickness-value">{standardDPLength}</span>
+                    </div>
+                  </div>
+                ) : (partClass === 'Downpipe') ? (
+                  <div className="awf-form-row">
+                    <TextField
+                      label="Number of Pieces"
+                      required
+                      type="text"
+                      value={numberOfPieces}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^\d]/g, '');
+                        setNumberOfPieces(value);
+                      }}
+                      inputProps={{ maxLength: 4 }}
+                      fullWidth
+                    />
+                    {length === 'custom' ? (
+                      <TextField
                         label="Length (m)"
-                      >
-                        <option value="" disabled hidden></option>
-                        <option value="1.800">1.800</option>
-                        <option value="2.400">2.400</option>
-                      </Select>
-                    </FormControl>
+                        type="text"
+                        value={customLength}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^\d.]/g, '');
+                          if (value === '') { setLength(''); setCustomLength(''); return; }
+                          const parts = value.split('.');
+                          setCustomLength(parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : value);
+                        }}
+                        fullWidth
+                      />
+                    ) : (
+                      <FormControl fullWidth>
+                        <InputLabel>Length (m)</InputLabel>
+                        <Select
+                          native
+                          value={length}
+                          onChange={(e) => setLength(e.target.value)}
+                          label="Length (m)"
+                        >
+                          <option value="" disabled hidden></option>
+                          <option value="1.800">1.800</option>
+                          <option value="2.400">2.400</option>
+                          {formType === 'manual_dp' && <option value="custom">Custom</option>}
+                        </Select>
+                      </FormControl>
+                    )}
                   </div>
                 ) : formType === 'clips' ? (
                   <div className="awf-form-row">
@@ -892,16 +1140,36 @@ const AWFSelectMaterials = () => {
 
                 {/* TAPERED checkbox (manual_dp only) */}
                 {showTapered && (
-                  <div className="awf-checkbox-option">
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={tapered}
-                        onChange={(e) => setTapered(e.target.checked)}
-                      />
-                      <span>Big – Small End</span>
-                    </label>
-                  </div>
+                  <>
+                    <div className="awf-checkbox-option">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={tapered}
+                          onChange={(e) => setTapered(e.target.checked)}
+                        />
+                        <span>TAPERED</span>
+                      </label>
+                    </div>
+                    {tapered && (
+                      <div className="awf-form-row">
+                        <TextField
+                          label="Small End"
+                          type="text"
+                          value={taperedSmallEnd}
+                          onChange={(e) => setTaperedSmallEnd(e.target.value.replace(/[^\d.]/g, ''))}
+                          fullWidth
+                        />
+                        <TextField
+                          label="Big End"
+                          type="text"
+                          value={taperedBigEnd}
+                          onChange={(e) => setTaperedBigEnd(e.target.value.replace(/[^\d.]/g, ''))}
+                          fullWidth
+                        />
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {/* BARCODE checkbox */}
@@ -914,6 +1182,24 @@ const AWFSelectMaterials = () => {
                         onChange={(e) => setBarcode(e.target.checked)}
                       />
                       <span>BARCODE</span>
+                    </label>
+                  </div>
+                )}
+
+                {/* Use 2.4 Downpipe checkbox — Standard Offset and Bends only */}
+                {partClass === 'Offsets' && formType !== 'custom_offset' && (
+                  <div className="awf-checkbox-option">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={use24Downpipe}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setUse24Downpipe(checked);
+                          setLength(checked ? '2.4' : '1.8');
+                        }}
+                      />
+                      <span>Use 2.4 Downpipe</span>
                     </label>
                   </div>
                 )}

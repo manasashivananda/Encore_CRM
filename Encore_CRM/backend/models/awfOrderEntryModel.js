@@ -35,6 +35,8 @@ const awfOrderEntrySchema = new mongoose.Schema({
     diameter: { type: Number, default: null },
   },
   tapered: { type: Boolean, default: false },          // Manual D/P only
+  taperedSmallEnd: { type: Number, default: null },    // Small end dimension when tapered
+  taperedBigEnd: { type: Number, default: null },      // Big end dimension when tapered
 
   // Custom Offset fields
   size: { type: String, default: null },                // manually entered size
@@ -58,6 +60,7 @@ const awfOrderEntrySchema = new mongoose.Schema({
 
   // Options
   barcode: { type: Boolean, default: false },
+  use24Downpipe: { type: Boolean, default: false },    // Offsets: use 2.4m downpipe, C += 600mm
   note: { type: String, default: '' },
   unitPrice: { type: Number, default: 0 },
   productImage: { type: String, default: null },

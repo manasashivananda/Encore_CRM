@@ -985,27 +985,59 @@ const TemplateLibrary = () => {
                         onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.click(); }}
                         aria-pressed={selectedTemplate?._id === tpl._id}
                       >
-                        {/* Product image — SVG drawing for Custom Offset, image for others */}
+                        {/* Product image — SVG drawing for offsets, image for others */}
                         <div className="awf-product-icon">
                           {tpl.sub_category === 'Custom Offset' ? (
-                            <svg viewBox="0 0 420 440" width="120" height="130" xmlns="http://www.w3.org/2000/svg">
-                              <polygon points="120,80 280,80 310,60 150,60" fill="#e8e8e8" stroke="#333" strokeWidth="1.5" />
-                              <polygon points="120,80 280,80 280,120 120,120" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
-                              <polygon points="280,80 310,60 310,100 280,120" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
-                              <polygon points="120,120 170,120 170,260 120,260" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
-                              <polygon points="170,120 200,100 200,240 170,260" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
-                              <polygon points="120,120 170,120 200,100 150,100" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
-                              <polygon points="120,260 280,260 280,300 120,300" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
-                              <polygon points="280,260 310,240 310,280 280,300" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
-                              <polygon points="120,260 280,260 310,240 150,240" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
-                              <text x="200" y="45" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#d32f2f">W</text>
-                              <text x="70" y="195" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#d32f2f" transform="rotate(-90,70,195)">A</text>
-                              <text x="330" y="85" fontSize="15" fontWeight="bold" fill="#1976d2">B1</text>
-                              <text x="225" y="175" fontSize="15" fontWeight="bold" fill="#1976d2">B2</text>
-                              <text x="200" y="340" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#d32f2f">C</text>
-                              <text x="295" y="118" fontSize="14" fontWeight="bold" fill="#e65100">D</text>
-                              <text x="95" y="370" fontSize="14" fontWeight="bold" fill="#e65100">E</text>
+                            <svg viewBox="85 35 250 325" width="120" height="130" xmlns="http://www.w3.org/2000/svg">
+                              <polygon points="110,70 290,70 312,52 132,52" fill="#ddd" stroke="#555" strokeWidth="1.5" />
+                              <polygon points="165,125 290,125 312,107 187,107" fill="#bbb" stroke="#555" strokeWidth="1.5" />
+                              <polygon points="290,70 312,52 312,107 290,125" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                              <polygon points="165,125 187,107 187,267 165,285" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                              <polygon points="165,285 290,285 312,267 187,267" fill="#bbb" stroke="#555" strokeWidth="1.5" />
+                              <polygon points="290,285 312,267 312,322 290,340" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                              <polygon points="110,340 290,340 312,322 132,322" fill="#999" stroke="#555" strokeWidth="1.5" />
+                              <polygon points="110,70 290,70 290,125 110,125" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                              <polygon points="110,125 165,125 165,285 110,285" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                              <polygon points="110,285 290,285 290,340 110,340" fill="#ccc" stroke="#555" strokeWidth="1.5" />
                             </svg>
+                          ) : (tpl.sub_category === 'Standard Offset' || tpl.sub_category === 'Bends (Elbow/Shoes)') ? (
+                            /* Standard Offset / Bends cards — square or round, standard or federation */
+                            tpl.name.includes('x') ? (
+                              /* Square offset — thick 3D box pipe L-shape */
+                              <svg viewBox="0 0 300 400" width="120" height="130" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="25,55 200,55 220,39 45,39" fill="#ddd" stroke="#555" strokeWidth="1.5" />
+                                <polygon points="90,120 200,120 220,104 110,104" fill="#bbb" stroke="#555" strokeWidth="1.5" />
+                                <polygon points="200,55 220,39 220,104 200,120" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                                <polygon points="90,120 110,104 110,334 90,350" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                                <polygon points="25,350 90,350 110,334 45,334" fill="#999" stroke="#555" strokeWidth="1.5" />
+                                <polygon points="25,55 200,55 200,120 25,120" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                                <polygon points="25,120 90,120 90,350 25,350" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                                {tpl.name.toLowerCase().includes('federation') && (
+                                  <text x="150" y="385" textAnchor="middle" fontSize="24" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
+                                )}
+                              </svg>
+                            ) : (
+                              /* Round offset — cylindrical Z-shape */
+                              <svg viewBox="0 0 140 150" width="120" height="130" xmlns="http://www.w3.org/2000/svg">
+                                {/* Top vertical pipe */}
+                                <ellipse cx="95" cy="12" rx="18" ry="7" fill="#e0e0e0" stroke="#333" strokeWidth="1" />
+                                <rect x="77" y="12" width="36" height="40" fill="#d5d5d5" stroke="none" />
+                                <line x1="77" y1="12" x2="77" y2="52" stroke="#333" strokeWidth="1" />
+                                <line x1="113" y1="12" x2="113" y2="52" stroke="#333" strokeWidth="1" />
+                                {/* Diagonal connector */}
+                                <line x1="77" y1="52" x2="42" y2="80" stroke="#333" strokeWidth="1" />
+                                <line x1="113" y1="52" x2="78" y2="80" stroke="#333" strokeWidth="1" />
+                                {/* Bottom horizontal pipe */}
+                                <ellipse cx="18" cy="95" rx="7" ry="18" fill="#e0e0e0" stroke="#333" strokeWidth="1" />
+                                <rect x="18" y="77" width="100" height="36" fill="#d5d5d5" stroke="none" />
+                                <line x1="18" y1="77" x2="118" y2="77" stroke="#333" strokeWidth="1" />
+                                <line x1="18" y1="113" x2="118" y2="113" stroke="#333" strokeWidth="1" />
+                                <ellipse cx="118" cy="95" rx="7" ry="18" fill="#ccc" stroke="#333" strokeWidth="1" />
+                                {tpl.name.toLowerCase().includes('federation') && (
+                                  <text x="70" y="140" textAnchor="middle" fontSize="11" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
+                                )}
+                              </svg>
+                            )
                           ) : tpl.image
                             ? <img src={tpl.image} alt={tpl.name} className="awf-product-img" />
                             : <span className="awf-placeholder-icon">&#9634;</span>
@@ -1223,37 +1255,66 @@ const TemplateLibrary = () => {
                 /* ========== AWF Product Preview — image + name ========== */
                 <>
                   <div className="awf-preview-content">
-                    {/* Product image — SVG drawing for Custom Offset, image for others */}
+                    {/* Product image — SVG drawing for offsets, image for others */}
                     <div className="awf-preview-icon">
                       {selectedTemplate.sub_category === 'Custom Offset' ? (
-                        <svg viewBox="0 0 420 440" width="260" height="280" xmlns="http://www.w3.org/2000/svg">
-                          <polygon points="120,80 280,80 310,60 150,60" fill="#e8e8e8" stroke="#333" strokeWidth="1.5" />
-                          <polygon points="120,80 280,80 280,120 120,120" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
-                          <polygon points="280,80 310,60 310,100 280,120" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
-                          <polygon points="120,120 170,120 170,260 120,260" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
-                          <polygon points="170,120 200,100 200,240 170,260" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
-                          <polygon points="120,120 170,120 200,100 150,100" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
-                          <polygon points="120,260 280,260 280,300 120,300" fill="#d0d0d0" stroke="#333" strokeWidth="1.5" />
-                          <polygon points="280,260 310,240 310,280 280,300" fill="#b8b8b8" stroke="#333" strokeWidth="1.5" />
-                          <polygon points="120,260 280,260 310,240 150,240" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
-                          <line x1="120" y1="45" x2="280" y2="45" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                          <line x1="120" y1="40" x2="120" y2="50" stroke="#d32f2f" strokeWidth="1" />
-                          <line x1="280" y1="40" x2="280" y2="50" stroke="#d32f2f" strokeWidth="1" />
-                          <text x="200" y="40" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#d32f2f">W</text>
-                          <line x1="95" y1="80" x2="95" y2="300" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                          <line x1="90" y1="80" x2="100" y2="80" stroke="#d32f2f" strokeWidth="1" />
-                          <line x1="90" y1="300" x2="100" y2="300" stroke="#d32f2f" strokeWidth="1" />
-                          <text x="75" y="195" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#d32f2f" transform="rotate(-90,75,195)">A</text>
-                          <text x="325" y="82" fontSize="13" fontWeight="bold" fill="#1976d2">B1</text>
-                          <text x="225" y="175" fontSize="13" fontWeight="bold" fill="#1976d2">B2</text>
-                          <line x1="120" y1="320" x2="280" y2="320" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                          <line x1="120" y1="315" x2="120" y2="325" stroke="#d32f2f" strokeWidth="1" />
-                          <line x1="280" y1="315" x2="280" y2="325" stroke="#d32f2f" strokeWidth="1" />
-                          <text x="200" y="340" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#d32f2f">C</text>
-                          <text x="290" y="118" fontSize="13" fontWeight="bold" fill="#e65100">D</text>
-                          <text x="100" y="370" fontSize="13" fontWeight="bold" fill="#e65100">E</text>
-                          <text x="210" y="410" textAnchor="middle" fontSize="10" fill="#666" fontStyle="italic">* Standard angle of a downpipe offset is 80°</text>
+                        <svg viewBox="70 30 280 340" width="260" height="280" xmlns="http://www.w3.org/2000/svg">
+                          <polygon points="110,70 290,70 312,52 132,52" fill="#ddd" stroke="#555" strokeWidth="1.5" />
+                          <polygon points="165,125 290,125 312,107 187,107" fill="#bbb" stroke="#555" strokeWidth="1.5" />
+                          <polygon points="290,70 312,52 312,107 290,125" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                          <polygon points="165,125 187,107 187,267 165,285" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                          <polygon points="165,285 290,285 312,267 187,267" fill="#bbb" stroke="#555" strokeWidth="1.5" />
+                          <polygon points="290,285 312,267 312,322 290,340" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                          <polygon points="110,340 290,340 312,322 132,322" fill="#999" stroke="#555" strokeWidth="1.5" />
+                          <polygon points="110,70 290,70 290,125 110,125" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                          <polygon points="110,125 165,125 165,285 110,285" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                          <polygon points="110,285 290,285 290,340 110,340" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                          <text x="200" y="48" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#d32f2f">W</text>
+                          <text x="90" y="210" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#d32f2f">A</text>
+                          <text x="335" y="82" fontSize="13" fontWeight="bold" fill="#1976d2">B1</text>
+                          <text x="215" y="192" fontSize="13" fontWeight="bold" fill="#1976d2">B2</text>
+                          <text x="200" y="362" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#d32f2f">C</text>
+                          <text x="300" y="122" fontSize="13" fontWeight="bold" fill="#e65100">D</text>
+                          <text x="90" y="365" fontSize="13" fontWeight="bold" fill="#e65100">E</text>
                         </svg>
+                      ) : (selectedTemplate.sub_category === 'Standard Offset' || selectedTemplate.sub_category === 'Bends (Elbow/Shoes)') ? (
+                        /* Standard Offset / Bends preview — larger SVG, square or round */
+                        selectedTemplate.name.includes('x') ? (
+                          /* Square offset preview — thick 3D box pipe L-shape */
+                          <svg viewBox="0 0 300 400" width="240" height="260" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="25,55 200,55 220,39 45,39" fill="#ddd" stroke="#555" strokeWidth="1.5" />
+                            <polygon points="90,120 200,120 220,104 110,104" fill="#bbb" stroke="#555" strokeWidth="1.5" />
+                            <polygon points="200,55 220,39 220,104 200,120" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                            <polygon points="90,120 110,104 110,334 90,350" fill="#aaa" stroke="#555" strokeWidth="1.5" />
+                            <polygon points="25,350 90,350 110,334 45,334" fill="#999" stroke="#555" strokeWidth="1.5" />
+                            <polygon points="25,55 200,55 200,120 25,120" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                            <polygon points="25,120 90,120 90,350 25,350" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                            {selectedTemplate.name.toLowerCase().includes('federation') && (
+                              <text x="150" y="385" textAnchor="middle" fontSize="22" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
+                            )}
+                          </svg>
+                        ) : (
+                          /* Round offset preview */
+                          <svg viewBox="0 0 200 220" width="240" height="260" xmlns="http://www.w3.org/2000/svg">
+                            {/* Top vertical pipe */}
+                            <ellipse cx="135" cy="18" rx="25" ry="10" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                            <rect x="110" y="18" width="50" height="55" fill="#d5d5d5" stroke="none" />
+                            <line x1="110" y1="18" x2="110" y2="73" stroke="#333" strokeWidth="1.5" />
+                            <line x1="160" y1="18" x2="160" y2="73" stroke="#333" strokeWidth="1.5" />
+                            {/* Diagonal connector */}
+                            <line x1="110" y1="73" x2="65" y2="115" stroke="#333" strokeWidth="1.5" />
+                            <line x1="160" y1="73" x2="115" y2="115" stroke="#333" strokeWidth="1.5" />
+                            {/* Bottom horizontal pipe */}
+                            <ellipse cx="25" cy="135" rx="10" ry="25" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
+                            <rect x="25" y="110" width="145" height="50" fill="#d5d5d5" stroke="none" />
+                            <line x1="25" y1="110" x2="170" y2="110" stroke="#333" strokeWidth="1.5" />
+                            <line x1="25" y1="160" x2="170" y2="160" stroke="#333" strokeWidth="1.5" />
+                            <ellipse cx="170" cy="135" rx="10" ry="25" fill="#ccc" stroke="#333" strokeWidth="1.5" />
+                            {selectedTemplate.name.toLowerCase().includes('federation') && (
+                              <text x="100" y="200" textAnchor="middle" fontSize="16" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
+                            )}
+                          </svg>
+                        )
                       ) : selectedTemplate.image
                         ? <img src={selectedTemplate.image} alt={selectedTemplate.name} className="awf-preview-img" />
                         : <span className="awf-placeholder-icon-lg">&#9634;</span>

@@ -525,9 +525,311 @@ Total AWF products in `awf_product_libraries`: 28 (14 original + 10 Manual D/P +
 | `backend/routes/awfOrderEntryRoutes.js` | MODIFIED | Added PUT route |
 | `backend/scripts/addCustomOffsetProducts.js` | CREATED | Seed script for 4 custom Offset products |
 
+### What's Next (TODO — as of 24-Feb)
+
+1. ~~**Custom Offset form**~~ — DONE (25-Feb)
+2. **Product images**: Upload actual product images to S3, replace placehold.co URLs
+3. **Rollforming**: No spec yet
+4. **Quotation flow**: AWF tab for quotes — deferred per user instruction
+
+---
+
+## AWF Module — Work Log (25-26 Feb 2026)
+
+### What Was Built
+
+Major updates to AWFSelectMaterials form: Custom Offset form with measurements sidebar, interactive SVG drawings for Custom Offset and Standard Offset products, Standard D/P length-from-product-name, Manual D/P custom length, tapered small/big end fields, "Use 2.4 Downpipe" checkbox for Offsets, and Federation offset products.
+
+### Custom Offset Form (25-Feb)
+
+Full custom offset form with separate two-column layout:
+
+**Left column (form fields):**
+- Material & Color dropdowns (shared API)
+- Thickness dropdown (0.45 / 0.60 — unlike other types which have fixed thickness)
+- Size (manual text input)
+- Number of Pieces
+- Note, Unit Price
+
+**Right column (measurements sidebar):**
+- Measurements (mm): W, A, B1, B2, C — each with label + input
+- Angle Degree: D, E — each with label + input
+- Type: Fixed / Adjustable radio buttons (adjustable shows from/to range inputs)
+- Seam Side: Top / Left Side / Bottom / Right Side radio buttons
+
+**Interactive SVG drawing (left panel):**
+- 3D isometric square offset pipe with labeled dimensions (W, A, B1, B2, C, D, E)
+- When a measurement field changes, the corresponding SVG label highlights briefly (yellow background, 1.5s)
+- SVG labels show current values (e.g., "W = 150")
+
+### Standard Offset SVG Drawings (26-Feb)
+
+**Square offset SVG** — thick 3D box pipe forming an L-shape:
+- Horizontal pipe across the top (front face, top face, right side)
+- Vertical pipe going down on the left (front face, right side, bottom face)
+- Inner corner step visible where they meet
+- Gray shading: lightest #ddd on top, #ccc on front, #aaa on sides, #999 on bottom
+- viewBox="0 0 400 440" used consistently across all locations, scaled via width/height
+- Dimension labels A (vertical height) and C (horizontal length, updates with "Use 2.4 Downpipe")
+
+**Round offset SVG** — cylindrical Z-shape pipe:
+- Top vertical pipe with elliptical cap
+- Angled diagonal connector section
+- Bottom horizontal pipe with elliptical ends
+- Dimension labels: A (450-600mm adjustable), B (120mm), C (880mm/1480mm), D (80°), E (80°)
+
+Both square and round SVGs appear in all 4 locations:
+- TemplateLibrary.js card thumbnails (small)
+- TemplateLibrary.js preview pane (medium)
+- AWFSelectMaterials.js left panel (large, with dimension labels)
+- AWFDetailsTab.js card grid + lightbox
+
+### Federation Offset Products (26-Feb)
+
+Standard Offset sub-category now has 8 products (was 2):
+
+| Type | Products |
+|------|----------|
+| Standard Square | 100x50mm, 100x75mm |
+| Standard Round | 75mm, 90mm |
+| Federation Square | Federation 100x50mm, Federation 100x75mm |
+| Federation Round | Federation 75mm, Federation 90mm |
+
+Federation products show bold italic "FEDERATION" text below the SVG drawing. Detection: `productName.toLowerCase().includes('federation')`.
+
+### Standard D/P Length Changes (25-Feb)
+
+- Replaced 2 generic Standard D/P products with 8 length-specific products:
+  - 100x50mm 1.8mtr, 100x50mm 2.4mtr, 100x75mm 1.8mtr, 100x75mm 2.4mtr
+  - 75mm 1.8mtr, 75mm 2.4mtr, 90mm 1.8mtr, 90mm 2.4mtr
+- Length is readonly (bold display like thickness), extracted from product name
+- `standardDPLength` useMemo: checks if productName contains "1.8" or "2.4"
+
+### Manual D/P Custom Length (25-Feb)
+
+- Length dropdown has "Custom" option (only for `formType === 'manual_dp'`)
+- When selected: dropdown replaced with text input for custom length value
+- When cleared: immediately switches back to dropdown
+
+### Tapered Small End / Big End (25-Feb)
+
+- Checkbox label changed back to "TAPERED"
+- When checked: shows two text fields — Small End and Big End
+- State: `taperedSmallEnd`, `taperedBigEnd` — saved to backend
+
+### Use 2.4 Downpipe (25-Feb)
+
+- Checkbox appears for `partClass === 'Offsets' && formType !== 'custom_offset'`
+- When checked: `length` changes from 1.8 to 2.4, C dimension in SVG updates from 880mm to 1480mm (880 + 600)
+- SVG C label turns red when active
+- Saved as `use24Downpipe` boolean in backend
+
+### Offsets — No Length Field (25-Feb)
+
+- Offsets auto-set `length = 1.8` on mount (no dropdown shown)
+- "Use 2.4 Downpipe" checkbox toggles length between 1.8 and 2.4
+- Custom Offset has no length field at all (measurements entered manually)
+
+### UI Tweaks (25-Feb)
+
+- "Clips" title instead of "Clips & Pops" in AWFSelectMaterials
+- Length display: "2.4" not "2.400"
+- BARCODE checkbox visible for all product types
+
+### Backend Model Updates (25-Feb)
+
+`awfOrderEntryModel.js` — added fields:
+- `taperedSmallEnd: Number`, `taperedBigEnd: Number`
+- `size: String` (manually entered size for Custom Offset)
+- `measurements: { W, A, B1, B2, C }` (mm values)
+- `angleDegree: { D, E }` (degree values)
+- `offsetType: String` (enum: fixed, adjustable, null)
+- `adjustableRange: { from, to }` (only when adjustable)
+- `seamSide: String` (enum: top, left, bottom, right, null)
+- `use24Downpipe: Boolean`
+
+`awfOrderEntryCtrl.js` — createEntry and updateEntry both destructure and save all new fields.
+
+### Files Modified (25-26 Feb)
+
+| File | Changes |
+|------|---------|
+| `frontend/src/Pages/DrawingComponents/AWFSelectMaterials.js` | Custom Offset form layout, measurements sidebar, interactive SVG, Standard Offset SVG (square L-shape + round Z-shape), Standard D/P readonly length, Manual D/P custom length, tapered fields, Use 2.4 Downpipe, UI tweaks |
+| `frontend/src/Pages/DrawingComponents/TemplateLibrary.js` | SVG drawings for Standard Offset cards (square/round) + preview pane, Federation label, Custom Offset SVG in cards/preview |
+| `frontend/src/Pages/Drawings/AWFDetailsTab.js` | SVG drawings for Standard Offset + Custom Offset in card grid + lightbox, edit handler passes all new fields (measurements, angleDegree, offsetType, adjustableRange, seamSide, taperedSmallEnd, taperedBigEnd, use24Downpipe) |
+| `frontend/src/styles/AWFSelectMaterials.scss` | Custom offset layout styles (grid, measurements panel, radio options, adjustable range) |
+| `backend/models/awfOrderEntryModel.js` | Added fields: taperedSmallEnd, taperedBigEnd, size, measurements, angleDegree, offsetType, adjustableRange, seamSide, use24Downpipe |
+| `backend/controllers/awfOrderEntryCtrl.js` | createEntry + updateEntry save all new fields |
+
+### Files Created (26-Feb)
+
+| File | Purpose |
+|------|---------|
+| `backend/scripts/addFederationOffsets.js` | Seed script: deletes old Standard Offset products, inserts 8 new (4 standard + 4 federation) |
+
+### AWF Product Library Count
+
+Total AWF products in `awf_product_libraries`: ~34
+- Downpipe > Standard D/P: 8 (length-specific)
+- Downpipe > Manual D/P: 12 (5 square + 5 round + 2 custom)
+- Clips & Pops: 2
+- Offsets > Standard Offset: 8 (4 standard + 4 federation)
+- Offsets > Custom Offset: 4 (2 original + 2 from addCustomOffsetProducts)
+- Offsets > Bends: 2 + 2 custom = 4
+- Rollforming: 2
+
+### AWF Form Fields Per Type (Updated 26-Feb)
+
+| Field | Standard D/P | Manual D/P | Clips | Std Offset | Bends | Custom Offset |
+|-------|-------------|-----------|-------|------------|-------|---------------|
+| Material | dropdown | dropdown | dropdown | dropdown | dropdown | dropdown |
+| Color | dropdown | dropdown | dropdown | dropdown | dropdown | dropdown |
+| Thickness | 0.45 fixed | 0.45 fixed | 0.60 fixed | 0.45 fixed | 0.45 fixed | 0.45/0.60 dropdown |
+| Length | readonly from product name | dropdown + Custom option | fixed: 1 | auto 1.8 (no field) | no field | no field |
+| Dimensions | custom products only | custom products only | — | custom products only | custom products only | via measurements sidebar |
+| Number of Pieces | yes | yes (side by side with length) | yes | yes | yes | yes |
+| TAPERED | — | checkbox + Small/Big End | — | — | — | — |
+| BARCODE | yes | yes | yes | yes | yes | — |
+| Use 2.4 Downpipe | — | — | — | checkbox (C += 600) | checkbox (C += 600) | — |
+| Measurements (W,A,B1,B2,C) | — | — | — | — | — | sidebar inputs |
+| Angle Degree (D,E) | — | — | — | — | — | sidebar inputs |
+| Type (Fixed/Adjustable) | — | — | — | — | — | radio buttons |
+| Seam Side | — | — | — | — | — | radio buttons |
+| Size | — | — | — | — | — | text input |
+| Note | yes | yes | yes | yes | yes | yes |
+| Unit Price | yes | yes | yes | yes | yes | yes |
+
+### Bends Uses Same SVG as Standard Offset (26-Feb)
+
+Bends (Elbow/Shoes) is part of the Offsets part class, so it now shares the same rendering as Standard Offset everywhere:
+
+- **TemplateLibrary.js**: Card thumbnails and preview pane conditions changed from `sub_category === 'Standard Offset'` to `(sub_category === 'Standard Offset' || sub_category === 'Bends (Elbow/Shoes)')` — same square L-shape / round Z-shape SVGs
+- **AWFDetailsTab.js**: Card grid and lightbox conditions changed from `subCategory === 'Standard Offset'` to `(subCategory === 'Standard Offset' || subCategory === 'Bends (Elbow/Shoes)')` — same SVGs
+- **AWFSelectMaterials.js**: Already correct — condition `partClass === 'Offsets' && formType !== 'custom_offset'` covers both Standard Offset and Bends. Same SVG, same length auto-set to 1.8, same "Use 2.4 Downpipe" checkbox (toggles length 1.8↔2.4, updates C value 880mm↔1480mm in SVG)
+
+### SVG Proportion Updates (26-Feb)
+
+**Standard Offset square SVG** — proportions updated for thicker pipe walls:
+- Old viewBox `0 0 400 440`: pipe walls 55px thick, horizontal 300px wide (ratio 5.5:1 — too thin)
+- New viewBox `0 0 300 400`: pipe walls 65px thick, horizontal 175px wide (ratio 2.7:1 — chunkier)
+- AWFSelectMaterials.js uses expanded viewBox `"-80 0 380 400"` to accommodate horizontal A label on left
+- A dimension label changed from rotated vertical text to **horizontal** text: "450-600mm" / "Adjustable" / "A" — three lines, readable left-to-right
+- Updated in all 5 locations: TemplateLibrary card/preview, AWFDetailsTab card/lightbox, AWFSelectMaterials
+
+**Custom Offset SVG** — completely redesigned as thick 3D Z-shape box pipe:
+- Old: thin-walled Z-shape with inconsistent pipe thickness and old-style 3D (different colors #e8e8e8/#d0d0d0/#b8b8b8)
+- New: thick box pipe Z-shape matching Standard Offset style — 3 sections (top bar, connector, bottom bar), all 55px thick, consistent 3D depth dx=22 dy=-18
+- Pipe coordinates: top bar (110,70)→(290,125), connector (110,125)→(165,285), bottom bar (110,285)→(290,340)
+- Two inner corner steps visible at both junctions (#bbb)
+- Colors: #ddd top, #ccc front, #bbb inner step, #aaa sides, #999 bottom (matching Standard Offset)
+- A label: horizontal text (not rotated). When Adjustable with from/to values: shows "{from}-{to}mm" + "Adjustable" on two lines. When Fixed: shows "A = {value}"
+- Seam Side indicator: colored dashed lines appear on pipe faces when seam side radio selected (Top=#d32f2f red, Left=#f57c00 orange, Bottom=#388e3c green, Right=#1976d2 blue)
+- viewBox="0 0 420 460" for labeled version, "85 35 250 325" for card thumbnails
+- Updated in all 5 locations: AWFSelectMaterials, TemplateLibrary card/preview, AWFDetailsTab card/lightbox
+- **NOTE**: SVG still needs refinement to exactly match the reference image — deferred
+
+---
+
+## AWF Module — Work Log (26-Feb-2026)
+
+### What Was Built
+
+Restructured AWFDetailsTab card layout and lightbox to match new design. Added Note display, barcode sticker SVG, and various UI refinements across AWFSelectMaterials and AWFDetailsTab.
+
+### Card Layout (AWFDetailsTab) — New Structure
+
+```
+┌──────────────────────────────────────────────┐
+│  0.45          ASHWOOD           │ Qty/Len  │
+│  (thickness)   (color)          │ 4 x 1.800│
+│─────────────────────────────────────────────│
+│                                              │
+│              BARCODE                         │
+│           ||||||||||||||||                    │
+│              STICKERS                        │
+│           [Drawing / SVG / Image]            │
+│                                              │
+│              100x50mm 1.8mtr                 │
+│                          Note: Test          │
+│─────────────────────────────────────────────│
+│                         Edit  │  Delete      │
+└──────────────────────────────────────────────┘
+```
+
+- **Top row**: Thickness (left) | Color name bold center | Qty/Len table (right)
+- **Barcode + Drawing + Product Name + Note**: All grouped in one centered column wrapper. Barcode sits directly above drawing (no gap). Note right-aligned to drawing width.
+- **Barcode**: SVG barcode lines (not icon) — BARCODE text, vertical bars, STICKERS text, all same width. Centered within the group.
+- **Drawing**: Centered (SVG for offsets, product image for others, Package icon fallback)
+- **Below drawing**: Product name only (centered, no sub-category)
+- **Below product name**: Note (right-aligned to drawing width via `alignSelf: flex-end`, not full card width)
+- Card grid: 3 per row (`Col md={4}`), `minHeight: 550px`
+
+### Lightbox — Updated to Match Cards
+
+- **Header**: Thickness (left) | Color (center) | Qty/Len table (top-right, floating)
+- **Barcode**: Same SVG barcode pattern (180px wide, 80px tall)
+- **Drawing**: Centered
+- **Below drawing**: Product name (centered)
+- **Below product name**: Note (right-aligned to drawing width)
+
+### Note Display
+
+- **AWFSelectMaterials**: Below the drawing, right-aligned within drawing width (280px for other types, full width of `awf-offset-drawing` for offsets). Bold, 18px.
+- **AWFDetailsTab cards**: Inside a column wrapper that auto-sizes to drawing. Uses `alignSelf: 'flex-end'` to align with drawing's right edge.
+- **AWFDetailsTab lightbox**: Same approach — wrapped with drawing in column flex, `alignSelf: 'flex-end'`.
+
+### Barcode Sticker — SVG Redesign
+
+Replaced `FaBarcode` icon with proper SVG barcode in all locations:
+- **Pattern**: Varying thick/thin vertical bars with white space (like a real barcode)
+- **Layout**: BARCODE text → SVG bars → STICKERS text, all same width
+- **Sizes**: Cards 110px wide × 50px tall, Lightbox 180px wide × 80px tall, Materials page 140px wide × 50px tall
+- **Applied to all product types**: Standard offset, custom offset, and other types in AWFSelectMaterials; cards and lightbox in AWFDetailsTab
+
+### Custom Offset — BARCODE Checkbox Added
+
+Added BARCODE checkbox to the custom offset form in AWFSelectMaterials (below Number of Pieces field). Previously missing — only existed in the standard form. Barcode sticker display also added to both offset SVG sections (standard and custom) on the left panel.
+
+### Custom Offset SVG — ViewBox Expanded
+
+Card viewBox expanded from `"85 35 250 325"` to `"20 10 380 420"` (card: 250×280, lightbox: 380×420) to prevent label cutoff on A, E, C, B1 dimension labels.
+
+### Offset SVG Cleanup (26-Feb, later)
+
+Removed extra decorative elements from offset SVGs in AWFSelectMaterials — keeping only the pipe drawing and essential dimension labels.
+
+**Custom Offset SVG:**
+- Removed "* Standard angle of a downpipe offset is 80°" italic note text (was at bottom of SVG)
+
+**Round Offset SVG (Standard Offset):**
+- Removed 80° ANGLE indicator box (top-left corner)
+- Removed D = 80° angle arc and label
+- Removed E = 80° angle arc and label
+- Removed fixed specs legend at bottom-left (A=450-600mm, B=120mm, C=880mm, D=80°, E=80°)
+- Kept: pipe drawing, B=120mm label, C=880mm/1480mm label, Federation label
+
+**Both Square and Round Offset SVGs (Standard Offset):**
+- Removed "450-600mm Adjustable A" dimension lines and labels (vertical height indicator)
+- Square offset now shows: pipe drawing + C dimension only
+- Round offset now shows: pipe drawing + B dimension + C dimension only
+
+**Lightbox (AWFDetailsTab):**
+- Removed "* Standard angle of a downpipe offset is 80°" from Custom Offset SVG (done earlier)
+- Increased drawing sizes: Custom Offset 480×520, Square Offset 480×520, Round Offset 440×470, product image maxHeight 500px, Package icon 180
+- Added 40px top padding for better spacing
+- Product name `marginTop: 10px` for spacing below drawing
+
+### Files Modified (26-Feb)
+
+| File | Changes |
+|------|---------|
+| `frontend/src/Pages/Drawings/AWFDetailsTab.js` | Card layout restructured (thickness/color/qty header, drawing centered, product name below, note right-aligned to drawing). Barcode SVG pattern. Lightbox updated to match. Custom Offset viewBox expanded. 3 cards per row. 550px min height. Lightbox drawing sizes increased. Removed 80° note from lightbox Custom Offset. Product name margin added. |
+| `frontend/src/Pages/DrawingComponents/AWFSelectMaterials.js` | Note positioned right-aligned within drawing sections. Barcode SVG pattern in all 3 drawing sections (standard offset, custom offset, other types). BARCODE checkbox added to custom offset form. Removed 80° note from Custom Offset SVG. Removed angle box, D/E angles, specs legend from Round Offset SVG. Removed 450-600mm Adjustable A dimension from both Square and Round Offset SVGs. |
+| `frontend/src/styles/AWFSelectMaterials.scss` | `awf-canvas-container` gap set to 0 |
+
 ### What's Next (TODO)
 
-1. **Custom Offset form**: Complex form with W, A, B1, B2, C, D, E measurements + Seam Side + Type (Fixed/Adjustable) — deferred
-2. **Product images**: Upload actual product images to S3, replace placehold.co URLs. Images need seam side indicator and dimension labels.
+1. **Custom Offset SVG refinement**: Current thick box Z-shape needs adjustment to exactly match reference image proportions/perspective
+2. **Product images**: Upload actual product images to S3, replace placehold.co URLs
 3. **Rollforming**: No spec yet
-5. **Quotation flow**: AWF tab for quotes — deferred per user instruction
+4. **Quotation flow**: AWF tab for quotes — deferred per user instruction
