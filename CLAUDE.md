@@ -868,8 +868,122 @@ This means all the dynamic SVG code for offsets (square, round, custom offset �
 | `AWFDetailsTab.js` | **SIMPLIFY** cards + lightbox — remove all offset SVG rendering, use `entry.productImage` for all types. For offsets, show dimension values from entry data |
 | `awf_product_libraries` (MongoDB) | **UPDATE** image field from placehold.co URLs to static paths |
 
+---
+
+## AWF Module — Work Log (3-Mar-2026)
+
+### What Was Built
+
+Major architectural shift: **replaced all dynamic SVG rendering with static product images** from `public/awf-products/`. Offset products now use PNG base images with SVG dimension label overlays instead of hand-drawn SVG geometry. Product images added for all AWF product categories. Card grid changed to 2 per row.
+
+### Static Product Images — Implementation Complete
+
+**Folder**: `frontend/public/awf-products/` — 14 static image files:
+
+| File | Used For |
+|------|----------|
+| `standard-square-dp.png` | Standard D/P square products |
+| `square-dp-cross-section.jpeg` | Standard D/P round + Manual D/P round |
+| `manual-square-dp.png` | Manual D/P square products |
+| `saddle-clip.jpeg` | Saddle clips |
+| `standoff-clip.png` | Stand-off clips |
+| `standard-square-offset.png` | Standard Offset square (non-federation) + Round (non-federation) |
+| `federation-offset.jpeg` | Federation Offset (both square + round) |
+| `custom-offset-square.png` | Custom Offset square |
+| `custom-offset-round.png` | Custom Offset round |
+| `square-elbow.png` | Square Elbow (Bends) |
+| `square-elbow-3d.jpeg` | Round Elbow (Bends) |
+| `square-shoe.jpeg` | Square Shoe (Bends) |
+| `square-dp-single.jpeg` | Additional D/P reference |
+| `standard-offset-square.jpeg` | Base image for offset SVG overlays |
+
+### Offset Rendering — PNG Base + SVG Overlays
+
+Offsets no longer use hand-drawn SVG geometry. Instead they embed a PNG image (`standard-offset-square.jpeg`) inside an SVG wrapper with dynamic dimension labels overlaid on top.
+
+**Custom Offset (AWFSelectMaterials + AWFDetailsTab):**
+- PNG base image via `<image href="/awf-products/standard-offset-square.jpeg">`
+- Dimension overlays: W (blue horizontal dashed), B1/B2/C (red dashed lines with labels)
+- A dimension: diagonal line showing adjustable range "{from}-{to}mm" or fixed "A = {value}"
+- D, E angles: orange arrow indicators pointing to bend locations
+- Seam Side: colored dashed vertical lines (Top=#d32f2f red, Right=#1976d2 blue, Left=#f57c00 orange, Bottom=#388e3c green)
+- ViewBox: `"0 0 380 450"` (page: 380×450, lightbox: 480×560)
+
+**Standard Offset + Bends (AWFSelectMaterials + AWFDetailsTab):**
+- Same PNG base image
+- C dimension label only (880mm or 1480mm with "Use 2.4 Downpipe")
+- Federation italic label if product name contains "federation"
+
+**All Other Types:**
+- Simple `<img>` tag using `entry.productImage` path (static file from `public/awf-products/`)
+- Package icon placeholder if no image
+
+### TemplateLibrary.js — Simplified
+
+- Removed all dynamic SVG rendering for AWF offset products
+- AWF product cards now show static `tpl.image` for all product types uniformly
+- AWF preview pane: product image + name + "Use It" button
+- Navigation state includes `productImage: tpl.image` for downstream use
+
+### AWFDetailsTab.js — Card Layout (Final)
+
+**Card grid: 2 per row** (`Col md={6}`), `minHeight: 550px`
+
+```
+┌──────────────────────────────────────────────┐
+│  0.45          ASHWOOD           │ Qty/Len  │
+│  (thickness)   (color)          │ 4 x 1.800│
+│─────────────────────────────────────────────│
+│              BARCODE                         │
+│           ||||||||||||||||                    │
+│              STICKERS                        │
+│                                              │
+│   [PNG image / SVG+PNG overlay / Package]    │
+│                                              │
+│              100x50mm 1.8mtr                 │
+│                          Note: Test          │
+│─────────────────────────────────────────────│
+│                         Edit  │  Delete      │
+└──────────────────────────────────────────────┘
+```
+
+- Barcode: SVG barcode pattern (120px×40px cards, 180px×60px lightbox)
+- Drawing renders in 3 branches: Custom Offset (PNG+overlay), Standard Offset/Bends (PNG+C label), Other (static image)
+- Lightbox: increased drawing sizes (Custom Offset 480×560, Std Offset 480×520, image maxHeight 500px), 40px top padding
+
+### Bends Separated from Standard Offset (3-Mar)
+
+Bends (Elbow/Shoes) now renders its **own product image** instead of sharing Standard Offset's SVG:
+- Each Bends product (square-elbow.png, square-shoe.jpeg, square-elbow-3d.jpeg) has its own image
+- Still shares "Use 2.4 Downpipe" checkbox + C dimension logic with Standard Offset
+- TemplateLibrary, AWFDetailsTab, AWFSelectMaterials all updated
+
+### Backend Changes (3-Mar)
+
+| File | Changes |
+|------|---------|
+| `backend/models/awfOrderEntryModel.js` | Added `offsetCValue: Number` field — stores computed C dimension (880 or 1480mm) |
+| `backend/scripts/updateAWFProductImages.js` | **CREATED** — maps all AWF products to static image paths by part_class, sub_category, and product name. Updates `awf_product_libraries.image` field |
+| `backend/scripts/fixEntryImages.js` | **CREATED** — batch fixes `productImage` in existing `awf_order_entries` (replaces old placehold.co URLs with correct static paths) |
+
+### Files Modified (3-Mar)
+
+| File | Changes |
+|------|---------|
+| `frontend/src/Pages/DrawingComponents/AWFSelectMaterials.js` | Removed all inline SVG generation for Standard Offset (square L-shape + round Z-shape). Offset products now use PNG base + SVG dimension overlays. Custom Offset SVG labels repositioned (W, B1, B2, C, A, D, E). D/E angles now have orange arrow indicators. Seam side colored dashed lines. Barcode sticker SVG updated across all product types. |
+| `frontend/src/Pages/DrawingComponents/TemplateLibrary.js` | Removed ~117 lines of dynamic SVG rendering for AWF offset products. All AWF products now display uniform static images. |
+| `frontend/src/Pages/Drawings/AWFDetailsTab.js` | Card grid changed from 3 to 2 per row. Offset cards use PNG+overlay instead of inline SVG. Bends rendered separately from Standard Offset with own product image. Lightbox sizes increased. Barcode SVG updated (180×60px). |
+
+### Files Created (3-Mar)
+
+| File | Purpose |
+|------|---------|
+| `frontend/public/awf-products/` (14 files) | Static product images for all AWF categories |
+| `backend/scripts/updateAWFProductImages.js` | Seed script: maps products → image paths in DB |
+| `backend/scripts/fixEntryImages.js` | Batch fix: corrects productImage in saved order entries |
+
 ### What's Next (TODO)
 
-1. **Product images**: Add real product drawing files to `public/awf-products/`, update product library records, remove dynamic SVG code
-2. **Rollforming**: No spec yet
-3. **Quotation flow**: AWF tab for quotes — deferred per user instruction
+1. **Rollforming**: No spec yet
+2. **Quotation flow**: AWF tab for quotes — deferred per user instruction
+3. **Custom Offset refinement**: SVG overlay labels may need further positioning tweaks to match reference exactly
