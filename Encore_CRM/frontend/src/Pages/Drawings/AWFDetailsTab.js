@@ -404,7 +404,7 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
     <MyDiv className="GeneralTable mt-3" style={{ border: 'none', borderBottom: 'none', overflow: 'hidden' }}>
       <Row>
         {entries.map((entry, index) => (
-          <Col md={4} key={entry._id} className="mb-3" data-awf-index={index}>
+          <Col md={6} key={entry._id} className="mb-3" data-awf-index={index}>
             <Card
               className="p-2"
               style={{ display: 'flex', flexDirection: 'column', overflow: 'visible', minHeight: '550px', cursor: 'pointer' }}
