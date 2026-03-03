@@ -236,80 +236,107 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
           flex: 1, padding: 0, margin: 0
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {/* Barcode sticker — right above drawing */}
+          {/* Barcode sticker — with product illustration */}
           {entry.barcode && (() => {
             const bf = isLightbox ? 32 : 18;
-            const bbw = isLightbox ? 200 : 110;
-            const bbh = isLightbox ? 80 : 50;
+            const stickerW = isLightbox ? 180 : 120;
             return (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', marginBottom: '4px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', marginBottom: '0px' }}>
                 <span style={{ fontSize: `${bf}px`, fontWeight: 900, letterSpacing: '4px', lineHeight: 1.2 }}>BARCODE</span>
-                <svg width={bbw} height={bbh} viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
-                  {[0,3,5,7,12,14,17,19,24,26,28,33,35,38,40,42,47,49,51,56,58,61,63,68,70,72,77,79,82,84,86,91,93,95,100,102,105,107,112,114,116,121,123,126,128,133,135,137].map(x => (
-                    <rect key={x} x={x} y="0" width={x % 12 < 3 ? 2.5 : 1} height="50" fill="#000" />
+                <svg width={stickerW} height={isLightbox ? 60 : 40} viewBox="0 0 180 45" xmlns="http://www.w3.org/2000/svg">
+                  {[0,3,5,7,12,14,17,19,24,26,28,33,35,38,40,42,47,49,51,56,58,61,63,68,70,72,77,79,82,84,86,91,93,95,100,102,105,107,112,114,116,121,123,126,128,133,135,137,140,143,145,148,153,155,158,160,165,167,170,175,177].map(x => (
+                    <rect key={x} x={x} y="0" width={x % 12 < 3 ? 3 : 1.2} height="45" fill="#000" />
                   ))}
                 </svg>
-                <span style={{ fontSize: `${bf}px`, fontWeight: 900, letterSpacing: '4px', lineHeight: 1.4 }}>STICKERS</span>
+                <span style={{ fontSize: `${bf}px`, fontWeight: 900, letterSpacing: '4px', lineHeight: 1.0 }}>STICKERS</span>
               </div>
             );
           })()}
           {entry.subCategory === 'Custom Offset' ? (
             /* Custom Offset — PNG image + dimension overlays */
-            <svg viewBox="0 0 380 450" width={isLightbox ? 360 : 210} height={isLightbox ? 420 : 245} xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 380 450" width={isLightbox ? 360 : 400} height={isLightbox ? 420 : 470} xmlns="http://www.w3.org/2000/svg" overflow="visible">
               <image href="/awf-products/standard-offset-square.jpeg" x="80" y="30" width="270" height="380" preserveAspectRatio="xMidYMid meet" />
               {/* W */}
-              <line x1="125" y1="40" x2="338" y2="40" stroke="#1976d2" strokeWidth="1.2" strokeDasharray="5,3" />
-              <line x1="125" y1="35" x2="125" y2="45" stroke="#1976d2" strokeWidth="1.2" />
-              <line x1="338" y1="35" x2="338" y2="45" stroke="#1976d2" strokeWidth="1.2" />
-              <text x="232" y="34" textAnchor="middle" fontSize={isLightbox ? 13 : 10} fontWeight="bold"
-                fill={entry.measurements?.W ? '#d32f2f' : '#1976d2'}>
+              <line x1="75" y1="40" x2="240" y2="40" stroke="#1976d2" strokeWidth="1.2" strokeDasharray="5,3" />
+              <line x1="75" y1="35" x2="75" y2="45" stroke="#1976d2" strokeWidth="1.2" />
+              <line x1="240" y1="35" x2="240" y2="45" stroke="#1976d2" strokeWidth="1.2" />
+              <text x="158" y="34" textAnchor="middle" fontSize="13" fontWeight="bold"
+                fill={entry.measurements?.W ? '#333' : '#1976d2'}>
                 {entry.measurements?.W ? `W=${entry.measurements.W}` : 'W'}
               </text>
               {/* B1 */}
-              <line x1="280" y1="50" x2="280" y2="82" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
-              <line x1="275" y1="50" x2="285" y2="50" stroke="#d32f2f" strokeWidth="1" />
-              <line x1="275" y1="82" x2="285" y2="82" stroke="#d32f2f" strokeWidth="1" />
-              <text x="288" y="70" textAnchor="start" fontSize={isLightbox ? 12 : 9} fontWeight="bold"
-                fill={entry.measurements?.B1 ? '#d32f2f' : '#333'}>
+              <line x1="248" y1="48" x2="248" y2="95" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
+              <line x1="243" y1="48" x2="253" y2="48" stroke="#d32f2f" strokeWidth="1" />
+              <line x1="243" y1="95" x2="253" y2="95" stroke="#d32f2f" strokeWidth="1" />
+              <text x="241" y="70" textAnchor="end" fontSize="12" fontWeight="bold"
+                fill="#333">
                 {entry.measurements?.B1 ? `B1=${entry.measurements.B1}` : 'B1'}
               </text>
               {/* B2 */}
               <line x1="348" y1="62" x2="348" y2="125" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
               <line x1="343" y1="62" x2="353" y2="62" stroke="#d32f2f" strokeWidth="1" />
               <line x1="343" y1="125" x2="353" y2="125" stroke="#d32f2f" strokeWidth="1" />
-              <text x="358" y="98" textAnchor="start" fontSize={isLightbox ? 12 : 9} fontWeight="bold"
-                fill={entry.measurements?.B2 ? '#d32f2f' : '#333'}>
+              <text x="358" y="98" textAnchor="start" fontSize="12" fontWeight="bold"
+                fill="#333">
                 {entry.measurements?.B2 ? `B2=${entry.measurements.B2}` : 'B2'}
               </text>
-              {/* A */}
-              <line x1="200" y1="135" x2="200" y2="225" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-              <line x1="195" y1="135" x2="205" y2="135" stroke="#d32f2f" strokeWidth="1" />
-              <line x1="195" y1="225" x2="205" y2="225" stroke="#d32f2f" strokeWidth="1" />
-              <text x="208" y="184" textAnchor="start" fontSize={isLightbox ? 13 : 10} fontWeight="bold"
-                fill={entry.measurements?.A ? '#d32f2f' : '#333'}>
-                {entry.measurements?.A ? `A=${entry.measurements.A}` : 'A'}
+              {/* A — nearly horizontal diagonal */}
+              <line x1="85" y1="182" x2="220" y2="93" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+              <line x1="83" y1="177" x2="87" y2="187" stroke="#d32f2f" strokeWidth="1" />
+              <line x1="218" y1="88" x2="222" y2="98" stroke="#d32f2f" strokeWidth="1" />
+              <text x="110" y="130" textAnchor="middle" fontSize="13" fontWeight="bold"
+                fill="#333">
+                {entry.offsetType === 'adjustable' && entry.adjustableRange?.from && entry.adjustableRange?.to
+                  ? `A=${entry.adjustableRange.from}-${entry.adjustableRange.to}`
+                  : (entry.measurements?.A ? `A=${entry.measurements.A}` : 'A')}
               </text>
-              {/* D */}
-              <path d="M 222,125 Q 216,135 210,148" fill="none" stroke="#e65100" strokeWidth="1.5" />
-              <text x="226" y="142" textAnchor="start" fontSize={isLightbox ? 12 : 9} fontWeight="bold"
-                fill={entry.angleDegree?.D ? '#d32f2f' : '#e65100'}>
+              {entry.offsetType === 'adjustable' && (
+                <text x="110" y="146" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#333">
+                  Adjustable
+                </text>
+              )}
+              {/* D — arrow pointing to upper bend */}
+              <defs>
+                <marker id="arrowDCard" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                  <path d="M 0,0 L 8,3 L 0,6" fill="#e65100" />
+                </marker>
+                <marker id="arrowECard" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                  <path d="M 0,0 L 8,3 L 0,6" fill="#e65100" />
+                </marker>
+              </defs>
+              <line x1="365" y1="150" x2="325" y2="142" stroke="#e65100" strokeWidth="1.2" markerEnd="url(#arrowDCard)" />
+              <text x="369" y="155" textAnchor="start" fontSize="12" fontWeight="bold"
+                fill={entry.angleDegree?.D ? '#333' : '#e65100'}>
                 {entry.angleDegree?.D ? `D=${entry.angleDegree.D}°` : 'D'}
               </text>
-              {/* E */}
-              <path d="M 165,215 Q 158,225 152,240" fill="none" stroke="#e65100" strokeWidth="1.5" />
-              <text x="160" y="245" textAnchor="start" fontSize={isLightbox ? 12 : 9} fontWeight="bold"
-                fill={entry.angleDegree?.E ? '#d32f2f' : '#e65100'}>
+              {/* E — arrow pointing to lower bend */}
+              <line x1="215" y1="240" x2="185" y2="227" stroke="#e65100" strokeWidth="1.2" markerEnd="url(#arrowECard)" />
+              <text x="219" y="255" textAnchor="start" fontSize="12" fontWeight="bold"
+                fill={entry.angleDegree?.E ? '#333' : '#e65100'}>
                 {entry.angleDegree?.E ? `E=${entry.angleDegree.E}°` : 'E'}
               </text>
               {/* C */}
-              <line x1="100" y1="230" x2="100" y2="395" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-              <line x1="95" y1="230" x2="105" y2="230" stroke="#d32f2f" strokeWidth="1" />
-              <line x1="95" y1="395" x2="105" y2="395" stroke="#d32f2f" strokeWidth="1" />
-              <text x="92" y="318" textAnchor="middle" fontSize={isLightbox ? 13 : 10} fontWeight="bold"
-                fill={entry.measurements?.C ? '#d32f2f' : '#333'}
-                transform="rotate(-90, 92, 318)">
+              <line x1="75" y1="195" x2="75" y2="380" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+              <line x1="70" y1="195" x2="80" y2="195" stroke="#d32f2f" strokeWidth="1" />
+              <line x1="70" y1="380" x2="80" y2="380" stroke="#d32f2f" strokeWidth="1" />
+              <text x="67" y="293" textAnchor="middle" fontSize="13" fontWeight="bold"
+                fill="#333"
+                transform="rotate(-90, 67, 293)">
                 {entry.measurements?.C ? `C=${entry.measurements.C}` : 'C'}
               </text>
+              {/* Seam Side indicator */}
+              {entry.seamSide === 'top' && (
+                <line x1="126" y1="125" x2="126" y2="373" stroke="#d32f2f" strokeWidth="3" strokeDasharray="8,5" />
+              )}
+              {entry.seamSide === 'right' && (
+                <line x1="168" y1="136" x2="168" y2="384" stroke="#1976d2" strokeWidth="3" strokeDasharray="8,5" />
+              )}
+              {entry.seamSide === 'left' && (
+                <line x1="103" y1="136" x2="103" y2="384" stroke="#f57c00" strokeWidth="3" strokeDasharray="8,5" />
+              )}
+              {entry.seamSide === 'bottom' && (
+                <line x1="145" y1="148" x2="145" y2="395" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
+              )}
             </svg>
           ) : (entry.subCategory === 'Standard Offset' || entry.subCategory === 'Bends (Elbow/Shoes)') ? (
             /* Standard Offset / Bends — PNG image + C dimension overlay */
@@ -589,22 +616,22 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
                 <div>
                   {entry.subCategory === 'Custom Offset' ? (
                     /* Custom Offset — PNG image + dimension overlays (lightbox) */
-                    <svg viewBox="0 0 380 450" width="480" height="560" xmlns="http://www.w3.org/2000/svg">
+                    <svg viewBox="0 0 380 450" width="480" height="560" xmlns="http://www.w3.org/2000/svg" overflow="visible">
                       <image href="/awf-products/standard-offset-square.jpeg" x="80" y="30" width="270" height="380" preserveAspectRatio="xMidYMid meet" />
                       {/* W */}
-                      <line x1="125" y1="40" x2="338" y2="40" stroke="#1976d2" strokeWidth="1.2" strokeDasharray="5,3" />
-                      <line x1="125" y1="35" x2="125" y2="45" stroke="#1976d2" strokeWidth="1.2" />
-                      <line x1="338" y1="35" x2="338" y2="45" stroke="#1976d2" strokeWidth="1.2" />
-                      <text x="232" y="34" textAnchor="middle" fontSize="13" fontWeight="bold"
-                        fill={entry.measurements?.W ? '#d32f2f' : '#1976d2'}>
+                      <line x1="75" y1="40" x2="240" y2="40" stroke="#1976d2" strokeWidth="1.2" strokeDasharray="5,3" />
+                      <line x1="75" y1="35" x2="75" y2="45" stroke="#1976d2" strokeWidth="1.2" />
+                      <line x1="240" y1="35" x2="240" y2="45" stroke="#1976d2" strokeWidth="1.2" />
+                      <text x="158" y="34" textAnchor="middle" fontSize="13" fontWeight="bold"
+                        fill={entry.measurements?.W ? '#333' : '#1976d2'}>
                         {entry.measurements?.W ? `W=${entry.measurements.W}` : 'W'}
                       </text>
                       {/* B1 */}
-                      <line x1="280" y1="50" x2="280" y2="82" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
-                      <line x1="275" y1="50" x2="285" y2="50" stroke="#d32f2f" strokeWidth="1" />
-                      <line x1="275" y1="82" x2="285" y2="82" stroke="#d32f2f" strokeWidth="1" />
-                      <text x="288" y="70" textAnchor="start" fontSize="12" fontWeight="bold"
-                        fill={entry.measurements?.B1 ? '#d32f2f' : '#333'}>
+                      <line x1="248" y1="48" x2="248" y2="95" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
+                      <line x1="243" y1="48" x2="253" y2="48" stroke="#d32f2f" strokeWidth="1" />
+                      <line x1="243" y1="95" x2="253" y2="95" stroke="#d32f2f" strokeWidth="1" />
+                      <text x="241" y="70" textAnchor="end" fontSize="12" fontWeight="bold"
+                        fill="#333">
                         {entry.measurements?.B1 ? `B1=${entry.measurements.B1}` : 'B1'}
                       </text>
                       {/* B2 */}
@@ -612,40 +639,66 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
                       <line x1="343" y1="62" x2="353" y2="62" stroke="#d32f2f" strokeWidth="1" />
                       <line x1="343" y1="125" x2="353" y2="125" stroke="#d32f2f" strokeWidth="1" />
                       <text x="358" y="98" textAnchor="start" fontSize="12" fontWeight="bold"
-                        fill={entry.measurements?.B2 ? '#d32f2f' : '#333'}>
+                        fill="#333">
                         {entry.measurements?.B2 ? `B2=${entry.measurements.B2}` : 'B2'}
                       </text>
-                      {/* A */}
-                      <line x1="200" y1="135" x2="200" y2="225" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                      <line x1="195" y1="135" x2="205" y2="135" stroke="#d32f2f" strokeWidth="1" />
-                      <line x1="195" y1="225" x2="205" y2="225" stroke="#d32f2f" strokeWidth="1" />
-                      <text x="208" y="184" textAnchor="start" fontSize="13" fontWeight="bold"
-                        fill={entry.measurements?.A ? '#d32f2f' : '#333'}>
+                      {/* A — nearly horizontal diagonal */}
+                      <line x1="85" y1="182" x2="220" y2="93" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="83" y1="177" x2="87" y2="187" stroke="#d32f2f" strokeWidth="1" />
+                      <line x1="218" y1="88" x2="222" y2="98" stroke="#d32f2f" strokeWidth="1" />
+                      <text x="110" y="130" textAnchor="middle" fontSize="13" fontWeight="bold"
+                        fill="#333">
                         {entry.offsetType === 'adjustable' && entry.adjustableRange?.from && entry.adjustableRange?.to
                           ? `A=${entry.adjustableRange.from}-${entry.adjustableRange.to}`
                           : (entry.measurements?.A ? `A=${entry.measurements.A}` : 'A')}
                       </text>
-                      {/* D */}
-                      <path d="M 222,125 Q 216,135 210,148" fill="none" stroke="#e65100" strokeWidth="1.5" />
-                      <text x="226" y="142" textAnchor="start" fontSize="12" fontWeight="bold"
-                        fill={entry.angleDegree?.D ? '#d32f2f' : '#e65100'}>
+                      {entry.offsetType === 'adjustable' && (
+                        <text x="110" y="146" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#333">
+                          Adjustable
+                        </text>
+                      )}
+                      {/* D — arrow pointing to upper bend */}
+                      <defs>
+                        <marker id="arrowDLightbox" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                          <path d="M 0,0 L 8,3 L 0,6" fill="#e65100" />
+                        </marker>
+                        <marker id="arrowELightbox" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                          <path d="M 0,0 L 8,3 L 0,6" fill="#e65100" />
+                        </marker>
+                      </defs>
+                      <line x1="365" y1="150" x2="325" y2="142" stroke="#e65100" strokeWidth="1.2" markerEnd="url(#arrowDLightbox)" />
+                      <text x="369" y="155" textAnchor="start" fontSize="12" fontWeight="bold"
+                        fill={entry.angleDegree?.D ? '#333' : '#e65100'}>
                         {entry.angleDegree?.D ? `D=${entry.angleDegree.D}°` : 'D'}
                       </text>
-                      {/* E */}
-                      <path d="M 165,215 Q 158,225 152,240" fill="none" stroke="#e65100" strokeWidth="1.5" />
-                      <text x="160" y="245" textAnchor="start" fontSize="12" fontWeight="bold"
-                        fill={entry.angleDegree?.E ? '#d32f2f' : '#e65100'}>
+                      {/* E — arrow pointing to lower bend */}
+                      <line x1="215" y1="240" x2="185" y2="227" stroke="#e65100" strokeWidth="1.2" markerEnd="url(#arrowELightbox)" />
+                      <text x="219" y="255" textAnchor="start" fontSize="12" fontWeight="bold"
+                        fill={entry.angleDegree?.E ? '#333' : '#e65100'}>
                         {entry.angleDegree?.E ? `E=${entry.angleDegree.E}°` : 'E'}
                       </text>
                       {/* C */}
-                      <line x1="100" y1="230" x2="100" y2="395" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                      <line x1="95" y1="230" x2="105" y2="230" stroke="#d32f2f" strokeWidth="1" />
-                      <line x1="95" y1="395" x2="105" y2="395" stroke="#d32f2f" strokeWidth="1" />
-                      <text x="92" y="318" textAnchor="middle" fontSize="13" fontWeight="bold"
-                        fill={entry.measurements?.C ? '#d32f2f' : '#333'}
-                        transform="rotate(-90, 92, 318)">
+                      <line x1="75" y1="195" x2="75" y2="380" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="70" y1="195" x2="80" y2="195" stroke="#d32f2f" strokeWidth="1" />
+                      <line x1="70" y1="380" x2="80" y2="380" stroke="#d32f2f" strokeWidth="1" />
+                      <text x="67" y="293" textAnchor="middle" fontSize="13" fontWeight="bold"
+                        fill="#333"
+                        transform="rotate(-90, 67, 293)">
                         {entry.measurements?.C ? `C=${entry.measurements.C}` : 'C'}
                       </text>
+                      {/* Seam Side indicator */}
+                      {entry.seamSide === 'top' && (
+                        <line x1="126" y1="125" x2="126" y2="373" stroke="#d32f2f" strokeWidth="3" strokeDasharray="8,5" />
+                      )}
+                      {entry.seamSide === 'right' && (
+                        <line x1="168" y1="136" x2="168" y2="384" stroke="#1976d2" strokeWidth="3" strokeDasharray="8,5" />
+                      )}
+                      {entry.seamSide === 'left' && (
+                        <line x1="103" y1="136" x2="103" y2="384" stroke="#f57c00" strokeWidth="3" strokeDasharray="8,5" />
+                      )}
+                      {entry.seamSide === 'bottom' && (
+                        <line x1="145" y1="148" x2="145" y2="395" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
+                      )}
                     </svg>
                   ) : (entry.subCategory === 'Standard Offset' || entry.subCategory === 'Bends (Elbow/Shoes)') ? (
                     /* Standard Offset / Bends — PNG image + C dimension overlay */

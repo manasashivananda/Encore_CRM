@@ -500,24 +500,24 @@ const AWFSelectMaterials = () => {
                       <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.4 }}>STICKERS</span>
                     </div>
                   )}
-                  <svg viewBox="0 0 380 450" width="380" height="450" xmlns="http://www.w3.org/2000/svg">
+                  <svg viewBox="0 0 380 450" width="380" height="450" xmlns="http://www.w3.org/2000/svg" overflow="visible">
                     {/* Same 3D offset image as Standard Offset */}
                     <image href="/awf-products/standard-offset-square.jpeg" x="80" y="30" width="270" height="380" preserveAspectRatio="xMidYMid meet" />
 
                     {/* W — horizontal dashed line across full width of upper pipe */}
-                    <line x1="125" y1="40" x2="338" y2="40" stroke="#1976d2" strokeWidth="1.2" strokeDasharray="5,3" />
-                    <line x1="125" y1="35" x2="125" y2="45" stroke="#1976d2" strokeWidth="1.2" />
-                    <line x1="338" y1="35" x2="338" y2="45" stroke="#1976d2" strokeWidth="1.2" />
-                    <text x="232" y="34" textAnchor="middle" fontSize="13" fontWeight="bold"
+                    <line x1="75" y1="40" x2="240" y2="40" stroke="#1976d2" strokeWidth="1.2" strokeDasharray="5,3" />
+                    <line x1="75" y1="35" x2="75" y2="45" stroke="#1976d2" strokeWidth="1.2" />
+                    <line x1="240" y1="35" x2="240" y2="45" stroke="#1976d2" strokeWidth="1.2" />
+                    <text x="158" y="34" textAnchor="middle" fontSize="13" fontWeight="bold"
                       fill={highlightedLabel === 'W' ? '#d32f2f' : '#1976d2'}>
                       {measW ? `W=${measW}` : 'W'}
                     </text>
 
-                    {/* B1 — vertical line on top face of upper pipe */}
-                    <line x1="280" y1="50" x2="280" y2="82" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
-                    <line x1="275" y1="50" x2="285" y2="50" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="275" y1="82" x2="285" y2="82" stroke="#d32f2f" strokeWidth="1" />
-                    <text x="288" y="70" textAnchor="start" fontSize="12" fontWeight="bold"
+                    {/* B1 — vertical line on left side of top face of upper pipe */}
+                    <line x1="248" y1="48" x2="248" y2="95" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
+                    <line x1="243" y1="48" x2="253" y2="48" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="243" y1="95" x2="253" y2="95" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="241" y="70" textAnchor="end" fontSize="12" fontWeight="bold"
                       fill={highlightedLabel === 'B1' ? '#d32f2f' : '#333'}>
                       {measB1 ? `B1=${measB1}` : 'B1'}
                     </text>
@@ -531,40 +531,67 @@ const AWFSelectMaterials = () => {
                       {measB2 ? `B2=${measB2}` : 'B2'}
                     </text>
 
-                    {/* A — vertical line between C and B1, at connector section */}
-                    <line x1="200" y1="135" x2="200" y2="225" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="195" y1="135" x2="205" y2="135" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="195" y1="225" x2="205" y2="225" stroke="#d32f2f" strokeWidth="1" />
-                    <text x="208" y="184" textAnchor="start" fontSize="13" fontWeight="bold"
+                    {/* A — nearly horizontal dashed line measuring diagonal connector */}
+                    <line x1="85" y1="182" x2="220" y2="93" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="83" y1="177" x2="87" y2="187" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="218" y1="88" x2="222" y2="98" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="110" y="130" textAnchor="middle" fontSize="13" fontWeight="bold"
                       fill={highlightedLabel === 'A' ? '#d32f2f' : '#333'}>
                       {offsetType === 'adjustable' && adjustableFrom && adjustableTo
                         ? `A=${adjustableFrom}-${adjustableTo}`
                         : (measA ? `A=${measA}` : 'A')}
                     </text>
+                    {offsetType === 'adjustable' && (
+                      <text x="110" y="146" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#333">
+                        Adjustable
+                      </text>
+                    )}
 
-                    {/* D — angle arc at upper bend */}
-                    <path d="M 222,125 Q 216,135 210,148" fill="none" stroke="#e65100" strokeWidth="1.5" />
-                    <text x="226" y="142" textAnchor="start" fontSize="12" fontWeight="bold"
+                    {/* D — arrow pointing to upper bend */}
+                    <defs>
+                      <marker id="arrowD" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                        <path d="M 0,0 L 8,3 L 0,6" fill="#e65100" />
+                      </marker>
+                      <marker id="arrowE" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                        <path d="M 0,0 L 8,3 L 0,6" fill="#e65100" />
+                      </marker>
+                    </defs>
+                    <line x1="365" y1="150" x2="325" y2="142" stroke="#e65100" strokeWidth="1.2" markerEnd="url(#arrowD)" />
+                    <text x="369" y="155" textAnchor="start" fontSize="12" fontWeight="bold"
                       fill={highlightedLabel === 'D' ? '#d32f2f' : '#e65100'}>
                       {angleD ? `D=${angleD}°` : 'D'}
                     </text>
 
-                    {/* E — angle arc at lower bend */}
-                    <path d="M 165,215 Q 158,225 152,240" fill="none" stroke="#e65100" strokeWidth="1.5" />
-                    <text x="160" y="245" textAnchor="start" fontSize="12" fontWeight="bold"
+                    {/* E — arrow pointing to lower bend */}
+                    <line x1="215" y1="240" x2="185" y2="227" stroke="#e65100" strokeWidth="1.2" markerEnd="url(#arrowE)" />
+                    <text x="219" y="255" textAnchor="start" fontSize="12" fontWeight="bold"
                       fill={highlightedLabel === 'E' ? '#d32f2f' : '#e65100'}>
                       {angleE ? `E=${angleE}°` : 'E'}
                     </text>
 
                     {/* C — vertical dashed line along left side of bottom pipe */}
-                    <line x1="100" y1="230" x2="100" y2="395" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="95" y1="230" x2="105" y2="230" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="95" y1="395" x2="105" y2="395" stroke="#d32f2f" strokeWidth="1" />
-                    <text x="92" y="318" textAnchor="middle" fontSize="13" fontWeight="bold"
+                    <line x1="75" y1="195" x2="75" y2="380" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="70" y1="195" x2="80" y2="195" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="70" y1="380" x2="80" y2="380" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="67" y="293" textAnchor="middle" fontSize="13" fontWeight="bold"
                       fill={highlightedLabel === 'C' ? '#d32f2f' : '#333'}
-                      transform="rotate(-90, 92, 318)">
+                      transform="rotate(-90, 67, 293)">
                       {measC ? `C=${measC}` : 'C'}
                     </text>
+
+                    {/* Seam Side indicator — vertical dashed line on the pipe face */}
+                    {seamSide === 'top' && (
+                      <line x1="126" y1="125" x2="126" y2="373" stroke="#d32f2f" strokeWidth="3" strokeDasharray="8,5" />
+                    )}
+                    {seamSide === 'right' && (
+                      <line x1="168" y1="136" x2="168" y2="384" stroke="#1976d2" strokeWidth="3" strokeDasharray="8,5" />
+                    )}
+                    {seamSide === 'left' && (
+                      <line x1="103" y1="136" x2="103" y2="384" stroke="#f57c00" strokeWidth="3" strokeDasharray="8,5" />
+                    )}
+                    {seamSide === 'bottom' && (
+                      <line x1="145" y1="148" x2="145" y2="395" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
+                    )}
                   </svg>
                   {note && (
                     <div style={{ fontSize: '18px', color: '#333', fontWeight: 'bold', textAlign: 'right', width: '100%', marginTop: '4px' }}>
@@ -793,7 +820,15 @@ const AWFSelectMaterials = () => {
                   </div>
 
                   <div className="awf-measurements-section">
-                    <div className="awf-measurements-title">Seam Side</div>
+                    <div className="awf-measurements-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      Seam Side
+                      {seamSide && (
+                        <button type="button" onClick={() => setSeamSide('')}
+                          style={{ background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer', fontSize: '11px', padding: '0', textDecoration: 'underline' }}>
+                          Reset
+                        </button>
+                      )}
+                    </div>
                     <label className="awf-radio-option">
                       <input type="radio" name="seamSide" value="top" checked={seamSide === 'top'} onChange={(e) => setSeamSide(e.target.value)} />
                       <span>Top</span>
