@@ -340,17 +340,17 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
             </svg>
           ) : (entry.subCategory === 'Standard Offset' || entry.subCategory === 'Bends (Elbow/Shoes)') ? (
             /* Standard Offset / Bends — PNG image + C dimension overlay */
-            <svg viewBox="0 0 380 450" width={isLightbox ? 360 : 210} height={isLightbox ? 420 : 245} xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 380 450" width={isLightbox ? 360 : 400} height={isLightbox ? 420 : 470} xmlns="http://www.w3.org/2000/svg">
               <image href="/awf-products/standard-offset-square.jpeg" x="80" y="30" width="270" height="380" preserveAspectRatio="xMidYMid meet" />
               {entry.productName?.toLowerCase().includes('federation') && (
                 <text x="215" y="430" textAnchor="middle" fontSize={isLightbox ? 16 : 11} fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
               )}
-              <line x1="100" y1="230" x2="100" y2="395" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-              <line x1="95" y1="230" x2="105" y2="230" stroke="#d32f2f" strokeWidth="1" />
-              <line x1="95" y1="395" x2="105" y2="395" stroke="#d32f2f" strokeWidth="1" />
-              <text x="92" y="318" textAnchor="middle" fontSize={isLightbox ? 13 : 10} fontWeight="bold"
-                fill={entry.use24Downpipe ? '#d32f2f' : '#333'}
-                transform="rotate(-90, 92, 318)">
+              <line x1="75" y1="195" x2="75" y2="380" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+              <line x1="70" y1="195" x2="80" y2="195" stroke="#d32f2f" strokeWidth="1" />
+              <line x1="70" y1="380" x2="80" y2="380" stroke="#d32f2f" strokeWidth="1" />
+              <text x="67" y="293" textAnchor="middle" fontSize="13" fontWeight="bold"
+                fill="#333"
+                transform="rotate(-90, 67, 293)">
                 {entry.offsetCValue || 880}mm  C
               </text>
             </svg>
@@ -599,17 +599,21 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
               {/* ── MAIN CONTENT: Barcode + Drawing + Product Name + Note ── */}
               <div style={{ padding: '40px 80px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 {/* Barcode sticker */}
-                {entry.barcode && (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', padding: '10px 0' }}>
-                    <span style={{ fontSize: '32px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.2 }}>BARCODE</span>
-                    <svg width={180} height={80} viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
-                      {[0,3,5,7,12,14,17,19,24,26,28,33,35,38,40,42,47,49,51,56,58,61,63,68,70,72,77,79,82,84,86,91,93,95,100,102,105,107,112,114,116,121,123,126,128,133,135,137].map(x => (
-                        <rect key={x} x={x} y="0" width={x % 12 < 3 ? 2.5 : 1} height="50" fill="#000" />
-                      ))}
-                    </svg>
-                    <span style={{ fontSize: '32px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.4 }}>STICKERS</span>
-                  </div>
-                )}
+                {entry.barcode && (() => {
+                  const lbf = 32;
+                  const lbStickerW = 180;
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', marginBottom: '0px' }}>
+                      <span style={{ fontSize: `${lbf}px`, fontWeight: 900, letterSpacing: '4px', lineHeight: 1.2 }}>BARCODE</span>
+                      <svg width={lbStickerW} height={60} viewBox="0 0 180 45" xmlns="http://www.w3.org/2000/svg">
+                        {[0,3,5,7,12,14,17,19,24,26,28,33,35,38,40,42,47,49,51,56,58,61,63,68,70,72,77,79,82,84,86,91,93,95,100,102,105,107,112,114,116,121,123,126,128,133,135,137,140,143,145,148,153,155,158,160,165,167,170,175,177].map(x => (
+                          <rect key={x} x={x} y="0" width={x % 12 < 3 ? 3 : 1.2} height="45" fill="#000" />
+                        ))}
+                      </svg>
+                      <span style={{ fontSize: `${lbf}px`, fontWeight: 900, letterSpacing: '4px', lineHeight: 1.0 }}>STICKERS</span>
+                    </div>
+                  );
+                })()}
 
                 {/* Product image / Offset SVGs + Product Name + Note */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0' }}>
@@ -707,12 +711,12 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
                       {entry.productName?.toLowerCase().includes('federation') && (
                         <text x="215" y="430" textAnchor="middle" fontSize="16" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
                       )}
-                      <line x1="65" y1="195" x2="65" y2="410" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                      <line x1="60" y1="195" x2="70" y2="195" stroke="#d32f2f" strokeWidth="1" />
-                      <line x1="60" y1="410" x2="70" y2="410" stroke="#d32f2f" strokeWidth="1" />
-                      <text x="58" y="308" textAnchor="middle" fontSize="13" fontWeight="bold"
-                        fill={entry.use24Downpipe ? '#d32f2f' : '#333'}
-                        transform="rotate(-90, 58, 308)">
+                      <line x1="75" y1="195" x2="75" y2="380" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                      <line x1="70" y1="195" x2="80" y2="195" stroke="#d32f2f" strokeWidth="1" />
+                      <line x1="70" y1="380" x2="80" y2="380" stroke="#d32f2f" strokeWidth="1" />
+                      <text x="67" y="293" textAnchor="middle" fontSize="13" fontWeight="bold"
+                        fill="#333"
+                        transform="rotate(-90, 67, 293)">
                         {entry.offsetCValue || 880}mm  C
                       </text>
                     </svg>

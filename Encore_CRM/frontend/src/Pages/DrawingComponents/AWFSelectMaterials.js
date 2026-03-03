@@ -471,12 +471,12 @@ const AWFSelectMaterials = () => {
                       <text x="215" y="430" textAnchor="middle" fontSize="16" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
                     )}
                     {/* C dimension — vertical dashed line along bottom pipe only */}
-                    <line x1="100" y1="230" x2="100" y2="395" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="95" y1="230" x2="105" y2="230" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="95" y1="395" x2="105" y2="395" stroke="#d32f2f" strokeWidth="1" />
-                    <text x="92" y="318" textAnchor="middle" fontSize="13" fontWeight="bold"
-                      fill={use24Downpipe ? '#d32f2f' : '#333'}
-                      transform="rotate(-90, 92, 318)">
+                    <line x1="75" y1="195" x2="75" y2="380" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="70" y1="195" x2="80" y2="195" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="70" y1="380" x2="80" y2="380" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="67" y="293" textAnchor="middle" fontSize="13" fontWeight="bold"
+                      fill="#333"
+                      transform="rotate(-90, 67, 293)">
                       {offsetCValue}mm  C
                     </text>
                   </svg>
