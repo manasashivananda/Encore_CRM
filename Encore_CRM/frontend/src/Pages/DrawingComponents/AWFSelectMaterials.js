@@ -140,6 +140,15 @@ const AWFSelectMaterials = () => {
   const [seamSide, setSeamSide] = useState(editData?.seamSide || '');
   const [highlightedLabel, setHighlightedLabel] = useState(null);
 
+  // Standard Offset: C dimension varies by product
+  const offsetCValue = useMemo(() => {
+    if (partClass !== 'Offsets') return null;
+    const name = productName?.toLowerCase() || '';
+    if (name.includes('100x75') || name.includes('federation 100x75')) return use24Downpipe ? 1970 : 1370;
+    if (name.includes('90')) return use24Downpipe ? 1400 : 800;
+    return use24Downpipe ? 1480 : 880;
+  }, [partClass, productName, use24Downpipe]);
+
   // Highlight a label briefly when its value changes
   const highlightField = (field) => {
     setHighlightedLabel(field);
@@ -309,6 +318,7 @@ const AWFSelectMaterials = () => {
       taperedSmallEnd: tapered && taperedSmallEnd ? Number(taperedSmallEnd) : null,
       taperedBigEnd: tapered && taperedBigEnd ? Number(taperedBigEnd) : null,
       barcode, use24Downpipe, note,
+      offsetCValue: offsetCValue || null,
       unitPrice: unitPrice ? Number(unitPrice) : 0,
       productImage,
       // Custom Offset fields
@@ -442,7 +452,7 @@ const AWFSelectMaterials = () => {
               <h4 className="awf-product-title">{subCategory || (partClass === 'Clips & Pops' ? 'Clips' : partClass)}</h4>
 
               {partClass === 'Offsets' && formType !== 'custom_offset' ? (
-                /* ═══ STANDARD OFFSET / BENDS — Square or Round pipe SVG drawing ═══ */
+                /* ═══ STANDARD OFFSET / BENDS — PNG image + C dimension overlay ═══ */
                 <div className="awf-offset-drawing">
                   {barcode && (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', padding: '4px 0' }}>
@@ -455,88 +465,21 @@ const AWFSelectMaterials = () => {
                       <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.4 }}>STICKERS</span>
                     </div>
                   )}
-                  {isSquareProduct ? (
-                    /* Square offset — thick 3D box pipe L-shape: horizontal top + vertical left */
-                    <svg viewBox="-80 0 380 400" width="350" height="390" xmlns="http://www.w3.org/2000/svg">
-                      {/* ─── Top face (horizontal section) ─── */}
-                      <polygon points="25,55 200,55 220,39 45,39" fill="#ddd" stroke="#555" strokeWidth="1.5" />
-
-                      {/* ─── Inner step face (bottom of horizontal pipe visible in the corner) ─── */}
-                      <polygon points="90,120 200,120 220,104 110,104" fill="#bbb" stroke="#555" strokeWidth="1.5" />
-
-                      {/* ─── Right side of horizontal section ─── */}
-                      <polygon points="200,55 220,39 220,104 200,120" fill="#aaa" stroke="#555" strokeWidth="1.5" />
-
-                      {/* ─── Right side of vertical section (below junction) ─── */}
-                      <polygon points="90,120 110,104 110,334 90,350" fill="#aaa" stroke="#555" strokeWidth="1.5" />
-
-                      {/* ─── Bottom face of vertical section ─── */}
-                      <polygon points="25,350 90,350 110,334 45,334" fill="#999" stroke="#555" strokeWidth="1.5" />
-
-                      {/* ─── Front face — horizontal section ─── */}
-                      <polygon points="25,55 200,55 200,120 25,120" fill="#ccc" stroke="#555" strokeWidth="1.5" />
-
-                      {/* ─── Front face — vertical section ─── */}
-                      <polygon points="25,120 90,120 90,350 25,350" fill="#ccc" stroke="#555" strokeWidth="1.5" />
-
-                      {/* Federation label */}
-                      {productName?.toLowerCase().includes('federation') && (
-                        <text x="150" y="385" textAnchor="middle" fontSize="16" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
-                      )}
-
-                      {/* ─── Dimension labels ─── */}
-                      {/* C = 880mm (horizontal) — updates with use24Downpipe */}
-                      <line x1="25" y1="370" x2="200" y2="370" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                      <line x1="25" y1="365" x2="25" y2="375" stroke="#d32f2f" strokeWidth="1" />
-                      <line x1="200" y1="365" x2="200" y2="375" stroke="#d32f2f" strokeWidth="1" />
-                      <text x="112" y="390" textAnchor="middle" fontSize="12" fontWeight="bold"
-                        fill={use24Downpipe ? '#d32f2f' : '#333'}>
-                        {use24Downpipe ? '1480mm' : '880mm'}  C
-                      </text>
-                    </svg>
-                  ) : (
-                    /* Round offset — cylindrical Z-shape with dimension labels */
-                    <svg viewBox="0 0 480 460" width="400" height="420" xmlns="http://www.w3.org/2000/svg">
-                      {/* ─── Round pipe offset shape ─── */}
-                      {/* Top vertical pipe (round) */}
-                      <ellipse cx="340" cy="60" rx="30" ry="12" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
-                      <rect x="310" y="60" width="60" height="120" fill="#d5d5d5" stroke="none" />
-                      <line x1="310" y1="60" x2="310" y2="180" stroke="#333" strokeWidth="1.5" />
-                      <line x1="370" y1="60" x2="370" y2="180" stroke="#333" strokeWidth="1.5" />
-
-                      {/* Angled section connecting top pipe to bottom pipe */}
-                      <line x1="310" y1="180" x2="190" y2="280" stroke="#333" strokeWidth="1.5" />
-                      <line x1="370" y1="180" x2="250" y2="280" stroke="#333" strokeWidth="1.5" />
-                      <rect x="190" y="180" width="60" height="100" fill="#d5d5d5" stroke="none" opacity="0.3" />
-
-                      {/* Bottom horizontal pipe (round) */}
-                      <ellipse cx="120" cy="310" rx="12" ry="30" fill="#e0e0e0" stroke="#333" strokeWidth="1.5" />
-                      <rect x="120" y="280" width="310" height="60" fill="#d5d5d5" stroke="none" />
-                      <line x1="120" y1="280" x2="430" y2="280" stroke="#333" strokeWidth="1.5" />
-                      <line x1="120" y1="340" x2="430" y2="340" stroke="#333" strokeWidth="1.5" />
-                      <ellipse cx="430" cy="310" rx="12" ry="30" fill="#ccc" stroke="#333" strokeWidth="1.5" />
-
-                      {/* Federation label */}
-                      {productName?.toLowerCase().includes('federation') && (
-                        <text x="275" y="430" textAnchor="middle" fontSize="18" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
-                      )}
-
-                      {/* ─── Dimension labels ─── */}
-                      {/* B = 120mm (top pipe width) */}
-                      <line x1="375" y1="50" x2="375" y2="72" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
-                      <text x="390" y="55" fontSize="12" fontWeight="bold" fill="#d32f2f">120mm  B</text>
-
-                      {/* C = 880mm — updates with use24Downpipe */}
-                      <line x1="120" y1="355" x2="430" y2="355" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                      <line x1="120" y1="350" x2="120" y2="360" stroke="#d32f2f" strokeWidth="1" />
-                      <line x1="430" y1="350" x2="430" y2="360" stroke="#d32f2f" strokeWidth="1" />
-                      <text x="275" y="375" textAnchor="middle" fontSize="13" fontWeight="bold"
-                        fill={use24Downpipe ? '#d32f2f' : '#333'}>
-                        {use24Downpipe ? '1480mm' : '880mm'}  C
-                      </text>
-
-                    </svg>
-                  )}
+                  <svg viewBox="0 0 380 450" width="380" height="450" xmlns="http://www.w3.org/2000/svg">
+                    <image href="/awf-products/standard-offset-square.jpeg" x="80" y="30" width="270" height="380" preserveAspectRatio="xMidYMid meet" />
+                    {productName?.toLowerCase().includes('federation') && (
+                      <text x="215" y="430" textAnchor="middle" fontSize="16" fontWeight="bold" fontStyle="italic" fill="#333">FEDERATION</text>
+                    )}
+                    {/* C dimension — vertical dashed line along bottom pipe only */}
+                    <line x1="100" y1="230" x2="100" y2="395" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="95" y1="230" x2="105" y2="230" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="95" y1="395" x2="105" y2="395" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="92" y="318" textAnchor="middle" fontSize="13" fontWeight="bold"
+                      fill={use24Downpipe ? '#d32f2f' : '#333'}
+                      transform="rotate(-90, 92, 318)">
+                      {offsetCValue}mm  C
+                    </text>
+                  </svg>
                   {note && (
                     <div style={{ fontSize: '18px', color: '#333', fontWeight: 'bold', textAlign: 'right', width: '100%', marginTop: '4px' }}>
                       Note: {note}
@@ -544,7 +487,7 @@ const AWFSelectMaterials = () => {
                   )}
                 </div>
               ) : formType === 'custom_offset' ? (
-                /* ═══ CUSTOM OFFSET — Interactive SVG drawing ═══ */
+                /* ═══ CUSTOM OFFSET — Dynamic SVG with user-entered dimensions ═══ */
                 <div className="awf-offset-drawing">
                   {barcode && (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', padding: '4px 0' }}>
@@ -557,140 +500,71 @@ const AWFSelectMaterials = () => {
                       <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '4px', lineHeight: 1.4 }}>STICKERS</span>
                     </div>
                   )}
-                  <svg viewBox="0 0 420 460" width="380" height="440" xmlns="http://www.w3.org/2000/svg">
-                    {/* ─── 3D Z-shape offset pipe (thick box style) ─── */}
-                    {/* Top face — top bar */}
-                    <polygon points="110,70 290,70 312,52 132,52" fill="#ddd" stroke="#555" strokeWidth="1.5" />
-                    {/* Inner step — top junction */}
-                    <polygon points="165,125 290,125 312,107 187,107" fill="#bbb" stroke="#555" strokeWidth="1.5" />
-                    {/* Right side — top bar */}
-                    <polygon points="290,70 312,52 312,107 290,125" fill="#aaa" stroke="#555" strokeWidth="1.5" />
-                    {/* Right side — connector */}
-                    <polygon points="165,125 187,107 187,267 165,285" fill="#aaa" stroke="#555" strokeWidth="1.5" />
-                    {/* Inner step — bottom junction */}
-                    <polygon points="165,285 290,285 312,267 187,267" fill="#bbb" stroke="#555" strokeWidth="1.5" />
-                    {/* Right side — bottom bar */}
-                    <polygon points="290,285 312,267 312,322 290,340" fill="#aaa" stroke="#555" strokeWidth="1.5" />
-                    {/* Bottom face — bottom bar */}
-                    <polygon points="110,340 290,340 312,322 132,322" fill="#999" stroke="#555" strokeWidth="1.5" />
-                    {/* Front face — top bar */}
-                    <polygon points="110,70 290,70 290,125 110,125" fill="#ccc" stroke="#555" strokeWidth="1.5" />
-                    {/* Front face — connector */}
-                    <polygon points="110,125 165,125 165,285 110,285" fill="#ccc" stroke="#555" strokeWidth="1.5" />
-                    {/* Front face — bottom bar */}
-                    <polygon points="110,285 290,285 290,340 110,340" fill="#ccc" stroke="#555" strokeWidth="1.5" />
+                  <svg viewBox="0 0 380 450" width="380" height="450" xmlns="http://www.w3.org/2000/svg">
+                    {/* Same 3D offset image as Standard Offset */}
+                    <image href="/awf-products/standard-offset-square.jpeg" x="80" y="30" width="270" height="380" preserveAspectRatio="xMidYMid meet" />
 
-                    {/* ─── Dimension lines & labels ─── */}
-
-                    {/* W — width across top */}
-                    <line x1="110" y1="48" x2="290" y2="48" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="110" y1="43" x2="110" y2="53" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="290" y1="43" x2="290" y2="53" stroke="#d32f2f" strokeWidth="1" />
-                    <text x="200" y="42" textAnchor="middle" fontSize="14" fontWeight="bold"
-                      fill={highlightedLabel === 'W' ? '#d32f2f' : '#333'}>
-                      W{measW ? ` = ${measW}` : ''}
+                    {/* W — horizontal dashed line across full width of upper pipe */}
+                    <line x1="125" y1="40" x2="338" y2="40" stroke="#1976d2" strokeWidth="1.2" strokeDasharray="5,3" />
+                    <line x1="125" y1="35" x2="125" y2="45" stroke="#1976d2" strokeWidth="1.2" />
+                    <line x1="338" y1="35" x2="338" y2="45" stroke="#1976d2" strokeWidth="1.2" />
+                    <text x="232" y="34" textAnchor="middle" fontSize="13" fontWeight="bold"
+                      fill={highlightedLabel === 'W' ? '#d32f2f' : '#1976d2'}>
+                      {measW ? `W=${measW}` : 'W'}
                     </text>
-                    {highlightedLabel === 'W' && <rect x="170" y="29" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* A — full height left side */}
-                    <line x1="90" y1="70" x2="90" y2="340" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="85" y1="70" x2="95" y2="70" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="85" y1="340" x2="95" y2="340" stroke="#d32f2f" strokeWidth="1" />
-                    {offsetType === 'adjustable' && adjustableFrom && adjustableTo ? (
-                      <>
-                        <text x="42" y="195" textAnchor="middle" fontSize="13" fontWeight="bold"
-                          fill={highlightedLabel === 'A' ? '#d32f2f' : '#333'}>
-                          {adjustableFrom}-{adjustableTo}mm
-                        </text>
-                        <text x="42" y="212" textAnchor="middle" fontSize="12" fontWeight="bold" fontStyle="italic"
-                          fill={highlightedLabel === 'A' ? '#d32f2f' : '#333'}>
-                          Adjustable
-                        </text>
-                      </>
-                    ) : (
-                      <text x="42" y="210" textAnchor="middle" fontSize="14" fontWeight="bold"
-                        fill={highlightedLabel === 'A' ? '#d32f2f' : '#333'}>
-                        A{measA ? ` = ${measA}` : ''}
-                      </text>
-                    )}
-                    {highlightedLabel === 'A' && <rect x="8" y="183" width="70" height="38" rx="3" fill="#ffeb3b" opacity="0.4" />}
-
-                    {/* B1 — top bar 3D side height */}
-                    <line x1="322" y1="52" x2="322" y2="107" stroke="#1976d2" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="317" y1="52" x2="327" y2="52" stroke="#1976d2" strokeWidth="1" />
-                    <line x1="317" y1="107" x2="327" y2="107" stroke="#1976d2" strokeWidth="1" />
-                    <text x="335" y="82" textAnchor="start" fontSize="13" fontWeight="bold"
-                      fill={highlightedLabel === 'B1' ? '#d32f2f' : '#1976d2'}>
-                      B1{measB1 ? ` = ${measB1}` : ''}
+                    {/* B1 — vertical line on top face of upper pipe */}
+                    <line x1="280" y1="50" x2="280" y2="82" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
+                    <line x1="275" y1="50" x2="285" y2="50" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="275" y1="82" x2="285" y2="82" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="288" y="70" textAnchor="start" fontSize="12" fontWeight="bold"
+                      fill={highlightedLabel === 'B1' ? '#d32f2f' : '#333'}>
+                      {measB1 ? `B1=${measB1}` : 'B1'}
                     </text>
-                    {highlightedLabel === 'B1' && <rect x="330" y="69" width="70" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* B2 — connector height */}
-                    <line x1="200" y1="107" x2="200" y2="267" stroke="#1976d2" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="195" y1="107" x2="205" y2="107" stroke="#1976d2" strokeWidth="1" />
-                    <line x1="195" y1="267" x2="205" y2="267" stroke="#1976d2" strokeWidth="1" />
-                    <text x="215" y="192" textAnchor="start" fontSize="13" fontWeight="bold"
-                      fill={highlightedLabel === 'B2' ? '#d32f2f' : '#1976d2'}>
-                      B2{measB2 ? ` = ${measB2}` : ''}
+                    {/* B2 — vertical line on right side face of upper pipe */}
+                    <line x1="348" y1="62" x2="348" y2="125" stroke="#d32f2f" strokeWidth="1" strokeDasharray="3,2" />
+                    <line x1="343" y1="62" x2="353" y2="62" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="343" y1="125" x2="353" y2="125" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="358" y="98" textAnchor="start" fontSize="12" fontWeight="bold"
+                      fill={highlightedLabel === 'B2' ? '#d32f2f' : '#333'}>
+                      {measB2 ? `B2=${measB2}` : 'B2'}
                     </text>
-                    {highlightedLabel === 'B2' && <rect x="210" y="179" width="70" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* C — width across bottom */}
-                    <line x1="110" y1="358" x2="290" y2="358" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
-                    <line x1="110" y1="353" x2="110" y2="363" stroke="#d32f2f" strokeWidth="1" />
-                    <line x1="290" y1="353" x2="290" y2="363" stroke="#d32f2f" strokeWidth="1" />
-                    <text x="200" y="378" textAnchor="middle" fontSize="14" fontWeight="bold"
-                      fill={highlightedLabel === 'C' ? '#d32f2f' : '#333'}>
-                      C{measC ? ` = ${measC}` : ''}
+                    {/* A — vertical line between C and B1, at connector section */}
+                    <line x1="200" y1="135" x2="200" y2="225" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="195" y1="135" x2="205" y2="135" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="195" y1="225" x2="205" y2="225" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="208" y="184" textAnchor="start" fontSize="13" fontWeight="bold"
+                      fill={highlightedLabel === 'A' ? '#d32f2f' : '#333'}>
+                      {offsetType === 'adjustable' && adjustableFrom && adjustableTo
+                        ? `A=${adjustableFrom}-${adjustableTo}`
+                        : (measA ? `A=${measA}` : 'A')}
                     </text>
-                    {highlightedLabel === 'C' && <rect x="175" y="365" width="50" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* D — angle at top-right junction */}
-                    <path d="M 275,125 Q 282,113 290,107" fill="none" stroke="#e65100" strokeWidth="1.5" />
-                    <text x="300" y="122" textAnchor="start" fontSize="13" fontWeight="bold"
+                    {/* D — angle arc at upper bend */}
+                    <path d="M 222,125 Q 216,135 210,148" fill="none" stroke="#e65100" strokeWidth="1.5" />
+                    <text x="226" y="142" textAnchor="start" fontSize="12" fontWeight="bold"
                       fill={highlightedLabel === 'D' ? '#d32f2f' : '#e65100'}>
-                      D{angleD ? ` = ${angleD}°` : ''}
+                      {angleD ? `D=${angleD}°` : 'D'}
                     </text>
-                    {highlightedLabel === 'D' && <rect x="295" y="109" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* E — angle at bottom-left junction */}
-                    <path d="M 125,285 Q 118,297 112,305" fill="none" stroke="#e65100" strokeWidth="1.5" />
-                    <text x="85" y="400" textAnchor="start" fontSize="13" fontWeight="bold"
+                    {/* E — angle arc at lower bend */}
+                    <path d="M 165,215 Q 158,225 152,240" fill="none" stroke="#e65100" strokeWidth="1.5" />
+                    <text x="160" y="245" textAnchor="start" fontSize="12" fontWeight="bold"
                       fill={highlightedLabel === 'E' ? '#d32f2f' : '#e65100'}>
-                      E{angleE ? ` = ${angleE}°` : ''}
+                      {angleE ? `E=${angleE}°` : 'E'}
                     </text>
-                    {highlightedLabel === 'E' && <rect x="80" y="387" width="60" height="18" rx="3" fill="#ffeb3b" opacity="0.4" />}
 
-                    {/* ─── Seam Side indicator — colored dashed lines ─── */}
-                    {seamSide === 'top' && (
-                      <>
-                        <line x1="110" y1="72" x2="290" y2="72" stroke="#d32f2f" strokeWidth="3" strokeDasharray="8,5" />
-                        <line x1="112" y1="127" x2="112" y2="283" stroke="#d32f2f" strokeWidth="3" strokeDasharray="8,5" />
-                        <line x1="110" y1="287" x2="290" y2="287" stroke="#d32f2f" strokeWidth="3" strokeDasharray="8,5" />
-                      </>
-                    )}
-                    {seamSide === 'left' && (
-                      <>
-                        <line x1="112" y1="70" x2="112" y2="125" stroke="#f57c00" strokeWidth="3" strokeDasharray="8,5" />
-                        <line x1="110" y1="125" x2="110" y2="285" stroke="#f57c00" strokeWidth="3" strokeDasharray="8,5" />
-                        <line x1="112" y1="285" x2="112" y2="340" stroke="#f57c00" strokeWidth="3" strokeDasharray="8,5" />
-                      </>
-                    )}
-                    {seamSide === 'bottom' && (
-                      <>
-                        <line x1="110" y1="123" x2="290" y2="123" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
-                        <line x1="163" y1="127" x2="163" y2="283" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
-                        <line x1="110" y1="338" x2="290" y2="338" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
-                      </>
-                    )}
-                    {seamSide === 'right' && (
-                      <>
-                        <line x1="288" y1="70" x2="288" y2="125" stroke="#1976d2" strokeWidth="3" strokeDasharray="8,5" />
-                        <line x1="163" y1="125" x2="163" y2="285" stroke="#1976d2" strokeWidth="3" strokeDasharray="8,5" />
-                        <line x1="288" y1="285" x2="288" y2="340" stroke="#1976d2" strokeWidth="3" strokeDasharray="8,5" />
-                      </>
-                    )}
-
+                    {/* C — vertical dashed line along left side of bottom pipe */}
+                    <line x1="100" y1="230" x2="100" y2="395" stroke="#d32f2f" strokeWidth="1" strokeDasharray="4,3" />
+                    <line x1="95" y1="230" x2="105" y2="230" stroke="#d32f2f" strokeWidth="1" />
+                    <line x1="95" y1="395" x2="105" y2="395" stroke="#d32f2f" strokeWidth="1" />
+                    <text x="92" y="318" textAnchor="middle" fontSize="13" fontWeight="bold"
+                      fill={highlightedLabel === 'C' ? '#d32f2f' : '#333'}
+                      transform="rotate(-90, 92, 318)">
+                      {measC ? `C=${measC}` : 'C'}
+                    </text>
                   </svg>
                   {note && (
                     <div style={{ fontSize: '18px', color: '#333', fontWeight: 'bold', textAlign: 'right', width: '100%', marginTop: '4px' }}>
@@ -699,7 +573,7 @@ const AWFSelectMaterials = () => {
                   )}
                 </div>
               ) : (
-                /* ═══ OTHER TYPES — Product image / placeholder ═══ */
+                /* ═══ ALL OTHER TYPES — Static product image ═══ */
                 <>
                   {barcode && (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', padding: '4px 0' }}>

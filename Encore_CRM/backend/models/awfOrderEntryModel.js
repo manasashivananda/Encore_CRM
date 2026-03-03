@@ -61,6 +61,7 @@ const awfOrderEntrySchema = new mongoose.Schema({
   // Options
   barcode: { type: Boolean, default: false },
   use24Downpipe: { type: Boolean, default: false },    // Offsets: use 2.4m downpipe, C += 600mm
+  offsetCValue: { type: Number, default: null },        // Computed C dimension in mm (varies by product)
   note: { type: String, default: '' },
   unitPrice: { type: Number, default: 0 },
   productImage: { type: String, default: null },

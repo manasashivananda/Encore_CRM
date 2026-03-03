@@ -827,9 +827,49 @@ Removed extra decorative elements from offset SVGs in AWFSelectMaterials — kee
 | `frontend/src/Pages/DrawingComponents/AWFSelectMaterials.js` | Note positioned right-aligned within drawing sections. Barcode SVG pattern in all 3 drawing sections (standard offset, custom offset, other types). BARCODE checkbox added to custom offset form. Removed 80° note from Custom Offset SVG. Removed angle box, D/E angles, specs legend from Round Offset SVG. Removed 450-600mm Adjustable A dimension from both Square and Round Offset SVGs. |
 | `frontend/src/styles/AWFSelectMaterials.scss` | `awf-canvas-container` gap set to 0 |
 
+### AWF Product Images — Plan (Static Files in `public/`)
+
+#### Decision: Static files (`public/`) vs S3
+
+| | Static files (`public/`) | S3 |
+|---|---|---|
+| **Speed** | Instant — served directly by web server | Slower — needs signed URL generation per request |
+| **Cost** | Free — bundled with the app | S3 request costs on every image load |
+| **Reliability** | No external dependency | Depends on AWS availability |
+| **Setup** | Drop files in folder, done | Upload script + AWS config + signed URL logic |
+| **Maintenance** | Zero | Signed URLs expire, need refresh/regeneration logic |
+| **Use case fit** | Fixed catalog images (~20-30 products, never change per order) | User-generated content (e.g. Flashing drawing previews, different per order) |
+
+**Verdict**: AWF product drawings are a fixed catalog — same image for every "100x50mm Square D/P" across all orders. No user uploads, no dynamic content. This is exactly what `public/` folder is for. S3 is already used in the project for Flashing drawing previews (which ARE different per order), but AWF product images don't need that.
+
+#### How It Works
+
+1. **Store images**: Place real product drawing files in `frontend/public/awf-products/` (e.g. `100x50-square-dp.png`, `offset-round-75mm.png`)
+2. **Update product library**: Set `image` field in `awf_product_libraries` to static path (e.g. `/awf-products/100x50-square-dp.png`)
+3. **On FINISH save**: `productImage` (the static path string) is saved to `awf_order_entries` — just a small string, not the actual image
+4. **Display**: Template Library, AWFSelectMaterials, AWFDetailsTab cards/lightbox all use this path directly — no API calls, no signed URLs
+
+#### Offset Drawings — Static Image + Dynamic Values
+
+Offset product drawings are the same static image for each product type. Only the dimension values change per order:
+- **Drawing/image** = same static file from `public/awf-products/` (e.g. one image for "Custom Round Offset")
+- **Values** (W, A, B1, B2, C, D, E, angles) = stored per order entry in `awf_order_entries.measurements` and `awf_order_entries.angleDegree`
+- **Display**: Show the static image + render dimension values as text labels alongside it
+
+This means all the dynamic SVG code for offsets (square, round, custom offset — ~300+ lines) will be removed and replaced with simple image display, same as all other product types.
+
+#### Code Changes Required
+
+| File | Action |
+|------|--------|
+| `frontend/public/awf-products/` | **CREATE** folder, add real product drawing files |
+| `backend/scripts/` | **UPDATE** seed scripts with static paths instead of placehold.co URLs |
+| `AWFSelectMaterials.js` | **SIMPLIFY** left panel — remove all dynamic SVG code for offsets, use unified image display for all types. For offsets, show dimension values as text alongside image |
+| `AWFDetailsTab.js` | **SIMPLIFY** cards + lightbox — remove all offset SVG rendering, use `entry.productImage` for all types. For offsets, show dimension values from entry data |
+| `awf_product_libraries` (MongoDB) | **UPDATE** image field from placehold.co URLs to static paths |
+
 ### What's Next (TODO)
 
-1. **Custom Offset SVG refinement**: Current thick box Z-shape needs adjustment to exactly match reference image proportions/perspective
-2. **Product images**: Upload actual product images to S3, replace placehold.co URLs
-3. **Rollforming**: No spec yet
-4. **Quotation flow**: AWF tab for quotes — deferred per user instruction
+1. **Product images**: Add real product drawing files to `public/awf-products/`, update product library records, remove dynamic SVG code
+2. **Rollforming**: No spec yet
+3. **Quotation flow**: AWF tab for quotes — deferred per user instruction
