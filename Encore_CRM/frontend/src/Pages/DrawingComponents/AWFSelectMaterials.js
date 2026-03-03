@@ -451,8 +451,8 @@ const AWFSelectMaterials = () => {
             <div className="awf-canvas-container">
               <h4 className="awf-product-title">{subCategory || (partClass === 'Clips & Pops' ? 'Clips' : partClass)}</h4>
 
-              {partClass === 'Offsets' && formType !== 'custom_offset' ? (
-                /* ═══ STANDARD OFFSET / BENDS — PNG image + C dimension overlay ═══ */
+              {partClass === 'Offsets' && formType !== 'custom_offset' && formType !== 'bends' ? (
+                /* ═══ STANDARD OFFSET — PNG image + C dimension overlay ═══ */
                 <div className="awf-offset-drawing">
                   {barcode && (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px', padding: '4px 0' }}>

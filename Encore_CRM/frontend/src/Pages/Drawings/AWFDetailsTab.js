@@ -338,8 +338,8 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
                 <line x1="145" y1="148" x2="145" y2="395" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
               )}
             </svg>
-          ) : (entry.subCategory === 'Standard Offset' || entry.subCategory === 'Bends (Elbow/Shoes)') ? (
-            /* Standard Offset / Bends — PNG image + C dimension overlay */
+          ) : entry.subCategory === 'Standard Offset' ? (
+            /* Standard Offset — PNG image + C dimension overlay */
             <svg viewBox="0 0 380 450" width={isLightbox ? 360 : 400} height={isLightbox ? 420 : 470} xmlns="http://www.w3.org/2000/svg">
               <image href="/awf-products/standard-offset-square.jpeg" x="80" y="30" width="270" height="380" preserveAspectRatio="xMidYMid meet" />
               {entry.productName?.toLowerCase().includes('federation') && (
@@ -704,8 +704,8 @@ const AWFDetailsTab = ({ orderId, mongoId, onEntryDelete, currentPage, type, sho
                         <line x1="145" y1="148" x2="145" y2="395" stroke="#388e3c" strokeWidth="3" strokeDasharray="8,5" />
                       )}
                     </svg>
-                  ) : (entry.subCategory === 'Standard Offset' || entry.subCategory === 'Bends (Elbow/Shoes)') ? (
-                    /* Standard Offset / Bends — PNG image + C dimension overlay */
+                  ) : entry.subCategory === 'Standard Offset' ? (
+                    /* Standard Offset — PNG image + C dimension overlay */
                     <svg viewBox="0 0 380 450" width="480" height="560" xmlns="http://www.w3.org/2000/svg">
                       <image href="/awf-products/standard-offset-square.jpeg" x="80" y="30" width="270" height="380" preserveAspectRatio="xMidYMid meet" />
                       {entry.productName?.toLowerCase().includes('federation') && (
